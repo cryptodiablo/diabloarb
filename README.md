@@ -1,55 +1,38 @@
-# diabloarb
+**Diablo Arb Bot**
 
-Минимальный **runtime‑бандл** для запуска арбитражного sender’а на Solana (DEX arbitrage).
+Minimal runtime bundle for running a Solana DEX arbitrage sender.
 
-Этот репозиторий содержит **только готовый бинарь и конфиги** — чтобы можно было быстро развернуть запуск на сервере.
+**What's inside**
+- `sender` — binary (Linux x86_64)
+- `config.toml` — main config
+- `markets.toml` — pools/markets list
+- `gas.json` — priority fee / Jito tip params
 
----
-
-## Что внутри
-
-- **`sender`** — бинарь (Linux x86_64)
-- **`config.toml`** — основной конфиг запуска
-- **`markets.toml`** — список пулов/маркетов, которые мониторим
-- **`gas.json`** — параметры priority fee / Jito tip и задержек (подставляются в `config.toml` через `{...}`)
-
----
-
-## Быстрый запуск
-
-```bash
+**Quick start**
+```
 chmod +x ./sender
 ./sender config.toml
 ```
 
-> Если запускаешь на другом сервере: важно, чтобы архитектура совпадала (x86_64).  
-> Проверка: `uname -m` и `file ./sender`.
+> If you run this on another server, make sure the architecture matches (x86_64).  
+> Check with: `uname -m` and `file ./sender`.
 
----
+**`config.toml` (overview)**
+- **rpc**: RPC for reading state (quotes/accounts)
+- **send_rpcs**: RPCs for broadcasting transactions
+- **gas_file**: path to `gas.json`
+- **markets_file**: path to `markets.toml`
+- **jito**, **jito_endpoints**, **jito_uuid**: Jito delivery settings
+- **luts**: path to LUT list (if used)
 
-## `config.toml` (вкратце)
+Config paths are examples — adjust for your server.
 
-Самые важные поля:
+**`gas.json`**
+Dynamic parameters (priority fee / tip / cooldown) that can be adjusted without editing the main TOML.
 
-- **`rpc`**: RPC для чтения состояния (quotes/аккаунты)
-- **`send_rpcs`**: список RPC для рассылки транзакций (ускоряет доставку)
-- **`gas_file`**: путь к `gas.json`
-- **`markets_file`**: путь к `markets.toml`
-- **`jito`**, **`jito_endpoints`**, **`jito_uuid`**: доставка через Jito
-- **`luts`**: путь к списку LUT (если используется)
+**`markets.toml`**
+List of pool/market addresses grouped by token and direction.
 
-Пути в конфиге — это примеры; под свою структуру сервера их нужно выставить своими.
+Repo: https://github.com/cryptodiablo/diabloarb
 
----
-
-## `gas.json`
-
-Файл с динамическими параметрами (priority fee / tip / cooldown), которые можно менять без правки основного TOML.
-
----
-
-## `markets.toml`
-
-Список адресов пулов/маркетов, сгруппированных по токенам/направлениям.
-
-
+Diablo Arb Profits: https://t.me/diabloarbprofits
