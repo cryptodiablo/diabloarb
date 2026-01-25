@@ -4,6 +4,8 @@ Telegram Chat: https://diabloarbchat
 
 Discord: https://discord.gg/gERHqsMy
 
+Pools Extractor: https://moneyprinter.bot/pools/
+
 
 
 **Diablo Arb Bot**
