@@ -1,7 +1,5 @@
 # diabloarb
 
-Diablo Arb Bot - Solana Dex Arbitrage Bot
-
 Минимальный бандл для запуска арб-сендера:
 
 - `sender` — бинарь (Linux x86_64)
@@ -11,5 +9,5 @@ Diablo Arb Bot - Solana Dex Arbitrage Bot
 
 ## Важно
 
-- **Не коммить ключи** (keypair / `key.json`) и любые секреты.
 - В `config.toml` пути типа `/root/diabloarb/...` — это **пути на сервере**, при деплое их нужно настроить под свою структуру.
+
