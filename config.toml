@@ -1,0 +1,35 @@
+rpc = "https://read-rpc.com/"
+keypair = "/root/diabloarb/key.json"
+flashloan = true
+
+send_rpcs = [
+"https://sender-rpc1.com/", # FRA
+"http://sender-rpc2.com/", #AMS
+]
+
+luts = "/root/diabloarb/royallut.txt"
+luts_update_ms = 1000
+autodelete_dead_luts = true
+
+gas_file = "/root/diabloarb/gas.json"
+
+spam_rpc = true
+min_priority_fee = "{enable_min_prio}"
+max_priority_fee = "{enable_max_prio}"
+process_delay_ms = "{spam_cooldown_ms}"
+#cu_limit = "{enable_cu_limit}"
+cu_limit = "380000"
+
+jito = true
+jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"]
+jito_uuid = "uuid"
+jito_min_tip_lamports = "{enable_jito_min_tip}"
+jito_max_tip_lamports = "{enable_jito_max_tip}"
+jito_process_delay_ms = "{jito_cooldown_ms}"
+no_failure_mode = true
+
+markets_file = "/root/diabloarb/markets.toml"
+markets_update_ms = 50
+
+bin_limit = 17
+enable_logs = false

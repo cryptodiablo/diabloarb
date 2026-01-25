@@ -1,0 +1,13 @@
+{
+    "enable_jito_max_tip": 3000,
+    "enable_jito_min_tip": 100,
+
+    "enable_max_prio": 3000,
+    "enable_min_prio": 100,
+
+    "jito_cooldown_ms": 320,
+    "spam_cooldown_ms": 300,
+
+    "spam_rpc": true,
+    "spam_jito": true
+}

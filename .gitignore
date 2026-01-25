@@ -1,0 +1,34 @@
+# Secrets / credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.env
+.env
+.env.*
+.axiom-cookies
+
+# Solana keypairs / wallets (never commit)
+*keypair*.json
+keypair*.json
+key.json
+id.json
+
+# Local runtime paths
+royallut.txt
+*.lut
+*.log
+logs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Go build artifacts
+*.exe
+*.out
+*.test
+dist/
+bin/
+
