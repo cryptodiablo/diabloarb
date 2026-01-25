@@ -8,9 +8,16 @@ Minimal runtime bundle for running a Solana DEX arbitrage sender.
 - `markets.toml` — pools/markets list
 - `gas.json` — priority fee / Jito tip params
 
-**Quick start**
+**Quick Install**
 ```
+wget -O diabloarb.zip https://github.com/cryptodiablo/diabloarb/archive/refs/heads/main.zip
+unzip diabloarb.zip
+cd diabloarb-main
 chmod +x ./sender
+```
+
+**Run**
+```
 ./sender config.toml
 ```
 
