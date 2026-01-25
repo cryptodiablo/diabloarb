@@ -36,3 +36,6 @@ List of pool/market addresses grouped by token and direction.
 Repo: https://github.com/cryptodiablo/diabloarb
 
 Diablo Arb Profits: https://t.me/diabloarbprofits
+
+Discord: https://discord.gg/gERHqsMy
+
