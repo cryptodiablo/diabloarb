@@ -1,3 +1,7 @@
+Realtime Profits: https://t.me/diabloarb
+Telegram Chat: https://diabloarbchat
+Discord: https://discord.gg/gERHqsMy
+
 **Diablo Arb Bot**
 
 Minimal runtime bundle for running a Solana DEX arbitrage sender.
@@ -42,7 +46,5 @@ List of pool/market addresses grouped by token and direction.
 
 Repo: https://github.com/cryptodiablo/diabloarb
 
-Diablo Arb Profits: https://t.me/diabloarbprofits
 
-Discord: https://discord.gg/gERHqsMy
 
