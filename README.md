@@ -50,6 +50,21 @@ Dynamic parameters (priority fee / tip / cooldown) that can be adjusted without 
 **`markets.toml`**
 List of pool/market addresses grouped by token and direction.
 
+- Wrap 0.1 SOL → WSOL
+```  ./sender wrap 0.1
+    ./sender wrap config.toml 0.1
+```
+
+- Unwrap 0.1 WSOL → SOL
+```  ./sender unwrap 0.1
+    ./sender unwrap config.toml 0.1
+```
+
+- Unwrap ALL WSOL balance → SOL (without closing ATA for WSOL)
+```  ./sender unwrap all
+    ./sender unwrap config.toml all
+```
+
 Repo: https://github.com/cryptodiablo/diabloarb
 
 
