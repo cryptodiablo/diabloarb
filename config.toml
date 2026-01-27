@@ -23,7 +23,7 @@ cu_limit = "380000" # compute unit limit for txs
 auto_unwrap = false # auto-unwrap WSOL to SOL
 min_sol_amount = 0.1 # minimum SOL balance to keep
 
-helius_enabled = false # enable Helius send loop
+helius = false # enable Helius send loop (bool or {gas_var})
 # helius_urls + helius_tip_accounts are hardcoded in sender # edit sender to change
 helius_tip_min_lamports = 1000 # Helius minimum tip in lamports
 helius_tip_max_lamports = 5000 # Helius maximum tip in lamports
