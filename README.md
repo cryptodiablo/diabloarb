@@ -31,8 +31,6 @@ chmod +x ./sender
 ./sender config.toml
 ```
 
-> If you run this on another server, make sure the architecture matches (x86_64).  
-> Check with: `uname -m` and `file ./sender`.
 
 **`config.toml` (overview)**
 - **rpc**: RPC for reading state (quotes/accounts)
