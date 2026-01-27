@@ -1,38 +1,48 @@
-rpc = "https://read-rpc.com/"
-keypair = "/root/diabloarb/key.json"
-flashloan = true
+rpc = "https://read-rpc.com/" # read-only RPC for quotes/accounts
+keypair = "/root/diabloarb/key.json" # signer keypair path
+flashloan = true # use WSOL vault flashloan
 
-send_rpcs = [
-"https://sender-rpc1.com/", # FRA
-"http://sender-rpc2.com/", #AMS
-]
+send_rpcs = [ # RPCs for broadcasting transactions
+"https://sender-rpc1.com/", # send RPC endpoint (FRA)
+"http://sender-rpc2.com/", # send RPC endpoint (AMS)
+] # end send_rpcs list
 
-luts = "/root/diabloarb/royallut.txt"
-luts_update_ms = 1000
-autodelete_dead_luts = true
+luts = "/root/diabloarb/royallut.txt" # lookup tables file path
+luts_update_ms = 1000 # LUT refresh interval in ms
+autodelete_dead_luts = true # drop invalid LUTs automatically
 
-gas_file = "/root/diabloarb/gas.json"
+gas_file = "/root/diabloarb/gas.json" # gas/vars json file
 
-spam_rpc = true
-min_priority_fee = "{enable_min_prio}"
-max_priority_fee = "{enable_max_prio}"
-process_delay_ms = "{spam_cooldown_ms}"
-#cu_limit = "{enable_cu_limit}"
-cu_limit = "380000"
+spam_rpc = true # enable main RPC spam loop
+min_priority_fee = "{enable_min_prio}" # min priority fee in lamports (gas var)
+max_priority_fee = "{enable_max_prio}" # max priority fee in lamports (gas var)
+process_delay_ms = "{spam_cooldown_ms}" # spam loop delay in ms (gas var)
+#cu_limit = "{enable_cu_limit}" # optional CU limit from gas var (disabled)
+cu_limit = "380000" # compute unit limit for txs
 
-auto_unwrap = false
-min_sol_amount = 0.1
+auto_unwrap = false # auto-unwrap WSOL to SOL
+min_sol_amount = 0.1 # minimum SOL balance to keep
 
-jito = true
-jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"]
-jito_uuid = "uuid"
-jito_min_tip_lamports = "{enable_jito_min_tip}"
-jito_max_tip_lamports = "{enable_jito_max_tip}"
-jito_process_delay_ms = "{jito_cooldown_ms}"
-no_failure_mode = true
+helius_enabled = false # enable Helius send loop
+# helius_urls + helius_tip_accounts are hardcoded in sender # edit sender to change
+helius_tip_min_lamports = 1000 # Helius minimum tip in lamports
+helius_tip_max_lamports = 5000 # Helius maximum tip in lamports
+helius_min_priority_fee = "{enable_min_prio}" # Helius min priority fee (gas var)
+helius_max_priority_fee = "{enable_max_prio}" # Helius max priority fee (gas var)
+helius_cooldown_ms = 300 # Helius loop interval in ms
+require_profit = true # legacy preflight flag (currently ignored)
+fail_on_no_profit = true # fail tx on no-profit (prevents tip)
 
-markets_file = "/root/diabloarb/markets.toml"
-markets_update_ms = 50
+jito = true # enable Jito send loop
+jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"] # Jito regions
+jito_uuid = "uuid" # Jito UUID (optional)
+jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
+jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito maximum tip (gas var)
+jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms (gas var)
+no_failure_mode = true # Jito bundleOnly=false (allow non-bundle)
 
-bin_limit = 17
-enable_logs = false
+markets_file = "/root/diabloarb/markets.toml" # markets list file
+markets_update_ms = 50 # markets refresh interval in ms
+
+bin_limit = 17 # DLMM bin limit per pool
+enable_logs = false # on-chain debug logs
