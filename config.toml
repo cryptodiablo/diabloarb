@@ -30,6 +30,13 @@ helius_min_priority_fee = "{helius_min_prio}" # Helius min priority fee (gas var
 helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee (gas var)
 helius_cooldown_ms = "{helius_cooldown_ms}" # Helius loop interval in ms
 
+helius_swqos = "{enable_helius_swqos}" # enable Helius SWQOS-only mode
+helius_swqos_tip_min_lamports = "{helius_swqos_min_tip}" # SWQOS min tip in lamports (min 5000)
+helius_swqos_tip_max_lamports = "{helius_swqos_max_tip}" # SWQOS max tip in lamports
+helius_swqos_min_priority_fee = "{helius_swqos_min_prio}" # SWQOS min priority fee
+helius_swqos_max_priority_fee = "{helius_swqos_max_prio}" # SWQOS max priority fee
+helius_swqos_cooldown_ms = "{helius_swqos_cooldown_ms}" # SWQOS loop interval in ms
+
 jito = true # enable Jito send loop
 jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
