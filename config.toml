@@ -10,7 +10,7 @@ send_rpcs = [ # RPCs for broadcasting transactions
 luts = "/root/diabloarb/royallut.txt" # lookup tables file path
 luts_update_ms = 1000 # LUT refresh interval in ms
 autodelete_dead_luts = true # drop invalid LUTs automatically
-autoluts = true # auto-manage LUTs: create/extend on tx-too-large + deactivate/close tagged tables
+autoluts = true # auto-manage LUTs: auto create/extend on tx-too-large + auto deactivate/close full tables
 
 gas_file = "/root/diabloarb/gas.json" # gas/vars json file
 
