@@ -20,6 +20,9 @@ process_delay_ms = "{spam_cooldown_ms}"
 #cu_limit = "{enable_cu_limit}"
 cu_limit = "380000"
 
+auto_unwrap = false
+min_sol_amount = 0.1
+
 jito = true
 jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"]
 jito_uuid = "uuid"
