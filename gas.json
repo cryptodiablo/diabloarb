@@ -11,7 +11,6 @@
     "helius_max_prio": 500,
     "helius_cooldown_ms": 300,
 
-    "enable_helius_swqos": false,
     "helius_swqos_min_tip": 5000,
     "helius_swqos_max_tip": 10000000,
     "helius_swqos_min_prio": 100,
