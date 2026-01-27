@@ -9,6 +9,7 @@
     "helius_max_tip": 10000000,
     "helius_min_prio": 100,
     "helius_max_prio": 500,
+    "helius_cooldown_ms": 300,
 
     "jito_cooldown_ms": 320,
     "spam_cooldown_ms": 300,

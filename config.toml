@@ -28,7 +28,7 @@ helius_tip_min_lamports = "{helius_min_tip}" # Helius minimum tip in lamports (m
 helius_tip_max_lamports = "{helius_max_tip}" # Helius maximum tip in lamports
 helius_min_priority_fee = "{helius_min_prio}" # Helius min priority fee (gas var)
 helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee (gas var)
-helius_cooldown_ms = 300 # Helius loop interval in ms
+helius_cooldown_ms = "{helius_cooldown_ms}" # Helius loop interval in ms
 
 jito = true # enable Jito send loop
 jito_uuid = "uuid" # Jito UUID (optional)
