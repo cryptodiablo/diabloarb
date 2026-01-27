@@ -40,4 +40,3 @@ markets_file = "/root/diabloarb/markets.toml" # markets list file
 markets_update_ms = 50 # markets refresh interval in ms
 
 bin_limit = 17 # DLMM bin limit per pool
-enable_logs = false # on-chain debug logs
