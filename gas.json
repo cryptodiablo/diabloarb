@@ -5,8 +5,8 @@
     "enable_max_prio": 3000,
     "enable_min_prio": 100,
 
-    "helius_min_tip": 1000,
-    "helius_max_tip": 5000,
+    "helius_min_tip": 200000,
+    "helius_max_tip": 10000000,
     "helius_min_prio": 100,
     "helius_max_prio": 3000,
 

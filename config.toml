@@ -24,7 +24,7 @@ auto_unwrap = false # auto-unwrap WSOL to SOL
 min_sol_amount = 0.1 # minimum SOL balance to keep
 
 helius = false # enable Helius send loop (bool or {gas_var})
-helius_tip_min_lamports = "{helius_min_tip}" # Helius minimum tip in lamports
+helius_tip_min_lamports = "{helius_min_tip}" # Helius minimum tip in lamports (min 200000)
 helius_tip_max_lamports = "{helius_max_tip}" # Helius maximum tip in lamports
 helius_min_priority_fee = "{helius_min_prio}" # Helius min priority fee (gas var)
 helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee (gas var)
