@@ -31,7 +31,6 @@ helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee (gas var
 helius_cooldown_ms = 300 # Helius loop interval in ms
 
 jito = true # enable Jito send loop
-jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"] # Jito regions
 jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
 jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito maximum tip (gas var)
