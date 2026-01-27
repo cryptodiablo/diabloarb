@@ -24,14 +24,11 @@ auto_unwrap = false # auto-unwrap WSOL to SOL
 min_sol_amount = 0.1 # minimum SOL balance to keep
 
 helius = false # enable Helius send loop (bool or {gas_var})
-# helius_urls + helius_tip_accounts are hardcoded in sender # edit sender to change
-helius_tip_min_lamports = 1000 # Helius minimum tip in lamports
-helius_tip_max_lamports = 5000 # Helius maximum tip in lamports
-helius_min_priority_fee = "{enable_min_prio}" # Helius min priority fee (gas var)
-helius_max_priority_fee = "{enable_max_prio}" # Helius max priority fee (gas var)
+helius_tip_min_lamports = "{helius_min_tip}" # Helius minimum tip in lamports
+helius_tip_max_lamports = "{helius_max_tip}" # Helius maximum tip in lamports
+helius_min_priority_fee = "{helius_min_prio}" # Helius min priority fee (gas var)
+helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee (gas var)
 helius_cooldown_ms = 300 # Helius loop interval in ms
-require_profit = true # legacy preflight flag (currently ignored)
-fail_on_no_profit = true # fail tx on no-profit (prevents tip)
 
 jito = true # enable Jito send loop
 jito_endpoints = ["amsterdam","frankfurt","ny","tokyo","london","slc"] # Jito regions
@@ -39,7 +36,6 @@ jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
 jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito maximum tip (gas var)
 jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms (gas var)
-no_failure_mode = true # Jito bundleOnly=false (allow non-bundle)
 
 markets_file = "/root/diabloarb/markets.toml" # markets list file
 markets_update_ms = 50 # markets refresh interval in ms
