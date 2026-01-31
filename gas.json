@@ -17,6 +17,12 @@
     "helius_swqos_max_prio": 500,
     "helius_swqos_cooldown_ms": 300,
 
+    "temporal_min_tip": 1000000,
+    "temporal_max_tip": 10000000,
+    "temporal_min_prio": 100,
+    "temporal_max_prio": 500,
+    "temporal_cooldown_ms": 300,
+
     "jito_cooldown_ms": 320,
     "spam_cooldown_ms": 300,
 

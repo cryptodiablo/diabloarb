@@ -38,6 +38,14 @@ helius_swqos_min_priority_fee = "{helius_swqos_min_prio}" # SWQOS min priority f
 helius_swqos_max_priority_fee = "{helius_swqos_max_prio}" # SWQOS max priority fee
 helius_swqos_cooldown_ms = "{helius_swqos_cooldown_ms}" # SWQOS loop interval in ms
 
+temporal = false # enable Temporal send loop (bool or {gas_var})
+temporal_uuid = "{temporal_uuid}" # Temporal Nozomi API key for ?c= (required)
+temporal_tip_min_lamports = "{temporal_min_tip}" # Temporal min tip in lamports (min 1000000)
+temporal_tip_max_lamports = "{temporal_max_tip}" # Temporal max tip in lamports
+temporal_min_priority_fee = "{temporal_min_prio}" # Temporal min priority fee (gas var)
+temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee (gas var)
+temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
+
 jito = true # enable Jito send loop
 jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
