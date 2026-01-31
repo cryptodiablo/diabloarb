@@ -46,6 +46,14 @@ temporal_min_priority_fee = "{temporal_min_prio}" # Temporal min priority fee (g
 temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee (gas var)
 temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
 
+flashblock = false # enable Flashblock send loop (bool or {gas_var})
+flashblock_api_key = "{flashblock_api_key}" # Flashblock API key (Authorization header)
+flashblock_tip_min_lamports = "{flashblock_min_tip}" # Flashblock min tip in lamports (min 100000)
+flashblock_tip_max_lamports = "{flashblock_max_tip}" # Flashblock max tip in lamports
+flashblock_min_priority_fee = "{flashblock_min_prio}" # Flashblock min priority fee (gas var)
+flashblock_max_priority_fee = "{flashblock_max_prio}" # Flashblock max priority fee (gas var)
+flashblock_cooldown_ms = "{flashblock_cooldown_ms}" # Flashblock loop interval in ms
+
 jito = true # enable Jito send loop
 jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)
