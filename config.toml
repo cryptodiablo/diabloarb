@@ -63,6 +63,6 @@ jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito maximum tip (gas var)
 jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms (gas var)
 
 markets_file = "/root/diabloarb/markets.toml" # markets list file
-markets_update_ms = 50 # markets refresh interval in ms
+files_updates_ms = 50 # refresh interval for gas.json + markets file
 
 bin_limit = 17 # DLMM bin limit per pool
