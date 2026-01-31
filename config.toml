@@ -14,6 +14,8 @@ autoluts = true # auto-manage LUTs: auto create/extend on tx-too-large + auto de
 
 gas_file = "/root/diabloarb/gas.json" # gas/vars json file
 
+# memo = "test" # optional, used to track performance of different settings on the same wallet
+
 spam_rpc = true # enable main RPC spam loop
 min_priority_fee = "{enable_min_prio}" # min priority fee in lamports (gas var)
 max_priority_fee = "{enable_max_prio}" # max priority fee in lamports (gas var)
