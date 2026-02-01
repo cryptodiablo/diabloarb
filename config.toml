@@ -56,6 +56,22 @@ flashblock_min_priority_fee = "{flashblock_min_prio}" # Flashblock min priority 
 flashblock_max_priority_fee = "{flashblock_max_prio}" # Flashblock max priority fee (gas var)
 flashblock_cooldown_ms = "{flashblock_cooldown_ms}" # Flashblock loop interval in ms
 
+fast = false # enable Fast send loop (bool or {gas_var})
+fast_api_key = "{fast_api_key}" # Fast API key (x-api-key header)
+fast_tip_min_lamports = "{fast_min_tip}" # Fast min tip in lamports (min 1_000_000)
+fast_tip_max_lamports = "{fast_max_tip}" # Fast max tip in lamports
+fast_min_priority_fee = "{fast_min_prio}" # Fast min priority fee
+fast_max_priority_fee = "{fast_max_prio}" # Fast max priority fee
+fast_cooldown_ms = "{fast_cooldown_ms}" # Fast loop interval in ms
+
+fast_swqos = false # Fast SWQOS (diablo endpoint, no profit check)
+fast_swqos_api_key = "{fast_swqos_api_key}" # Fast SWQOS API key (defaults to fast_api_key)
+fast_swqos_tip_min_lamports = "{fast_swqos_min_tip}" # Fast SWQOS min tip in lamports (min 7_500)
+fast_swqos_tip_max_lamports = "{fast_swqos_max_tip}" # Fast SWQOS max tip in lamports
+fast_swqos_min_priority_fee = "{fast_swqos_min_prio}" # Fast SWQOS min priority fee
+fast_swqos_max_priority_fee = "{fast_swqos_max_prio}" # Fast SWQOS max priority fee
+fast_swqos_cooldown_ms = "{fast_swqos_cooldown_ms}" # Fast SWQOS loop interval in ms
+
 jito = true # enable Jito send loop
 jito_uuid = "uuid" # Jito UUID (optional)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito minimum tip (gas var)

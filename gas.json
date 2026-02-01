@@ -29,6 +29,20 @@
     "flashblock_max_prio": 500,
     "flashblock_cooldown_ms": 300,
 
+    "fast_min_tip": 1000000,
+    "fast_max_tip": 1000005,
+    "fast_min_prio": 100,
+    "fast_max_prio": 500,
+    "fast_cooldown_ms": 300,
+    "fast_api_key": "",
+    "fast_swqos_api_key": "",
+
+    "fast_swqos_min_tip": 7500,
+    "fast_swqos_max_tip": 7600,
+    "fast_swqos_min_prio": 100,
+    "fast_swqos_max_prio": 500,
+    "fast_swqos_cooldown_ms": 300,
+
     "jito_cooldown_ms": 320,
     "spam_cooldown_ms": 300,
 
