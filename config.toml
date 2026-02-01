@@ -56,6 +56,14 @@ flashblock_min_priority_fee = "{flashblock_min_prio}" # Flashblock min priority 
 flashblock_max_priority_fee = "{flashblock_max_prio}" # Flashblock max priority fee (gas var)
 flashblock_cooldown_ms = "{flashblock_cooldown_ms}" # Flashblock loop interval in ms
 
+stellium = false # enable Stellium send loop (bool or {gas_var})
+stellium_api_key = "{stellium_api_key}" # Stellium API key for endpoint ($KEY replacement)
+stellium_tip_min_lamports = "{stellium_min_tip}" # Stellium min tip in lamports (min 1_000_000)
+stellium_tip_max_lamports = "{stellium_max_tip}" # Stellium max tip in lamports
+stellium_min_priority_fee = "{stellium_min_prio}" # Stellium min priority fee
+stellium_max_priority_fee = "{stellium_max_prio}" # Stellium max priority fee
+stellium_cooldown_ms = "{stellium_cooldown_ms}" # Stellium loop interval in ms
+
 fast = false # enable Fast send loop (bool or {gas_var})
 fast_api_key = "{fast_api_key}" # Fast API key (x-api-key header)
 fast_tip_min_lamports = "{fast_min_tip}" # Fast min tip in lamports (min 1_000_000)

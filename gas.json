@@ -29,6 +29,13 @@
     "flashblock_max_prio": 500,
     "flashblock_cooldown_ms": 300,
 
+    "stellium_min_tip": 1000000,
+    "stellium_max_tip": 10000000,
+    "stellium_min_prio": 100,
+    "stellium_max_prio": 500,
+    "stellium_cooldown_ms": 300,
+    "stellium_api_key": "",
+
     "fast_min_tip": 1000000,
     "fast_max_tip": 1000005,
     "fast_min_prio": 100,
