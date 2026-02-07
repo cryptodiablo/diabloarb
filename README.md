@@ -8,7 +8,7 @@
 
 ## 😈 Diablo Arb Bot
 
-Minimal runtime bundle for running a Solana DEX arbitrage sender.
+Automated arbitrage trading bot for Solana that identifies and executes profitable opportunities across multiple DEXs in real-time.
 
 ## 🧳 Whats inside
 - `sender` — binary (Linux x86_64)
