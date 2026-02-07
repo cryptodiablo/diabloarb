@@ -8,17 +8,17 @@ Pools Extractor: https://moneyprinter.bot/pools/
 
 
 
-**Diablo Arb Bot**
+## 😈 Diablo Arb Bot
 
 Minimal runtime bundle for running a Solana DEX arbitrage sender.
 
-**What's inside**
+## 🧳 Whats inside
 - `sender` — binary (Linux x86_64)
 - `config.toml` — main config
 - `markets.toml` — pools/markets list
 - `gas.json` — priority fee / Jito tip params
 
-**Quick Install**
+## 📊 Quick Install
 ```
 wget -O diabloarb.zip https://github.com/cryptodiablo/diabloarb/archive/refs/heads/main.zip
 unzip diabloarb.zip
@@ -26,7 +26,7 @@ cd diabloarb-main
 chmod +x ./sender
 ```
 
-**Run**
+## ⚙️ How to Run
 ```
 ./sender config.toml
 ```
