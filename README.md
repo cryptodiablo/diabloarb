@@ -65,5 +65,20 @@ List of pool/market addresses grouped by token and direction.
 
 Repo: https://github.com/cryptodiablo/diabloarb
 
+## 🔑 Keywords
+
+- Solana Arbitrage Bot  
+- Solana Arb Bot  
+- Solana Trading Bot  
+- DEX Arbitrage  
+- Crypto Arbitrage  
+- Flash Loan Arbitrage  
+- Automated Trading Bot  
+- Crypto Trading Strategy  
+- On-chain Arbitrage  
+- Raydium Arbitrage  
+- Solana DeFi Bot  
+- High-Frequency Trading (HFT)  
+
 
 
