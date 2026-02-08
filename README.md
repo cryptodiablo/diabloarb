@@ -13,7 +13,7 @@ Automated arbitrage trading bot for Solana that identifies and executes profitab
 Sample of tx with 5.1k$ profit:
 <img width="1816" height="444" alt="image" src="https://github.com/user-attachments/assets/41c56bbb-5e74-4e90-90b6-00d1008e450a" />
 
-## How It Works
+## ⚙️ How It Works
 
 The bot monitors price discrepancies across Solana DEXs:
 
