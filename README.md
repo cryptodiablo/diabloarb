@@ -36,7 +36,7 @@ cd diabloarb-main
 chmod +x ./sender
 ```
 
-## ⚙️ How to Run
+## ✅ How to Run
 ```
 ./sender config.toml
 ```
