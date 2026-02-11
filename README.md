@@ -6,7 +6,7 @@
 - Discord: https://discord.gg/gERHqsMy
 - Pools Extractor: https://moneyprinter.bot/pools/
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
-- RU Beginners Guid: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
+- RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
 
 ## 😈 Diablo Arb Bot
 
