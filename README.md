@@ -3,7 +3,7 @@
 - Official Website: https://diabloarb.bot
 - Realtime Profits: https://t.me/diabloarb
 - Telegram Chat: https://t.me/diabloarbchat
-- Discord: https://discord.gg/gERHqsMy
+- Discord: https://discord.gg/Zaykhzwh
 - Pools Extractor: https://moneyprinter.bot/pools/
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
 - RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
