@@ -1,0 +1,128 @@
+rpc = "https://read-rpc.com/" # read-only RPC for quotes/accounts (get one on diablosender.com)
+keypair = "key.json" # signer keypair path
+flashloan = true # use WSOL vault flashloan budget in on-chain sizing
+
+send_rpcs = [ # broadcast RPC endpoints used by spam_rpc path
+  "https://sender-rpc1.com/", # send RPC endpoint (FRA)
+  "http://sender-rpc2.com/", # send RPC endpoint (AMS)
+] # end send_rpcs - diablosender.com is your best choise also
+
+luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path or URL)
+luts_update_ms = 1000 # LUT file refresh interval in ms
+autodelete_dead_luts = true # auto-drop invalid/deactivated LUTs from active set
+autoluts = true # auto create/extend/close LUTs on size pressure
+
+markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
+files_updates_ms = 200 # local files refresh interval (gas + markets) in ms
+remote_files_update_ms = 10000 # remote URL refresh interval (markets/luts) in ms
+
+gas_file = "gas.json" # runtime vars JSON file (for {var} placeholders)
+# memo = "test" # optional memo for tracing tx source
+
+spam_rpc = true # enable main RPC send loop
+
+min_priority_fee = "{enable_min_prio}" # base min priority fee (lamports)
+max_priority_fee = "{enable_max_prio}" # base max priority fee (lamports)
+process_delay_ms = "{spam_cooldown_ms}" # RPC loop interval in ms
+cu_limit = "430000" # compute-unit limit for all routes
+bin_limit = 23 # DLMM scan bin limit per pool
+
+auto_unwrap = false # auto unwrap WSOL->SOL when SOL below threshold
+min_sol_amount = 0.1 # SOL threshold for auto_unwrap
+
+
+jito = true # enable Jito send loop
+jito_classic = false # true => sendBundle classic mode (revert-safe tip)
+jito_require_profit = true #true = the tip is paid only if the arbitrage is successful / false = always tipping
+proxy = "" # optional proxy source (single proxy, file path, or URL list)
+jito_uuid = "uuid" # optional Jito UUID for higher limits
+jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito min tip (lamports)
+jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito max tip (lamports)
+jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms
+
+helius = false # enable Helius sender (tip + priority)
+helius_tip_min_lamports = "{helius_min_tip}" # Helius min tip in lamports (>= 200_000)
+helius_tip_max_lamports = "{helius_max_tip}" # Helius max tip in lamports
+helius_min_priority_fee = "{helius_min_prio}" # Helius min priority fee in lamports
+helius_max_priority_fee = "{helius_max_prio}" # Helius max priority fee in lamports
+helius_cooldown_ms = "{helius_cooldown_ms}" # Helius loop interval in ms
+
+helius_swqos = false # enable Helius SWQOS-only sender
+helius_swqos_tip_min_lamports = "{helius_swqos_min_tip}" # SWQOS min tip (>= 5_000)
+helius_swqos_tip_max_lamports = "{helius_swqos_max_tip}" # SWQOS max tip
+helius_swqos_min_priority_fee = "{helius_swqos_min_prio}" # SWQOS min priority fee
+helius_swqos_max_priority_fee = "{helius_swqos_max_prio}" # SWQOS max priority fee
+helius_swqos_cooldown_ms = "{helius_swqos_cooldown_ms}" # SWQOS loop interval in ms
+
+temporal = false # enable Temporal/Nozomi sender
+temporal_uuid = "{temporal_uuid}" # Temporal UUID (query param c=...)
+temporal_transport = "v2" # Temporal transport: v2 | rest
+temporal_tip_min_lamports = "{temporal_min_tip}" # Temporal min tip in lamports
+temporal_tip_max_lamports = "{temporal_max_tip}" # Temporal max tip in lamports
+temporal_min_priority_fee = "{temporal_min_prio}" # Temporal min priority fee
+temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee
+temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
+
+flashblock = false # enable Flashblock sender
+flashblock_api_key = "{flashblock_api_key}" # Flashblock API key
+flashblock_tip_min_lamports = "{flashblock_min_tip}" # Flashblock min tip in lamports (>= 100_000)
+flashblock_tip_max_lamports = "{flashblock_max_tip}" # Flashblock max tip in lamports
+flashblock_min_priority_fee = "{flashblock_min_prio}" # Flashblock min priority fee
+flashblock_max_priority_fee = "{flashblock_max_prio}" # Flashblock max priority fee
+flashblock_cooldown_ms = "{flashblock_cooldown_ms}" # Flashblock loop interval in ms
+
+hellomoon = false # enable HelloMoon Lunar Lander sender
+hellomoon_tip_min_lamports = "{hellomoon_min_tip}" # HelloMoon min tip (>= 1_000_000)
+hellomoon_tip_max_lamports = "{hellomoon_max_tip}" # HelloMoon max tip
+hellomoon_min_priority_fee = "{hellomoon_min_prio}" # HelloMoon min priority fee
+hellomoon_max_priority_fee = "{hellomoon_max_prio}" # HelloMoon max priority fee
+hellomoon_cooldown_ms = "{hellomoon_cooldown_ms}" # HelloMoon loop interval in ms
+
+astralane = false # enable Astralane Iris sender
+astralane_api_key = "{astralane_api_key}" # Astralane API key
+astralane_tip_min_lamports = "{astralane_min_tip}" # Astralane min tip (>= 10_000)
+astralane_tip_max_lamports = "{astralane_max_tip}" # Astralane max tip
+astralane_min_priority_fee = "{astralane_min_prio}" # Astralane min priority fee
+astralane_max_priority_fee = "{astralane_max_prio}" # Astralane max priority fee
+astralane_cooldown_ms = "{astralane_cooldown_ms}" # Astralane loop interval in ms
+
+zeroslot = false # enable 0slot staked_conn sender
+zeroslot_api_key = "{zeroslot_api_key}" # 0slot API key
+zeroslot_tip_min_lamports = "{zeroslot_min_tip}" # 0slot min tip (>= 1_000_000)
+zeroslot_tip_max_lamports = "{zeroslot_max_tip}" # 0slot max tip
+zeroslot_min_priority_fee = "{zeroslot_min_prio}" # 0slot min priority fee
+zeroslot_max_priority_fee = "{zeroslot_max_prio}" # 0slot max priority fee
+zeroslot_cooldown_ms = "{zeroslot_cooldown_ms}" # 0slot loop interval in ms
+
+falcon = false # enable Falcon sender
+falcon_api_key = "{falcon_api_key}" # Falcon API key
+falcon_tip_min_lamports = "{falcon_min_tip}" # Falcon min tip (>= 1_000_000)
+falcon_tip_max_lamports = "{falcon_max_tip}" # Falcon max tip
+falcon_min_priority_fee = "{falcon_min_prio}" # Falcon min priority fee
+falcon_max_priority_fee = "{falcon_max_prio}" # Falcon max priority fee
+falcon_cooldown_ms = "{falcon_cooldown_ms}" # Falcon loop interval in ms
+
+stellium = false # enable Stellium sender
+stellium_api_key = "{stellium_api_key}" # Stellium API key
+stellium_tip_min_lamports = "{stellium_min_tip}" # Stellium min tip (>= 1_000_000)
+stellium_tip_max_lamports = "{stellium_max_tip}" # Stellium max tip
+stellium_min_priority_fee = "{stellium_min_prio}" # Stellium min priority fee
+stellium_max_priority_fee = "{stellium_max_prio}" # Stellium max priority fee
+stellium_cooldown_ms = "{stellium_cooldown_ms}" # Stellium loop interval in ms
+
+fast = false # enable Fast sender
+fast_api_key = "{fast_api_key}" # Fast API key
+fast_tip_min_lamports = "{fast_min_tip}" # Fast min tip (>= 1_000_000)
+fast_tip_max_lamports = "{fast_max_tip}" # Fast max tip
+fast_min_priority_fee = "{fast_min_prio}" # Fast min priority fee
+fast_max_priority_fee = "{fast_max_prio}" # Fast max priority fee
+fast_cooldown_ms = "{fast_cooldown_ms}" # Fast loop interval in ms
+
+fast_swqos = false # enable Fast SWQOS sender
+fast_swqos_api_key = "{fast_swqos_api_key}" # Fast SWQOS API key (falls back to fast_api_key)
+fast_swqos_tip_min_lamports = "{fast_swqos_min_tip}" # Fast SWQOS min tip (>= 7_500)
+fast_swqos_tip_max_lamports = "{fast_swqos_max_tip}" # Fast SWQOS max tip
+fast_swqos_min_priority_fee = "{fast_swqos_min_prio}" # Fast SWQOS min priority fee
+fast_swqos_max_priority_fee = "{fast_swqos_max_prio}" # Fast SWQOS max priority fee
+fast_swqos_cooldown_ms = "{fast_swqos_cooldown_ms}" # Fast SWQOS loop interval in ms
+
