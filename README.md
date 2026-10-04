@@ -59,6 +59,18 @@ chmod +x ./sender
 
 Config paths are examples — adjust for your server.
 
+**Market data**
+- No Geyser needed: without it the bot reads the pools over `rpc` (every second) and works out of the box.
+- Your own Yellowstone gRPC makes it faster: add `geyser_endpoint = "..."` and `geyser_x_token = "..."` to `config.toml`.
+- `markets_file` and `luts` point to https://moneyprinter.bot/auto/mp.toml and https://moneyprinter.bot/auto/mplutall.txt —
+  the coins the arbitrage bots earn most on right now and their lookup tables, refreshed live.
+- `jito_uuid`: your own Jito UUID; the `"uuid"` placeholder is ignored (Jito without one).
+
+**Updates**
+On every start the bot checks this repository and updates itself to the latest `sender`, then restarts with the same
+arguments. `./sender update` updates now, `./sender version` shows the version, and
+`DIABLO_SENDER_AUTO_UPDATE=0 ./sender config.toml` keeps the current one.
+
 **`gas.json`**
 Dynamic parameters (priority fee / tip / cooldown) that can be adjusted without editing the main TOML.
 
