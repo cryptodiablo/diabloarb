@@ -186,8 +186,8 @@ file. The markets file is not used in these modes.
 - **Bundle lanes** (Temporal bundles, Harmonic, `jito_classic`) get the hottest route every `hot_bundle_interval_ms`
   whenever any coin is tracked — also while no coin is on; a bundle without profit costs nothing.
 - **Flow** — non-stop: every `hot_interval_ms` the top `flow_top` coins (every coin with any profit in
-  `flow_rank_s` competes; the place is the higher of its average rate over `flow_rank_s` and its temperature), only
-  by the senders' broadcast on durable nonces (no RPC copies), Jito as one of the senders, priority random from
+  `flow_rank_s` competes; the place is the higher of its average rate over `flow_rank_s` and its temperature), by the
+  senders' broadcast on durable nonces plus RPC copies when `spam_rpc = true`, Jito as one of the senders, priority random from
   `hot_sender_min_priority_fee` to `hot_sender_max_priority_fee`. Costs fees all the time, also when nothing is hot.
 - **Sender delays still apply.** A sender whose `<name>_cooldown_ms` is longer than `hot_interval_ms` (or
   `hot_fast_ms`) skips the shots in between. For the mode's full pace set the senders' delays ≤ `hot_interval_ms`
