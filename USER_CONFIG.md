@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `4c0f115`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `ed0af90`). Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -107,7 +107,7 @@ on-chain arbitrage bots earn most on right now.
 | `gas_file` | — | Path to `gas.json` (as given, else next to the config). |
 | `memo` | — | Optional memo text added to each transaction (for tracing). |
 | `geyser_endpoint`, `geyser_x_token` | — | Yellowstone gRPC. Without it pools are polled over `rpc` every second (works, slower). **Required for ladder/flow modes.** |
-| `auto_unwrap`, `min_sol_amount` | `false`, — | Once a minute, if SOL < `min_sol_amount` (SOL), the whole WSOL balance is unwrapped to SOL (the WSOL account stays). |
+| `auto_unwrap`, `min_sol_amount` | `false`, — | SOL is checked every second; once SOL < `min_sol_amount` (SOL; at least ≈0.0107 is used) the whole WSOL balance is unwrapped to SOL with a priority fee, resent until it lands (the WSOL account stays). **Always on, whatever `auto_unwrap`:** below the network's rent minimum + 0.005 SOL (≈0.0057 SOL) the bot pauses sending (`PAUSED` in the minute summary) so the wallet never gets locked; with no WSOL left it asks for a top-up. |
 | `nonces` | 32 in hot modes | Number of durable nonce accounts for the hot modes' sender broadcast (max 100). |
 | `mode` | `"markets"` | `"markets"` (pools from the markets file), `"ladder"` or `"flow"` (§8). |
 
@@ -215,7 +215,6 @@ file. The markets file is not used in these modes.
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
-| `max_spend_sol` | — | Stop once the wallet's SOL fell this much since start. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 
 Minimal ladder setup:
@@ -265,8 +264,8 @@ temporal_tip_min_lamports = 1000000
 - **No wins.** Normal for periods: wins come in bursts on hot coins. More senders and a faster loop raise the
   chance and the fees. Hot modes need Geyser.
 - **Jito answers 400.** Usually a `jito_uuid` that is not a valid UUID or not yours.
-- **Too expensive.** Lower priority ranges, longer delays, fewer always-landing lanes (§5), `max_spend_sol` in hot
-  modes.
+- **Too expensive.** Lower priority ranges, longer delays, fewer always-landing lanes (§5).
+  There is no spending cap: the bot runs until stopped (an old `max_spend_sol` is ignored).
 - **Test safely.** `DIABLO_SENDER_DRY=1 ./sender config.toml` shows what would be sent.
 - **Failed transactions in the explorer.** `custom program error: 0x7` (`NoProfit`) is normal: the opportunity was gone
   when the transaction executed; the tip was not paid, only the network fee and priority. Many of them = paying

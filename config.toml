@@ -54,7 +54,6 @@ hot_sender_max_priority_fee = 1000
 hot_priority_cap = 100000 # ceiling of the RPC copies' priority (lamports per tx)
 hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
-# max_spend_sol = 1.0 # optional: stop once the wallet's SOL fell this much (off by default)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
 #             # (~0.00145 SOL rent each; ./sender nonces close returns it). Uncomment only to change the number:
 #             # set here, it is used in "markets" mode too, where nobody creates them.
