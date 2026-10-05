@@ -133,7 +133,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `helius` | none | Helius requires ≥ 200 000 | Helius Sender; fails without profit. |
 | `helius_swqos` | none | ≥ 5 000 | SWQoS-only; lands always. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
-| `temporal_bundle` | `temporal_bundle_uuid`, else `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true), `_require_profit` (true: no profit → dropped, nothing paid). Works next to `temporal`. |
+| `temporal_bundle` | `temporal_bundle_uuid`, else `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
@@ -143,7 +143,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `nextblock` | `nextblock_api_key` or `nextblock_auth_token` | none | |
 | `fast` | `fast_api_key` | 1 000 000 | |
 | `fast_swqos` | `fast_swqos_api_key`, else `fast_api_key` | 7 500 | SWQoS-only; lands always. |
-| `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file) | — (Harmonic's price is the priority) | `harmonic_bundle_endpoints` (`fra`, `lon`, `ams`, `ewr`/`ny`, `tyo`, `sgp`, `slc` or URLs; default fra lon ams ewr tyo sgp), `_all_endpoints` (true), `_require_profit` (true), `_cooldown_ms`, `_min/max_priority_fee`. |
+| `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file) | — (Harmonic's price is the priority) | `harmonic_bundle_endpoints` (`fra`, `lon`, `ams`, `ewr`/`ny`, `tyo`, `sgp`, `slc` or URLs; default fra lon ams ewr tyo sgp), `_all_endpoints` (true), `_cooldown_ms`, `_min/max_priority_fee`. A bundle without profit is always dropped — nothing paid (the old `harmonic_bundle_require_profit` is ignored). |
 
 **Rate per sender.** Every send goes to all regions of the sender at once; a sender sends at most once per its delay
 (`<name>_cooldown_ms`, Jito `jito_process_delay_ms`, RPC `process_delay_ms`). Providers have their own limits per

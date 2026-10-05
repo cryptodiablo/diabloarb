@@ -36,25 +36,28 @@ min_sol_amount = 0.1 # SOL threshold for auto_unwrap
 # shoot the coins they earn on right now (markets_file is not used then). Defaults below = what we run ourselves.
 # Full explanation: USER_CONFIG.md section 8.
 mode = "markets"
+# The keys below act only in mode = "ladder" / "flow" (ignored in "markets").
 # ladder: a coin turns on when the bots earn >= hot_sol_per_min on it; RPC copies first, senders from 2x, Jito from 4x
-# hot_sol_per_min = 0.03
-# hot_senders_x = 2
-# hot_jito_x = 4 # only if hot_jito_as_sender = false
-# hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
-# hot_fast_ms = 60 # extra senders' shots between ticks at tier 2+ (flow: 0)
+hot_sol_per_min = 0.03 # ladder threshold, SOL per minute the bots earn on a coin
+hot_senders_x = 2 # ladder: senders join at this multiple of the threshold
+hot_jito_x = 4 # ladder: Jito's own tier, only if hot_jito_as_sender = false
+hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
+hot_fast_ms = 60 # ladder: extra senders' shots between ticks at tier 2+ (0 = off)
 # flow: non-stop on the top coins
-# flow_top = 2
-# flow_rank_s = 900
+flow_top = 2 # flow: how many top coins
+flow_rank_s = 900 # flow: ranking window, seconds
 # both modes
-# hot_interval_ms = 250 # one shot this often (set senders' cooldowns <= this for the full pace)
-# hot_half_life_s = 15
-# hot_sender_min_priority_fee = 100 # senders' priority, lamports per tx, random in range
-# hot_sender_max_priority_fee = 1000
-# hot_priority_cap = 100000 # ceiling of the RPC copies' priority (lamports per tx)
-# hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
-# hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
-# max_spend_sol = 1.0 # stop once the wallet's SOL fell this much
-# nonces = 32 # durable nonce accounts for the senders' broadcast, created on start (~0.00145 SOL rent each; ./sender nonces close returns it)
+hot_interval_ms = 250 # one shot this often (set senders' cooldowns <= this for the full pace)
+hot_half_life_s = 15 # seconds a coin's temperature halves in
+hot_sender_min_priority_fee = 100 # senders' priority, lamports per tx, random in range
+hot_sender_max_priority_fee = 1000
+hot_priority_cap = 100000 # ceiling of the RPC copies' priority (lamports per tx)
+hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
+hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
+# max_spend_sol = 1.0 # optional: stop once the wallet's SOL fell this much (off by default)
+# nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
+#             # (~0.00145 SOL rent each; ./sender nonces close returns it). Uncomment only to change the number:
+#             # set here, it is used in "markets" mode too, where nobody creates them.
 
 
 jito = true # enable Jito send loop
@@ -87,11 +90,10 @@ temporal_min_priority_fee = "{temporal_min_prio}" # Temporal min priority fee
 temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee
 temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
 
-temporal_bundle = false # Temporal bundles (sendBundle): only profitable ones land, a miss costs nothing; uses temporal_uuid
+temporal_bundle = false # Temporal bundles (sendBundle): only profitable ones land, a miss is dropped and costs nothing; uses temporal_uuid
 temporal_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Temporal's minimum for bundles)
 temporal_bundle_tip_max_lamports = 2000000
-# temporal_bundle_cooldown_ms = 300
-# temporal_bundle_require_profit = true # false = lands without profit too (pays the tip)
+temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop interval in ms
 
 flashblock = false # enable Flashblock sender
 flashblock_api_key = "{flashblock_api_key}" # Flashblock API key
@@ -160,16 +162,15 @@ fast_swqos_cooldown_ms = "{fast_swqos_cooldown_ms}" # Fast SWQOS loop interval i
 
 nextblock = false # enable NextBlock sender
 nextblock_api_key = "" # NextBlock API key
-# nextblock_tip_min_lamports = 1000000
-# nextblock_tip_max_lamports = 2000000
-# nextblock_cooldown_ms = 300
+nextblock_tip_min_lamports = 1000000 # NextBlock min tip in lamports
+nextblock_tip_max_lamports = 2000000 # NextBlock max tip in lamports
+nextblock_cooldown_ms = 300 # NextBlock loop interval in ms
 
-harmonic_bundle = false # Harmonic bundles (needs a keypair whitelisted by Harmonic)
+harmonic_bundle = false # Harmonic bundles (needs a keypair whitelisted by Harmonic): only profitable ones land, a miss costs nothing
 harmonic_bundle_auth_keypair = "" # path to the whitelisted keypair file
-# harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions or URLs
-# harmonic_bundle_all_endpoints = true
-# harmonic_bundle_require_profit = true
-# harmonic_bundle_cooldown_ms = 300
+harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions (fra lon ams ny tyo sgp slc) or URLs
+harmonic_bundle_all_endpoints = true # every endpoint each time
+harmonic_bundle_cooldown_ms = 300 # Harmonic loop interval in ms
 
 # Old Go bot keys no longer used (harmless if left in your config): autoluts, autodelete_dead_luts, bin_limit, proxy,
 # temporal_transport, jito_endpoints, temporal_endpoints. Every key is explained in USER_CONFIG.md.
