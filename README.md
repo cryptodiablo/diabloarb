@@ -34,6 +34,7 @@ The bot monitors price discrepancies across Solana DEXs:
 - `config.toml` — main config
 - `markets.toml` — pools/markets list
 - `gas.json` — priority fee / Jito tip params
+- [`USER_CONFIG.md`](USER_CONFIG.md) — full settings reference: give it to your AI assistant (ChatGPT, Claude…) and ask it to help you set up the bot
 
 ## 📊 Quick Install
 ```
