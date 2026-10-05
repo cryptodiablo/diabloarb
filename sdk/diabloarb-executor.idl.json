@@ -1,0 +1,152 @@
+{
+  "name": "diabloarb_executor",
+  "description": "DiabloArb arbitrage executor: finds and executes the most profitable route over the listed swap windows at execution time, with an optional flash loan from the DiabloArb vault. Raw little-endian byte layout (NOT Anchor/Borsh: list lengths are u8 counters in the header). Field-by-field explanation: README.md.",
+  "program_id": "DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z",
+  "deployed": {
+    "date": "2026-10-03",
+    "elf_sha256_first_374536_bytes": "a6d03e003bd69a78c310afa8aa8d11d68764bd89e79b8231fc8b3b60a6a0d6c0",
+    "upgradeable": true
+  },
+  "encoding": "little-endian; u8/u16/u32/u64 unsigned, i64 signed; no padding; no length prefixes except the u8 counters named in each header",
+  "constants": {
+    "MAX_HOPS": 5,
+    "MAX_ROUTES": 16,
+    "MAX_BASES": 4,
+    "HOP_SIZE": 5,
+    "BASE_SIZE": 24,
+    "SEARCH_HEADER_SIZE": 14,
+    "FEE_PERCENT": 7,
+    "vault_pda": "Bank4kzA4xv6zsLfXXx4YrMK7io8fWTvCEHsbQZoh2Jc",
+    "vault_pda_seeds": ["utf8:bank", "u64le:3310317"],
+    "vault_pda_bump": 255,
+    "vault_token_accounts": {
+      "WSOL So11111111111111111111111111111111111111112": "HGoYKDXhjq1CVXvCDxTZcYhthZj4nTp1R6WSoKSKgceb",
+      "USDC EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "8QrVSVbhMgpTMjXskuFmmF7WFe4SLLg43tvpQfsnGA7k",
+      "USDT Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": "AzNFA4u7yGkLdN4wUJZ993JkYSiNhhyJnVAefiSLtPJr"
+    },
+    "spl_token_program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "q32_one": 4294967296
+  },
+  "types": {
+    "Hop": {
+      "size": 5,
+      "description": "A swap window: which DEX, the direction and where its accounts are in the instruction's account list.",
+      "fields": [
+        { "name": "dex", "type": "u8", "enum": "Dex" },
+        { "name": "flags", "type": "u8", "bits": "HopFlags" },
+        { "name": "first", "type": "u8", "description": "index of the DEX program in the instruction accounts; the swap accounts follow it" },
+        { "name": "len", "type": "u8", "description": "number of swap accounts after the program: accounts[first+1 .. first+1+len]" },
+        { "name": "out", "type": "u8", "description": "index of the user's token account that receives this hop's output" }
+      ]
+    },
+    "Base": {
+      "size": 24,
+      "description": "A token routes start and end in (SOL as WSOL, USDC, USDT). Base b is the user's token account at account index 1+b.",
+      "fields": [
+        { "name": "weight", "type": "u64", "description": "value of one base unit in lamports, Q32 (WSOL: 1<<32; USDC at 150 USD/SOL: ~6.667 lamports per micro-USDC => 6.667*2^32). Profits of different bases compare by profit*weight>>32" },
+        { "name": "start", "type": "u64", "description": "opening trade size of the on-chain search, base units (small, e.g. 0.001 SOL); with HINT in rounds: an estimate of the optimum" },
+        { "name": "max_in", "type": "u64", "description": "cap on the trade size, base units; the program also caps by user balance (+ vault balance with the vault section). Use u64::MAX/4 for no cap of yours" }
+      ]
+    },
+    "Route": {
+      "size": "2 + n_hops",
+      "fields": [
+        { "name": "base", "type": "u8", "description": "base index (< n_bases): the route starts and ends in this token" },
+        { "name": "n_hops", "type": "u8", "description": "1..=5" },
+        { "name": "windows", "type": "u8[n_hops]", "description": "indexes into the window table, in swap order" }
+      ]
+    }
+  },
+  "enums": {
+    "Dex": [
+      { "value": 0, "name": "RaydiumCpmm", "programs": ["CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C"] },
+      { "value": 1, "name": "PumpSell", "programs": ["pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"], "note": "Pump AMM base -> quote (sell)" },
+      { "value": 2, "name": "PumpBuy", "programs": ["pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"], "note": "Pump AMM quote -> base (buy_exact_quote_in)" },
+      { "value": 3, "name": "RaydiumV4", "programs": ["675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"] },
+      { "value": 4, "name": "Whirlpool", "programs": ["whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"] },
+      { "value": 5, "name": "RaydiumClmm", "programs": ["CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK", "HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq"], "note": "Raydium CLMM and its fork PancakeSwap CLMM" },
+      { "value": 6, "name": "MeteoraDlmm", "programs": ["LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"] },
+      { "value": 7, "name": "MeteoraDamm2", "programs": ["cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG"] },
+      { "value": 8, "name": "ByrealClmm", "programs": ["REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2"], "note": "Raydium CLMM accounts and swap_v2, Byreal fee rules" },
+      { "value": 9, "name": "Manifest", "programs": ["MNFSTqtC93rEfYHB6hF82sKdZpUDFWkViLByLd1k1Ms"], "note": "order book; A = base" },
+      { "value": 10, "name": "MeteoraDamm1", "programs": ["Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB"], "note": "Meteora Pools" },
+      { "value": 11, "name": "Futarchy", "programs": ["FUTARELBfJfQ8RDGhg1wdhddq1odMAJUePHFuBYfUxKq"], "note": "MetaDAO spot market; A = base" },
+      { "value": 12, "name": "Fusion", "programs": ["fUSioN9YKKSa3CUC2YUc4tPkHJ5Y6XW1yz8y6F7qWz9"], "note": "DefiTuna Fusion AMM" },
+      { "value": 13, "name": "TokenSwap", "programs": ["SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8", "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP"], "note": "SPL Token Swap and Orca v2" },
+      { "value": 14, "name": "MeteoraDbc", "programs": ["dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN"], "note": "Dynamic Bonding Curve; A = base" }
+    ],
+    "HopFlags": [
+      { "bit": 0, "name": "A_TO_B", "description": "swap token A -> token B of the pool (A/B as the DEX names them; see README per DEX)" },
+      { "bit": 1, "name": "PUMP_CANONICAL", "description": "Pump AMM only: see README" },
+      { "bit": 2, "name": "LEGACY", "description": "Whirlpool / Raydium CLMM (+forks) / DLMM: the older `swap` instruction and its account list (classic SPL Token mints only)" }
+    ],
+    "SearchFlags": [
+      { "bit": 0, "name": "FAIL_WHEN_DRY", "description": "no route reaches min_profit: fail with NoProfit (7) instead of succeeding as a no-op" },
+      { "bit": 1, "name": "VAULT", "description": "a vault section follows the base accounts: flash loan + fee destination. REQUIRED for every signer but the program owner" },
+      { "bit": 2, "name": "BUDGET", "description": "the last 4 bytes of data are a u32 compute-unit budget (the transaction's CU limit minus CU spent before this instruction); the search stops so the best route still executes within it" }
+    ]
+  },
+  "instructions": [
+    {
+      "name": "search",
+      "tag": 1,
+      "public": true,
+      "data": [
+        { "name": "tag", "type": "u8", "value": 1 },
+        { "name": "flags", "type": "u8", "bits": "SearchFlags" },
+        { "name": "rounds", "type": "u8", "description": "search precision: stop within best/2^(8+rounds) of the bound; bit7 (0x80) = HINT: Base.start is an estimate of the optimum. 0 is a good default" },
+        { "name": "min_profit", "type": "i64", "description": "lamports of value (profit*weight>>32) the best route must reach, after the 7% fee; else NoProfit / no-op" },
+        { "name": "n_bases", "type": "u8", "description": "1..=4" },
+        { "name": "n_windows", "type": "u8", "description": ">= 1" },
+        { "name": "n_routes", "type": "u8", "description": "1..=16" },
+        { "name": "bases", "type": "Base[n_bases]" },
+        { "name": "windows", "type": "Hop[n_windows]" },
+        { "name": "routes", "type": "Route[n_routes]" },
+        { "name": "budget", "type": "u32", "optional": "present only with SearchFlags.BUDGET" }
+      ],
+      "accounts": [
+        { "index": "0", "name": "user", "signer": true, "writable": true, "description": "the trader; pays the fee to the vault" },
+        { "index": "1 .. 1+n_bases", "name": "base_token_accounts", "writable": true, "description": "the user's SPL Token accounts of each base mint, in base order (must exist, may hold 0 with the vault section)" },
+        { "index": "1+n_bases", "name": "vault_pda", "writable": false, "optional": "with SearchFlags.VAULT", "address": "Bank4kzA4xv6zsLfXXx4YrMK7io8fWTvCEHsbQZoh2Jc" },
+        { "index": "2+n_bases", "name": "spl_token_program", "optional": "with SearchFlags.VAULT", "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
+        { "index": "3+n_bases .. 3+2*n_bases", "name": "vault_token_accounts", "writable": true, "optional": "with SearchFlags.VAULT", "description": "one per base, same order: the vault's token account of that base mint (owner = vault PDA)" },
+        { "index": "then", "name": "hop windows", "description": "for every window: the DEX program, then its swap accounts (README section per DEX); the user's intermediate token accounts referenced by Hop.out may sit anywhere in the list. Windows shared by several routes are listed once" }
+      ],
+      "return_data": [
+        { "name": "route", "type": "u8", "description": "index of the executed route; 255 = none reached min_profit (no-op)" },
+        { "name": "amount_in", "type": "u64" },
+        { "name": "profit", "type": "u64", "description": "base units, before the fee" },
+        { "name": "quotes", "type": "u16", "description": "on-chain quotes the search made" }
+      ]
+    },
+    {
+      "name": "quote",
+      "tag": 2,
+      "public": true,
+      "description": "One on-chain quote of one hop; changes nothing. For measuring/testing.",
+      "data": [
+        { "name": "tag", "type": "u8", "value": 2 },
+        { "name": "hop", "type": "Hop" },
+        { "name": "amount", "type": "u64" }
+      ],
+      "accounts": [
+        { "index": "0", "name": "user", "signer": true },
+        { "index": "...", "name": "the hop's window (program + swap accounts) at Hop.first" }
+      ],
+      "return_data": [{ "name": "amount_out", "type": "u64" }]
+    },
+    { "name": "route", "tag": 0, "public": false, "description": "Owner only: run one route at a fixed amount." },
+    { "name": "withdraw", "tag": 3, "public": false, "description": "Owner only: move tokens out of the vault." }
+  ],
+  "errors": [
+    { "code": 1, "name": "InvalidData", "description": "malformed data: counts out of range, lengths do not add up, unknown tag" },
+    { "code": 2, "name": "AccountIndex", "description": "an index points past the account list" },
+    { "code": 3, "name": "Unprofitable", "description": "the executed route did not realize the expected profit (state moved between search and execution, or after the fee below min_profit)" },
+    { "code": 4, "name": "UnknownDex", "description": "Hop.dex is not 0..=14" },
+    { "code": 5, "name": "NotSigner", "description": "account 0 did not sign" },
+    { "code": 6, "name": "NotTokenAccount", "description": "a base / out account is not a token account" },
+    { "code": 7, "name": "NoProfit", "description": "no route reached min_profit and FAIL_WHEN_DRY is set (normal: the opportunity is gone)" },
+    { "code": 8, "name": "BadVault", "description": "vault section accounts wrong (PDA, token program, vault account of another mint/owner) or the vault not repaid" },
+    { "code": 9, "name": "NotOwner", "description": "owner-only tag, or a search without the vault section by anyone but the owner" }
+  ]
+}

@@ -8,6 +8,7 @@
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
 - RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
 - **Full settings reference for your AI assistant:** [`USER_CONFIG.md`](USER_CONFIG.md)
+- **Build your own sender on our executor (SDK, IDL, AI-agent guide):** [`sdk/`](sdk/README.md)
 - 🇷🇺 **На русском:** [описание бота на русском](#-на-русском)
 
 ## 😈 Diablo Arb Bot
@@ -91,6 +92,7 @@ The bot monitors price discrepancies across Solana DEXs:
 - `markets.toml` — pools/markets list (example; the default config uses the live `mp.toml`)
 - `gas.json` — priority fee / tip / cooldown values referenced from `config.toml`
 - [`USER_CONFIG.md`](USER_CONFIG.md) — full settings reference: give it to your AI assistant (ChatGPT, Claude…) and ask it to help you set up the bot
+- [`sdk/`](sdk/README.md) — for developers: the executor's instruction format, every DEX's accounts, a JSON IDL and an `AGENTS.md` for Codex / Claude Code to build your own sender
 
 ## 📊 Quick Install
 ```
@@ -235,6 +237,9 @@ DIABLO_SENDER_DRY=1 ./sender config.toml
 `geyser_x_token`, `mode` (`markets` по умолчанию, `ladder` или `flow`) и отправители (`jito`, `temporal`, `helius`…) со
 своими чаевыми, приоритетом и паузой. Значения из `gas.json` подставляются как `"{имя}"` и применяются без
 перезапуска.
+
+**Свой отправитель на нашем контракте** — в папке [`sdk/`](sdk/README.md): формат инструкции, аккаунты всех DEX, IDL и
+`AGENTS.md` для Codex / Claude Code.
 
 **Все настройки подробно — в [`USER_CONFIG.md`](USER_CONFIG.md).** Дайте этот файл своему ИИ-помощнику (ChatGPT,
 Claude…) и попросите помочь настроить бота — он ответит по-русски. Приватный ключ и seed никому не показывайте,
