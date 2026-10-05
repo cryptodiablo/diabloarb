@@ -82,6 +82,11 @@ helius_swqos_min_priority_fee = "{helius_swqos_min_prio}" # SWQOS min priority f
 helius_swqos_max_priority_fee = "{helius_swqos_max_prio}" # SWQOS max priority fee
 helius_swqos_cooldown_ms = "{helius_swqos_cooldown_ms}" # SWQOS loop interval in ms
 
+helius_bundle = false # Helius Sender bundles (sendBundle, no key): only profitable ones land, a miss is dropped and costs nothing
+helius_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Helius minimum for bundles); a random tip in min..max each bundle
+helius_bundle_tip_max_lamports = 30000000
+helius_bundle_cooldown_ms = 50 # Helius bundle loop interval in ms (one of 7 Sender regions by turn)
+
 temporal = false # enable Temporal/Nozomi sender
 temporal_uuid = "{temporal_uuid}" # Temporal UUID (query param c=...)
 temporal_tip_min_lamports = "{temporal_min_tip}" # Temporal min tip in lamports

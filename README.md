@@ -40,7 +40,7 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   non-stop. These are the modes we run ourselves. See [`USER_CONFIG.md`](USER_CONFIG.md#8-hot-modes-mode--ladder-and-mode--flow).
 - **One landing per shot.** In the hot modes all copies of a shot to different senders share one durable nonce, so at
   most one lands — no double tips.
-- **15 landing services:** Jito, Helius (+SWQoS), Temporal (+ new Temporal bundles), Harmonic bundles, Flashblock,
+- **15 landing services:** Jito, Helius (+SWQoS, + new Helius bundles), Temporal (+ new Temporal bundles), Harmonic bundles, Flashblock,
   HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS), plus your own RPCs.
 - **Geyser optional.** With your Yellowstone gRPC (`geyser_endpoint`) pools update in real time; without it the bot
   polls them over RPC and still works.
@@ -201,7 +201,7 @@ senders once you see wins.
   `mode = "flow"` (поток) — без остановки по верхним монетам. Это режимы, на которых работаем мы сами.
 - **Одна посадка на выстрел.** В горячих режимах копии выстрела для разных отправителей подписаны одним durable
   nonce — садится не больше одной, чаевые дважды не платятся.
-- **15 сервисов отправки:** Jito, Helius (+SWQoS), Temporal (+ новые пакеты Temporal), пакеты Harmonic, Flashblock,
+- **15 сервисов отправки:** Jito, Helius (+SWQoS, + новые пакеты Helius), Temporal (+ новые пакеты Temporal), пакеты Harmonic, Flashblock,
   HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS) и ваши RPC.
 - **Geyser не обязателен.** Со своим Yellowstone gRPC (`geyser_endpoint`) пулы обновляются мгновенно, без него бот
   опрашивает их через RPC и тоже работает.

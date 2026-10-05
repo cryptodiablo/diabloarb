@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `6f79c4d`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `4c0f115`). Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -136,6 +136,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `helius_swqos` | none | ≥ 5 000 | SWQoS-only; lands always. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
 | `temporal_bundle` | `temporal_bundle_uuid` if set (a separate key), else the same `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
+| `helius_bundle` | none | 1 000 000 | Helius Sender Max `sendBundle` (no credits). Keys `helius_bundle_tip_min/max_lamports` (default 0.001 SOL; the sample: random 0.001–0.03 SOL), `_min/max_priority_fee` (at least 5 000 lamports a transaction), `_cooldown_ms`, `_all_endpoints` (false: one of 7 Sender regions by turn; true: every region each time — 7× the requests). A bundle without profit is always dropped — nothing paid. Works next to `helius` and `temporal_bundle`. |
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
@@ -148,7 +149,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `fast_swqos` | `fast_swqos_api_key`, else `fast_api_key` | 7 500 | SWQoS-only; lands always. |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file) | — (Harmonic's price is the priority) | `harmonic_bundle_endpoints` (`fra`, `lon`, `ams`, `ewr`/`ny`, `tyo`, `sgp`, `slc` or URLs; default fra lon ams ewr tyo sgp), `_all_endpoints` (true), `_cooldown_ms`, `_min/max_priority_fee`. A bundle without profit is always dropped — nothing paid (the old `harmonic_bundle_require_profit` is ignored). |
 
-**Rate per sender.** Every send goes to all regions of the sender at once (Apex: to `apex_regions`); a sender sends at most once per its delay
+**Rate per sender.** Every send goes to all regions of the sender at once (Apex: to `apex_regions`; `helius_bundle`: one Sender region by turn); a sender sends at most once per its delay
 (`<name>_cooldown_ms`, Jito `jito_process_delay_ms`, RPC `process_delay_ms`). Providers have their own limits per
 key — too fast gives `❌ … send failed … 429`.
 
