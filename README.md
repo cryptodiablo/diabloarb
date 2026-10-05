@@ -32,8 +32,8 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   flash-loan vault. If the opportunity is gone, the transaction does nothing and paid lanes keep their tip.
 - **SOL, USDC and USDT routes.** Cycles start and end in any of the three, including 3-hop routes through another coin.
 - **Live hot markets.** `https://moneyprinter.bot/auto/mp.toml` is rebuilt continuously from the routes the on-chain
-  arbitrage bots are winning right now — whole routes, never fragments, ordered by their profit (last 5 minutes,
-  falling back to 15). The bot shoots them in that order.
+  arbitrage bots are winning right now — whole routes, never fragments, ordered by their profit, recent wins weighing
+  more (each win counts half as much every 2.5 minutes). The bot shoots them in that order.
 - **Hot modes (new, need Geyser).** `mode = "ladder"` watches the arbitrage bots live and only shoots while they are
   earning, escalating from cheap RPC copies to paid senders as a coin heats up; `mode = "flow"` shoots the top coins
   non-stop. These are the modes we run ourselves. See [`USER_CONFIG.md`](USER_CONFIG.md#8-hot-modes-mode--ladder-and-mode--flow).
@@ -191,7 +191,8 @@ senders once you see wins.
   ничего не делает, платные отправители не берут чаевые.
 - **Маршруты в SOL, USDC и USDT**, включая трёхшаговые через другую монету.
 - **Живой список рынков.** `https://moneyprinter.bot/auto/mp.toml` постоянно пересобирается из маршрутов, на которых
-  арбитражные боты в сети выигрывают прямо сейчас: целые маршруты, по порядку их прибыли (за 5 минут, иначе за 15).
+  арбитражные боты в сети выигрывают прямо сейчас: целые маршруты, по порядку их прибыли (свежие выигрыши весят больше:
+  каждый вдвое легче за 2,5 минуты).
   Бот стреляет в этом порядке.
 - **Горячие режимы (нужен Geyser).** `mode = "ladder"` (лестница) следит за ботами в сети и стреляет только пока они
   зарабатывают, поднимая расходы по мере «нагрева» монеты: сначала дешёвые RPC-копии, потом платные отправители.
