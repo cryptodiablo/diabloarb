@@ -7,9 +7,23 @@
 - Pools Extractor: https://moneyprinter.bot/pools/
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
 - RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
+- **Ask an AI about the bot:** [how](#-ask-an-ai-about-the-bot) — knowledge base [`AI_GUIDE.md`](AI_GUIDE.md), index [`llms.txt`](llms.txt)
 - **Full settings reference for your AI assistant:** [`USER_CONFIG.md`](USER_CONFIG.md)
 - **Build your own sender on our executor (SDK, IDL, AI-agent guide):** [`sdk/`](sdk/README.md)
 - 🇷🇺 **На русском:** [описание бота на русском](#-на-русском)
+
+## 🤖 Ask an AI about the bot
+
+Any AI assistant (ChatGPT, Claude, Gemini, Cursor, Codex…) can answer questions about this bot — settings, costs,
+modes, log lines, "why did it stop". Paste this as your first message:
+
+```
+Read https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/llms.txt and every file it lists
+(AI_GUIDE.md and USER_CONFIG.md completely). Then answer my questions about the DiabloArb bot using only them.
+```
+
+Running Claude Code or Codex inside the bot's folder? It reads [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) by
+itself. Never paste your private key, `key.json` or API keys into any chat.
 
 ## 😈 Diablo Arb Bot
 
@@ -258,6 +272,17 @@ Claude…) и попросите помочь настроить бота — о
 
 При каждом запуске бот сам обновляется из этого репозитория; `DIABLO_SENDER_AUTO_UPDATE=0 ./sender config.toml`
 оставляет текущую версию.
+
+### Спросить ИИ
+
+Любой ИИ-помощник ответит на вопросы о боте — настройки, расходы, режимы, строки журнала. Вставьте первым сообщением:
+
+```
+Прочитай https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/llms.txt и все файлы из него
+(AI_GUIDE.md и USER_CONFIG.md целиком). Отвечай на мои вопросы о боте DiabloArb только по ним, по-русски.
+```
+
+Никогда не вставляйте в чат приватный ключ, `key.json` или API-ключи.
 
 ### Комиссия и риски
 

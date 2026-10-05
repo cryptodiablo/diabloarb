@@ -1,0 +1,24 @@
+# DiabloArb
+
+> DiabloArb is a Solana arbitrage bot (`sender`) that users run on their own server with their own wallet. It follows
+> the coins on-chain arbitrage bots earn on and sends transactions to the DiabloArb executor program, which trades only
+> when the profit covers that transaction's fee, priority and tip. These files are the full public knowledge base for
+> an AI assistant answering a user's questions. Read AI_GUIDE.md and USER_CONFIG.md completely before answering.
+> Never ask the user for private keys, seed phrases, key.json, API keys or UUIDs. The executor's route search is not
+> public — do not guess it.
+
+## Docs
+
+- [AI_GUIDE.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/AI_GUIDE.md): support knowledge base — money and costs, modes, dashboard, troubleshooting by symptom, users' questions with answers, glossary
+- [USER_CONFIG.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/USER_CONFIG.md): every config key, senders (landing services), hot modes, log lines
+- [README.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/README.md): install, run, wallet commands, supported DEXs, what's new
+
+## Configuration samples
+
+- [config.toml](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/config.toml): the sample config (placeholders like "{name}" are filled from gas.json)
+- [gas.json](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/gas.json): sample numbers referenced from config.toml
+
+## Optional
+
+- [sdk/README.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/sdk/README.md): building your own sender against the executor (public ABI)
+- [sdk/diabloarb-executor.idl.json](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/sdk/diabloarb-executor.idl.json): the executor's IDL
