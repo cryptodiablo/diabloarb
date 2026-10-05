@@ -48,6 +48,31 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   summary of sends, wins, balances and the coins being shot.
 - **Safe test run.** `DIABLO_SENDER_DRY=1 ./sender config.toml` builds and logs everything without sending.
 
+## 🔁 Supported DEXs
+
+Arbitrage routes (2 or 3 swaps, starting and ending in SOL, USDC or USDT) across any mix of:
+
+| DEX | Pool type |
+|---|---|
+| Meteora DLMM | dynamic liquidity bins |
+| Meteora DAMM v2 | dynamic AMM |
+| Meteora Pools (DAMM v1) | AMM over Meteora vaults |
+| Meteora DBC | dynamic bonding curve (launchpad pools) |
+| Pump.fun AMM (PumpSwap) | constant product |
+| Raydium AMM v4 | constant product |
+| Raydium CPMM | constant product |
+| Raydium CLMM | concentrated liquidity |
+| Orca Whirlpool | concentrated liquidity |
+| Orca v2 / SPL Token Swap | constant product |
+| PancakeSwap CLMM | concentrated liquidity |
+| Byreal CLMM | concentrated liquidity |
+| DefiTuna Fusion | concentrated liquidity with limit orders |
+| Manifest | on-chain order book |
+| MetaDAO Futarchy | spot market |
+
+SPL Token and Token-2022 coins are supported (tokens with an active transfer hook are skipped). Any pool of these
+DEXs can be put in your own markets file; the live `mp.toml` picks the ones where the arbitrage is happening.
+
 ## ⚙️ How It Works
 
 The bot monitors price discrepancies across Solana DEXs:

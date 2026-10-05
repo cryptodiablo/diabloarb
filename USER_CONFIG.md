@@ -9,8 +9,11 @@
 
 ## 1. What the bot does
 
-- It sends arbitrage transactions on Solana: a cycle over DEX pools (Meteora DLMM, DAMM v2, Pump AMM, Raydium,
-  Orca, …) that starts and ends in the same base token — **SOL (as WSOL), USDC or USDT**.
+- It sends arbitrage transactions on Solana: a cycle of 2–3 swaps over DEX pools that starts and ends in the same base
+  token — **SOL (as WSOL), USDC or USDT**. Supported DEXs: Meteora DLMM, DAMM v2, Pools (DAMM v1) and DBC; Pump.fun AMM
+  (PumpSwap); Raydium AMM v4, CPMM and CLMM; Orca Whirlpool and Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal
+  CLMM; DefiTuna Fusion; Manifest (order book); MetaDAO Futarchy. SPL Token and Token-2022 coins (tokens with an
+  active transfer hook are skipped). A pool of any other DEX in a markets file is ignored.
 - The trade is executed on chain by the DiabloArb executor program (`DiabLokxis…`). The program searches the best
   size itself at execution time, up to **the wallet's base-token balance plus, with `flashloan = true`, the whole
   flash-loan vault**. If there is no profit at that moment, the transaction does nothing (or fails, see §5).
