@@ -1,0 +1,165 @@
+## 🖇️ Useful Links
+
+- Official Website: https://diabloarb.bot
+- Realtime Profits: https://t.me/diabloarb
+- Telegram Chat: https://t.me/diabloarbchat
+- Discord: https://discord.gg/Zaykhzwh
+- Pools Extractor: https://moneyprinter.bot/pools/
+- Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
+- RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
+- **Full settings reference for your AI assistant:** [`USER_CONFIG.md`](USER_CONFIG.md)
+
+## 😈 Diablo Arb Bot
+
+Automated arbitrage trading bot for Solana that identifies and executes profitable opportunities across multiple DEXs in real-time.
+
+Arb tx with over 12k$ profit:
+https://solscan.io/tx/3CVwFndtJyJHbgHozCtfBnYaKDcz57pgskSJveeYAN4VTh3XXovKgZ2SXAsjWnMGPAFJDMAX7JghYDRtRbK5uqvg
+<img width="872" height="181" alt="image" src="https://github.com/user-attachments/assets/75b799ac-de9b-48b2-a2b1-cd252cf269b7" />
+
+
+Sample of tx with 5.1k$ profit:
+<img width="1816" height="444" alt="image" src="https://github.com/user-attachments/assets/41c56bbb-5e74-4e90-90b6-00d1008e450a" />
+
+## 🆕 What's new (October 2026)
+
+The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
+unchanged**, and the old binary updates itself to the new one on its next restart.
+
+- **New on-chain executor.** The trade size is no longer guessed off-chain: the program finds the best amount at the
+  moment of execution, using up to your WSOL/USDC/USDT balance plus — with `flashloan = true` — the whole DiabloArb
+  flash-loan vault. If the opportunity is gone, the transaction does nothing and paid lanes keep their tip.
+- **SOL, USDC and USDT routes.** Cycles start and end in any of the three, including 3-hop routes through another coin.
+- **Live hot markets.** `https://moneyprinter.bot/auto/mp.toml` is rebuilt continuously from the routes the on-chain
+  arbitrage bots are winning right now — whole routes, never fragments, ordered by their profit (last 5 minutes,
+  falling back to 15). The bot shoots them in that order.
+- **Hot modes (new, need Geyser).** `mode = "ladder"` watches the arbitrage bots live and only shoots while they are
+  earning, escalating from cheap RPC copies to paid senders as a coin heats up; `mode = "flow"` shoots the top coins
+  non-stop. These are the modes we run ourselves. See [`USER_CONFIG.md`](USER_CONFIG.md#8-hot-modes-mode--ladder-and-mode--flow).
+- **One landing per shot.** In the hot modes all copies of a shot to different senders share one durable nonce, so at
+  most one lands — no double tips.
+- **15 landing services:** Jito, Helius (+SWQoS), Temporal (+ new Temporal bundles), Harmonic bundles, Flashblock,
+  HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS), plus your own RPCs.
+- **Geyser optional.** With your Yellowstone gRPC (`geyser_endpoint`) pools update in real time; without it the bot
+  polls them over RPC and still works.
+- **New coins handled on the fly.** Missing token accounts are created automatically while the other coins keep
+  shooting.
+- **Clear logs.** One line per send, failures summarized every 10 s, `✅ Success!` on every win and a per-minute
+  summary of sends, wins, balances and the coins being shot.
+- **Safe test run.** `DIABLO_SENDER_DRY=1 ./sender config.toml` builds and logs everything without sending.
+
+## ⚙️ How It Works
+
+The bot monitors price discrepancies across Solana DEXs:
+
+1. **Monitoring:** Follows the pools where arbitrage is happening right now (live markets file or, in hot modes, the
+   on-chain arbitrage bots seen over Geyser)
+2. **Analysis:** Prices every route in real time from the pools' state
+3. **Execution:** Sends the transaction through your landing services; the on-chain program sizes the trade and
+   executes only if it is profitable
+4. **Settlement:** Profit lands in your wallet's WSOL/USDC/USDT; 7% of each profit goes to the DiabloArb vault
+
+## 🧳 Whats inside
+- `sender` — binary (Linux x86_64, static — runs on any distribution)
+- `config.toml` — main config
+- `markets.toml` — pools/markets list (example; the default config uses the live `mp.toml`)
+- `gas.json` — priority fee / tip / cooldown values referenced from `config.toml`
+- [`USER_CONFIG.md`](USER_CONFIG.md) — full settings reference: give it to your AI assistant (ChatGPT, Claude…) and ask it to help you set up the bot
+
+## 📊 Quick Install
+```
+wget -O diabloarb.zip https://github.com/cryptodiablo/diabloarb/archive/refs/heads/main.zip
+unzip diabloarb.zip
+cd diabloarb-main
+chmod +x ./sender
+```
+
+## ✅ How to Run
+```
+./sender config.toml
+```
+
+Test without sending anything:
+```
+DIABLO_SENDER_DRY=1 ./sender config.toml
+```
+
+**`config.toml` (overview)** — every key is explained in [`USER_CONFIG.md`](USER_CONFIG.md)
+- **rpc**: RPC for reading state (quotes/accounts)
+- **send_rpcs**: RPCs for broadcasting transactions (also used to create token accounts — must accept transactions)
+- **gas_file**: path to `gas.json`
+- **markets_file**: markets file (local path or URL)
+- **luts**: lookup table list (local path or URL)
+- **flashloan**: `true` lets the trade use the DiabloArb vault besides your own balance
+- **geyser_endpoint**, **geyser_x_token**: your Yellowstone gRPC (optional; required for hot modes)
+- **mode**: `markets` (default), `ladder` or `flow`
+- **jito**, **jito_uuid**, **temporal**, **helius**, …: landing services, each with its own tips, priority and cooldown
+
+Config paths are examples — adjust for your server.
+
+**Market data**
+- No Geyser needed for the default mode: without it the bot reads the pools over `rpc` (every second) and works out of the box.
+- Your own Yellowstone gRPC makes it faster: add `geyser_endpoint = "..."` and `geyser_x_token = "***"` to `config.toml`.
+- `markets_file` and `luts` point to https://moneyprinter.bot/auto/mp.toml and https://moneyprinter.bot/auto/mplutall.txt —
+  the routes the arbitrage bots win most on right now and their lookup tables, refreshed live.
+- `jito_uuid`: your own Jito UUID; the `"uuid"` placeholder is ignored (Jito without one).
+
+**Updates**
+On every start the bot checks this repository and updates itself to the latest `sender`, then restarts with the same
+arguments. `./sender update` updates now, `./sender version` shows the version, and
+`DIABLO_SENDER_AUTO_UPDATE=0 ./sender config.toml` keeps the current one.
+
+**`gas.json`**
+Dynamic parameters (priority fee / tip / cooldown) referenced from `config.toml` as `"{name}"`; edits apply without a
+restart. A value only works if `config.toml` references it.
+
+**`markets.toml` / `mp.toml`**
+List of pool addresses; in `mp.toml` each `[[group]]` is one complete route, in priority order.
+
+## 💸 Wallet commands
+
+- Wrap 0.1 SOL → WSOL
+```
+./sender wrap 0.1
+./sender wrap config.toml 0.1
+```
+
+- Unwrap 0.1 WSOL → SOL
+```
+./sender unwrap 0.1
+./sender unwrap config.toml 0.1
+```
+
+- Unwrap ALL WSOL balance → SOL (without closing ATA for WSOL)
+```
+./sender unwrap all
+./sender unwrap config.toml all
+```
+
+- Close the durable nonce accounts of the hot modes (returns their rent, ≈0.00145 SOL each)
+```
+./sender nonces close
+```
+
+Repo: https://github.com/cryptodiablo/diabloarb
+
+## ⚠️ Risks
+
+Arbitrage is competitive: every landed transaction pays network and priority fees whether it wins or not, and wins
+come in bursts. Start with small priority fees and a dry run, watch the per-minute summary, and only add paid
+senders once you see wins.
+
+## 🔑 Keywords
+
+- Solana Arbitrage Bot  
+- Solana Arb Bot  
+- Solana Trading Bot  
+- DEX Arbitrage  
+- Crypto Arbitrage  
+- Flash Loan Arbitrage  
+- Automated Trading Bot  
+- Crypto Trading Strategy  
+- On-chain Arbitrage  
+- Raydium Arbitrage  
+- Solana DeFi Bot  
+- High-Frequency Trading (HFT)  
