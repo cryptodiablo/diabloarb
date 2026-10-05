@@ -163,7 +163,7 @@ flags: bit0 (1) a_to_b | bit1 (2) Pump canonical pool | bit2 (4) legacy (older `
 ```
 
 In this document **window index `i`** means `accounts[first + 1 + i]` (index 0 = first account after the
-program). The executor's `quote.rs` uses the same 0-based window indexes.
+program). The executor uses the same 0-based window indexes.
 
 #### What the executor does with a window
 
@@ -183,7 +183,7 @@ program). The executor's `quote.rs` uses the same 0-based window indexes.
   `NotTokenAccount`). The sender sets `out` to the first position in the account list holding the
   user's token account of the hop's output mint.
 - **On-chain quoting** (tag 1 search, tag 2 quote): the executor reads pool state, vault balances, mints (for
-  Token-2022 transfer fees), tick/bin arrays at **fixed window indexes** per DEX (`quote.rs`, `legs.rs`). These
+  Token-2022 transfer fees), tick/bin arrays at **fixed window indexes** per DEX. These
   offsets are listed per DEX below (subsection "Executor reads") and summarized in section 16. A window built in a
   different order may still CPI correctly but will be quoted wrongly or not at all (a failed quote drops the
   route).
@@ -192,7 +192,7 @@ program). The executor's `quote.rs` uses the same 0-based window indexes.
 
 - `user` = the transaction signer (also `accounts[0]` of the executor instruction). Every window's signer slot
   is the same `user`.
-- `user_a` / `user_b` = the user's token accounts for the venue's mint A / mint B (`Venue::mints()`), which the
+- `user_a` / `user_b` = the user's token accounts for the venue's mint A / mint B, which the
   sender derives as ATA(user, mint, the mint's owner program: SPL Token or Token-2022) (associated token address:
   seeds `[owner, token_program, mint]`, program `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL`).
 - `a_to_b = true` swaps mint A for mint B. "A" is defined per DEX below.
@@ -201,16 +201,16 @@ program). The executor's `quote.rs` uses the same 0-based window indexes.
   - Memo `MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr`, System `11111111111111111111111111111111`
   - Associated Token `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL`
 - **Transfer hooks**: Our router skips any pool where either mint has an active Token-2022 transfer hook
-  (non-zero hook program id): no window passes the hook's extra accounts, so the swap would fail (`dex_math::token2022::transfer_hook_active`).
+  (non-zero hook program id): no window passes the hook's extra accounts, so the swap would fail.
 - **Legacy flag** (`FLAG_LEGACY = 4`): only Whirlpool (4), Raydium CLMM family (5, 8) and
   Meteora DLMM (6) have a legacy variant. The router sets it **whenever both mints are owned by classic SPL
-  Token** (`spl_only`) and never otherwise. Legacy is only valid for SPL-Token-only pairs (no Token-2022
+  Token** and never otherwise. Legacy is only valid for SPL-Token-only pairs (no Token-2022
   handling in the older instruction). The executor reads the bit for these three DEXes only (instruction data and window offsets); other DEXes ignore it.
 - **Labels**: `W` = writable, `R` = read-only, `S` = signer.
 - **Account letters for the "Executor reads" lines**: `amount(x)` = token account amount (bytes 64..72),
   `supply(x)` = mint supply (bytes 36..44), "T22 fee" = Token-2022 `TransferFeeConfig` read from the mint's data.
 
-#### Pool kind detection (`kind_of`)
+#### Pool kind detection
 
 | owner program | condition | kind | Dex id |
 |---|---|---|---|
@@ -239,7 +239,7 @@ program). The executor's `quote.rs` uses the same 0-based window indexes.
 - **Mints**: A = `token_0_mint` (pool offset 168), B = `token_1_mint` (offset 200). `a_to_b` = token0 -> token1.
 
 Pool fields used: `amm_config` (pool offset 8), vault 0/1 (offsets 72/104), mint 0/1 (168/200), token program
-0/1 (offsets 232/264), observation (offset 296) (`dex_math::cpmm::pool`).
+0/1 (offsets 232/264), observation (offset 296).
 
 | idx | account | W/R | S |
 |---|---|---|---|
@@ -271,7 +271,7 @@ Quote fails if the pool's swap is disabled or before `open_time`.
 - **Dex id by direction**: `a_to_b = true` (sell base for quote) -> **1 PumpSell** (`sell`);
   `a_to_b = false` (quote in, base out) -> **2 PumpBuy** (`buy_exact_quote_in`; data also carries
   `track_volume = None`).
-- **Mints**: A = base mint (pool offset 43), B = quote mint (pool offset 75) (`dex_math::pump::pool`).
+- **Mints**: A = base mint (pool offset 43), B = quote mint (pool offset 75).
 
 Derived accounts (all PDAs under the Pump AMM program unless stated):
 
@@ -284,11 +284,10 @@ Derived accounts (all PDAs under the Pump AMM program unless stated):
 - `global_volume_accumulator` = PDA `["global_volume_accumulator"]`.
 - `pool_v2` = PDA `["pool-v2", base_mint]`.
 - `ATA_q(owner)` = ATA(owner, quote_mint, quote mint's token program).
-- **Protocol fee recipient**: one of the 8 keys in `global_config` at offsets `57 + 32*i` (i = 0..7); the router
-  takes, among those whose quote ATA exists, the one whose quote-ATA bump is highest (cheaper for the program to
-  derive).
-- **Buyback recipient**: one of the 8 keys at `global_config` offsets `643 + 32*i`; same rule, falling back to the
-  first key when none has a quote ATA.
+- **Protocol fee recipient**: any of the 8 keys in `global_config` at offsets `57 + 32*i` (i = 0..7) whose quote ATA
+  exists.
+- **Buyback recipient**: any of the 8 keys at `global_config` offsets `643 + 32*i` whose quote ATA exists (else the
+  first key).
 - `is_cashback` = pool byte 244 != 0. `is_pump_pool` (canonical) = pool `creator` (offset 11) equals PDA
   `["pool-authority", base_mint]` under the **Pump bonding-curve program** `6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P`.
 
@@ -333,7 +332,7 @@ Length: sell 21 + tail, buy 23 + tail; tail = [cashback: 2 (sell) / 1 (buy)] + [
 **Flags**: bit0 = sell (`a_to_b`, base in); **bit1 = Pump canonical**: set when the pool is the
 canonical pool of a token graduated from the Pump bonding curve (`is_pump_pool` above). It selects the fee schedule:
 for canonical pools the fee comes from `fee_config` tiers by market cap (for SOL / wSOL-2022 quote: market-cap
-tiers; other branches in `dex_math::pump::FeeConfig::fees_for`), otherwise flat fees (``).
+tiers), otherwise flat fees.
 The executor cannot afford the PDA derivation on chain, so it trusts this bit.
 Setting it wrongly makes the on-chain quote use the wrong fee; the actual swap is unaffected. No legacy.
 
@@ -379,7 +378,7 @@ PDAs:
 - tick array = PDA `["tick_array", pool, start_tick_index as decimal ASCII string]`, e.g. `"-5632"`.
 - oracle = PDA `["oracle", pool]`.
 
-Tick array selection (`Whirlpool::tick_array_starts`, ``): with
+Tick array selection: with
 `T = 88 * tick_spacing` and `base = floor(tick_current_index / T) * T`:
 - a_to_b: starts `base, base - T, base - 2T`;
 - b_to_a: `base + T, base + 2T, base + 3T` if `tick_current_index + tick_spacing >= base + T`, else `base, base + T, base + 2T`;
@@ -447,8 +446,8 @@ One builder (`ClmmVenue`) for three programs with the same accounts and instruct
 | PancakeSwap CLMM `HpNfyc2Saw7RKkQd8nEL4khUcuPhQ7WwY1B2qjx8jxFq` (Raydium fork) | pancake | **5** RaydiumClmm |
 | Byreal CLMM `REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2` | byreal | **8** ByrealClmm |
 
-`dex()` returns 8 when the pool was parsed by `Clmm::parse_byreal` (pool owned by the Byreal program), else 5. Put the pool's actual owner program at `accounts[first]`. Byreal pools with the
-Pyth dynamic fee (byte at offset 1096 has bit `0x10`) are not supported (``). Byreal
+Use Dex 8 for pools owned by the Byreal program, else 5. Put the pool's actual owner program at `accounts[first]`. Byreal pools with the
+Pyth dynamic fee (byte at offset 1096 has bit `0x10`) are not supported. Byreal
 uses its own fee rules on the same accounts. The executor tells PancakeSwap apart only for its
 compute-budget estimate, by the program at `accounts[first]`.
 
@@ -461,8 +460,8 @@ PDAs (under the pool's own program):
 - tick array = PDA `["tick_array", pool, start_tick_index as i32 big-endian 4 bytes]`.
 - tick-array bitmap extension = PDA `["pool_tick_array_bitmap_extension", pool]`.
 
-Tick array selection: `Clmm::tick_array_starts(ext, zero_for_one)` (``)
-lists the first array the swap uses (the current one if initialized in the bitmap, else the next initialized one in
+Tick array selection:
+list the first array the swap uses (the current one if initialized in the bitmap, else the next initialized one in
 the direction) and the following initialized ones. The router then keeps only arrays whose accounts **exist**, and
 of those **1 or 2**: the second only when the first is not the current tick's array, or the current tick lies in
 the half of its array toward the swap direction. Array span = 60 * tick_spacing.
@@ -521,7 +520,7 @@ PDAs:
 - bitmap extension = PDA `["bitmap", lb_pair]`.
 - event authority = PDA `["__event_authority"]`.
 
-Bin array selection: `LbPair::bin_arrays_for_swap` (``) lists bin arrays
+Bin array selection: list the bin arrays
 **with liquidity** starting at the active bin's array (`bin_array_index(active_id)`, 70 bins per array) in the
 swap direction (X->Y: decreasing index). The router keeps **1 or 2**: the second only when the first is not the
 active array or the active bin is in the half of its array toward the swap direction; then only those whose
@@ -529,7 +528,7 @@ account exists.
 
 Host fee account (`host_fee_in`, idx 9): when the pair pays a host share
 (`protocol_share > 0`) and the fee token has no Token-2022 transfer fee:
-- fee taken on the output (`LbPair::fee_on_input` is false: `collect_fee_mode == 1` and the swap is X->Y; with mode 1
+- fee taken on the output (`collect_fee_mode == 1` and the swap is X->Y; with mode 1
   the fee is always in token Y) -> the user's **output** token account;
 - fee taken on the input and the input mint is wSOL, USDC or USDT -> the user's **input** token account;
 - otherwise -> the DLMM program id (Anchor "None").
@@ -560,7 +559,7 @@ comment sizes the longest window as DLMM with 10 bin arrays = 26 accounts.
 **Flags**: bit0 = swap_for_y (X in); bit2 = legacy (`swap`, no memo account) iff both mints SPL Token.
 
 **Executor reads**: pair = w[0]; w[1] is the extension iff its data length
-equals `BitmapExtension::LEN` (1576); bin arrays from w[16] (legacy w[15]) to the end, each must parse as a bin
+equals 1576 bytes (the bitmap extension); bin arrays from w[16] (legacy w[15]) to the end, each must parse as a bin
 array (up to 10; a non-existent account breaks the quote); mints w[6]/w[7] for T22 fees (in = w[6] if a_to_b).
 **Fee share** (`DLMM_SHARE = [9, 4, 5]`): the executor compares the address at w[9] with w[4] (input) and
 w[5] (output): equal to w[5] -> the host share is counted into the hop output; equal to w[4] -> counted as profit
@@ -572,7 +571,7 @@ the share transfer whenever w[9] is not the program id at `accounts[first]`.
 ### 6.7 Dex 7: Meteora DAMM v2 (CP-AMM)
 
 - **Program**: `cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG`.
-- **Instruction**: `swap2`, `SwapMode::ExactIn`.
+- **Instruction**: `swap2`, exact input.
 - **Mints**: A = token A mint (pool offset 168), B = token B (offset 200); vaults +232/+264.
 
 PDAs: pool authority = PDA `["pool_authority"]`; event authority = PDA `["__event_authority"]`.
@@ -612,7 +611,7 @@ Quote fails when `pool_status != 0` or before the activation point (spot path).
 
 Same window, PDAs, tick-array rules, legacy flag and executor offsets as **section 5** (Raydium CLMM). Program
 `REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2`; Dex id 8 so the executor parses the pool with
-`Clmm::parse_byreal` (Byreal fee rate at pool offset 393, decay-fee parameters at 1096..1100) (``). Pools with the Pyth dynamic fee flag are rejected. The executor comment notes
+Byreal fee rate at pool offset 393, decay-fee parameters at 1096..1100. Pools with the Pyth dynamic fee flag are rejected. The executor comment notes
 Byreal tick arrays may be "fixed or dynamic".
 
 ---
@@ -655,8 +654,8 @@ Accounts read from the pool: a/b vault (+104/+136), pool's a/b vault LP token ac
 token a/b fee accounts (+234/+266). From each Meteora vault account: its token vault (vault +19) and LP mint
 (vault +115). (A helper `meteora_vault(mint)` derives vault = PDA `["vault", mint,
 HWzXGcGHy4tcpYfaRDCyLNzXqBTv3E6BttpCH2vJxArv]` and token vault = PDA `["token_vault", vault]` under the vault
-program, but `accounts()` uses the addresses stored in the pool/vaults; LP mints are not PDAs on old
-vaults.) Depeg (LST) stable pools and unknown layouts are rejected (`damm1::Pool::parse`).
+program, but the window uses the addresses stored in the pool/vaults; LP mints are not PDAs on old
+vaults.) Depeg (LST) stable pools and unknown layouts are rejected.
 
 | idx | account | W/R | S |
 |---|---|---|---|
@@ -690,7 +689,7 @@ Fixed length 15. Flags: bit0 only.
 - **Instruction**: Anchor `spot_swap`: `input_amount`, `swap_type` (= `a_to_b`: 1 Sell = base in, 0 Buy = quote
   in), `min_output_amount`.
 - **Pool account**: the DAO account (the AMM lives in it). Mints/vaults are read from the DAO at layout-dependent
-  offsets (`dex_math::futarchy::Amm::parse`, ``).
+  offsets.
 - **Mints**: A = base, B = quote; `a_to_b` sells base. SPL Token only.
 
 | idx | account | W/R | S |
@@ -719,7 +718,7 @@ Fixed length 9; user accounts in base/quote order. Flags: bit0 (also in data).
 - **Mints**: A = mint A (pool offset 11), B = mint B (offset 43); vaults +75/+107.
 
 Tick arrays: PDA `["tick_array", pool, start as decimal ASCII string]` under the Fusion program.
-Always **exactly 3**, from `FusionPool::tick_array_starts(a_to_b)` (``): with
+Always **exactly 3**: with
 `size = 88 * tick_spacing` and `first` = start of the current tick's array: a_to_b `first, first - size, first - 2*size`;
 b_to_a `first, first + size, first + 2*size`. Passed whether they exist or not (a missing one counts as empty).
 
@@ -787,7 +786,7 @@ Fixed length 10. Flags: bit0 only.
   config = pool +72. `a_to_b` = base in.
 
 PDAs: pool authority = PDA `["pool_authority"]`; event authority = PDA `["__event_authority"]` (DBC program).
-Transfer-hook pools (their own layouts) are not supported (``).
+Transfer-hook pools (their own layouts) are not supported .
 
 | idx | account | W/R | S |
 |---|---|---|---|
@@ -826,7 +825,7 @@ fees (in = w[7] if a_to_b).
 
 ### 6.16 Executor offset requirements (external builders must respect these)
 
-The executor's quoting (`quote.rs`, mirrored by `legs.rs` and `spot`) reads accounts by window index. For each
+The executor's on-chain quoting reads accounts by window index. For each
 DEX, the following positions are load-bearing; everything else is only forwarded in the CPI.
 
 | Dex | window indexes the executor reads | notes |
@@ -852,10 +851,8 @@ Other executor-side requirements:
 - **Fee shares** (DLMM w[9], DAMM v2 w[11]): the executor classifies them by address equality with the window's
   user input/output accounts. Pass the DEX program id to mean "none". Any other account is treated as no share in
   the quote, but the budget estimate still charges the transfer.
-- **PancakeSwap** is identified only for compute-budget estimates, by the 32 bytes of `accounts[first]`
-  (`budget::PANCAKE`).
-- **Per-window caching**: in a tag 1 search a window index used by several routes is quoted from one cached state
-  (`legs.rs`); windows are deduplicated by (pool, direction) in the sender.
+- **PancakeSwap** is identified only for compute-budget estimates, by the program id at `accounts[first]`.
+- **Per-window caching**: in a tag 1 search a window index used by several routes is quoted from one cached state, so list each (pool, direction) window once.
 - **Legacy bit** changes both the data and the offsets the executor reads; set it only together with
   the legacy window.
 
