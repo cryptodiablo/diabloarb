@@ -8,6 +8,7 @@
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
 - RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
 - **Full settings reference for your AI assistant:** [`USER_CONFIG.md`](USER_CONFIG.md)
+- 🇷🇺 **На русском:** [описание бота на русском](#-на-русском)
 
 ## 😈 Diablo Arb Bot
 
@@ -173,6 +174,91 @@ Repo: https://github.com/cryptodiablo/diabloarb
 Arbitrage is competitive: every landed transaction pays network and priority fees whether it wins or not, and wins
 come in bursts. Start with small priority fees and a dry run, watch the per-minute summary, and only add paid
 senders once you see wins.
+
+## 🇷🇺 На русском
+
+**DiabloArb** — бот арбитража на Solana: находит маршрут из 2–3 обменов между пулами DEX, который начинается и
+заканчивается в SOL (WSOL), USDC или USDT, и отправляет его в сеть. Сделку исполняет программа DiabloArb в сети:
+она сама подбирает сумму в момент исполнения и ничего не делает, если выгоды уже нет.
+
+### Что нового (октябрь 2026)
+
+Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
+обновится до нового при следующем перезапуске.
+
+- **Новая программа исполнения.** Сумма сделки подбирается в сети в момент исполнения: до вашего баланса
+  WSOL/USDC/USDT плюс, при `flashloan = true`, всё хранилище флешлоана DiabloArb. Если возможность ушла — транзакция
+  ничего не делает, платные отправители не берут чаевые.
+- **Маршруты в SOL, USDC и USDT**, включая трёхшаговые через другую монету.
+- **Живой список рынков.** `https://moneyprinter.bot/auto/mp.toml` постоянно пересобирается из маршрутов, на которых
+  арбитражные боты в сети выигрывают прямо сейчас: целые маршруты, по порядку их прибыли (за 5 минут, иначе за 15).
+  Бот стреляет в этом порядке.
+- **Горячие режимы (нужен Geyser).** `mode = "ladder"` (лестница) следит за ботами в сети и стреляет только пока они
+  зарабатывают, поднимая расходы по мере «нагрева» монеты: сначала дешёвые RPC-копии, потом платные отправители.
+  `mode = "flow"` (поток) — без остановки по верхним монетам. Это режимы, на которых работаем мы сами.
+- **Одна посадка на выстрел.** В горячих режимах копии выстрела для разных отправителей подписаны одним durable
+  nonce — садится не больше одной, чаевые дважды не платятся.
+- **15 сервисов отправки:** Jito, Helius (+SWQoS), Temporal (+ новые пакеты Temporal), пакеты Harmonic, Flashblock,
+  HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS) и ваши RPC.
+- **Geyser не обязателен.** Со своим Yellowstone gRPC (`geyser_endpoint`) пулы обновляются мгновенно, без него бот
+  опрашивает их через RPC и тоже работает.
+- **Новые монеты на ходу.** Недостающие токен-счета создаются автоматически, остальные монеты в это время стреляют.
+- **Понятный журнал:** строка на каждую отправку, ошибки раз в 10 с, `✅ Success!` на каждый выигрыш и сводка раз в
+  минуту.
+- **Безопасная проверка:** `DIABLO_SENDER_DRY=1 ./sender config.toml` — всё собирается и пишется в журнал, но ничего
+  не отправляется.
+
+### Поддерживаемые DEX
+
+Meteora DLMM, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
+Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy.
+Монеты SPL Token и Token-2022 (кроме токенов с действующим transfer hook).
+
+### Установка и запуск
+
+```
+wget -O diabloarb.zip https://github.com/cryptodiablo/diabloarb/archive/refs/heads/main.zip
+unzip diabloarb.zip
+cd diabloarb-main
+chmod +x ./sender
+./sender config.toml
+```
+
+Проверка без отправки:
+```
+DIABLO_SENDER_DRY=1 ./sender config.toml
+```
+
+Главное в `config.toml`: `rpc` (чтение), `send_rpcs` (отправка; через них же создаются токен-счета — они должны
+принимать транзакции), `keypair` (путь к ключу), `markets_file` и `luts`, `flashloan`, `geyser_endpoint` и
+`geyser_x_token`, `mode` (`markets` по умолчанию, `ladder` или `flow`) и отправители (`jito`, `temporal`, `helius`…) со
+своими чаевыми, приоритетом и паузой. Значения из `gas.json` подставляются как `"{имя}"` и применяются без
+перезапуска.
+
+**Все настройки подробно — в [`USER_CONFIG.md`](USER_CONFIG.md).** Дайте этот файл своему ИИ-помощнику (ChatGPT,
+Claude…) и попросите помочь настроить бота — он ответит по-русски. Приватный ключ и seed никому не показывайте,
+в том числе ИИ.
+
+### Команды кошелька
+
+```
+./sender wrap 0.1           # 0.1 SOL -> WSOL
+./sender unwrap 0.1         # 0.1 WSOL -> SOL
+./sender unwrap all         # весь WSOL -> SOL (счёт WSOL остаётся)
+./sender nonces close       # закрыть nonce-счета горячих режимов, вернуть аренду (≈0.00145 SOL каждый)
+./sender update             # обновиться сейчас
+./sender version            # версия
+```
+
+При каждом запуске бот сам обновляется из этого репозитория; `DIABLO_SENDER_AUTO_UPDATE=0 ./sender config.toml`
+оставляет текущую версию.
+
+### Комиссия и риски
+
+С каждой прибыли 7% уходит в хранилище DiabloArb, остальное — в ваш кошелёк. Арбитраж — это конкуренция: каждая
+севшая транзакция платит комиссию сети и приоритет, даже без выигрыша, а выигрыши приходят всплесками. Начинайте с
+малого приоритета и сухого прогона, следите за минутной сводкой и добавляйте платных отправителей, когда увидите
+выигрыши.
 
 ## 🔑 Keywords
 
