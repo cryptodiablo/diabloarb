@@ -44,6 +44,7 @@
   "flashblock_max_prio": 500,
   "flashblock_cooldown_ms": 300,
 
+  "hellomoon_api_key": "",
   "hellomoon_min_tip": 1000000,
   "hellomoon_max_tip": 10000000,
   "hellomoon_min_prio": 100,

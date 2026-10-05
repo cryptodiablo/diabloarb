@@ -5,12 +5,10 @@ flashloan = true # use WSOL vault flashloan budget in on-chain sizing
 send_rpcs = [ # broadcast RPC endpoints used by spam_rpc path
   "https://sender-rpc1.com/", # send RPC endpoint (FRA)
   "http://sender-rpc2.com/", # send RPC endpoint (AMS)
-] # end send_rpcs - diablosender.com is your best choise also
+] # end send_rpcs - diablosender.com is your best choise also; they must accept transactions: new coins' token accounts are created through them
 
 luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path or URL)
 luts_update_ms = 1000 # LUT file refresh interval in ms
-autodelete_dead_luts = true # auto-drop invalid/deactivated LUTs from active set
-autoluts = true # auto create/extend/close LUTs on size pressure
 
 markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
 files_updates_ms = 200 # local files refresh interval (gas + markets) in ms
@@ -19,23 +17,50 @@ remote_files_update_ms = 10000 # remote URL refresh interval (markets/luts) in m
 gas_file = "gas.json" # runtime vars JSON file (for {var} placeholders)
 # memo = "test" # optional memo for tracing tx source
 
+# Geyser (Yellowstone gRPC): pools update in real time; without it they are polled over rpc every second.
+# Required for mode = "ladder" / "flow".
+# geyser_endpoint = "https://your-geyser:443"
+# geyser_x_token = "your-token"
+
 spam_rpc = true # enable main RPC send loop
 
 min_priority_fee = "{enable_min_prio}" # base min priority fee (lamports)
 max_priority_fee = "{enable_max_prio}" # base max priority fee (lamports)
 process_delay_ms = "{spam_cooldown_ms}" # RPC loop interval in ms
 cu_limit = "430000" # compute-unit limit for all routes
-bin_limit = 23 # DLMM scan bin limit per pool
 
 auto_unwrap = false # auto unwrap WSOL->SOL when SOL below threshold
 min_sol_amount = 0.1 # SOL threshold for auto_unwrap
 
+# Mode: "markets" (default) shoots markets_file; "ladder" / "flow" watch the on-chain arbitrage bots over Geyser and
+# shoot the coins they earn on right now (markets_file is not used then). Defaults below = what we run ourselves.
+# Full explanation: USER_CONFIG.md section 8.
+mode = "markets"
+# ladder: a coin turns on when the bots earn >= hot_sol_per_min on it; RPC copies first, senders from 2x, Jito from 4x
+# hot_sol_per_min = 0.03
+# hot_senders_x = 2
+# hot_jito_x = 4 # only if hot_jito_as_sender = false
+# hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
+# hot_fast_ms = 60 # extra senders' shots between ticks at tier 2+ (flow: 0)
+# flow: non-stop on the top coins
+# flow_top = 2
+# flow_rank_s = 900
+# both modes
+# hot_interval_ms = 250 # one shot this often (set senders' cooldowns <= this for the full pace)
+# hot_half_life_s = 15
+# hot_sender_min_priority_fee = 100 # senders' priority, lamports per tx, random in range
+# hot_sender_max_priority_fee = 1000
+# hot_priority_cap = 100000 # ceiling of the RPC copies' priority (lamports per tx)
+# hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
+# hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
+# max_spend_sol = 1.0 # stop once the wallet's SOL fell this much
+# nonces = 32 # durable nonce accounts for the senders' broadcast, created on start (~0.00145 SOL rent each; ./sender nonces close returns it)
+
 
 jito = true # enable Jito send loop
-jito_classic = false # true => sendBundle classic mode (revert-safe tip)
+jito_classic = false # true => sent as a bundle (bundleOnly): a bundle without profit is dropped, nothing paid
 jito_require_profit = true #true = the tip is paid only if the arbitrage is successful / false = always tipping
-proxy = "" # optional proxy source (single proxy, file path, or URL list)
-jito_uuid = "uuid" # optional Jito UUID for higher limits
+jito_uuid = "uuid" # optional Jito UUID for higher limits ("uuid" placeholder = no UUID)
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito min tip (lamports)
 jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito max tip (lamports)
 jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms
@@ -56,12 +81,17 @@ helius_swqos_cooldown_ms = "{helius_swqos_cooldown_ms}" # SWQOS loop interval in
 
 temporal = false # enable Temporal/Nozomi sender
 temporal_uuid = "{temporal_uuid}" # Temporal UUID (query param c=...)
-temporal_transport = "v2" # Temporal transport: v2 | rest
 temporal_tip_min_lamports = "{temporal_min_tip}" # Temporal min tip in lamports
 temporal_tip_max_lamports = "{temporal_max_tip}" # Temporal max tip in lamports
 temporal_min_priority_fee = "{temporal_min_prio}" # Temporal min priority fee
 temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee
 temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
+
+temporal_bundle = false # Temporal bundles (sendBundle): only profitable ones land, a miss costs nothing; uses temporal_uuid
+temporal_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Temporal's minimum for bundles)
+temporal_bundle_tip_max_lamports = 2000000
+# temporal_bundle_cooldown_ms = 300
+# temporal_bundle_require_profit = true # false = lands without profit too (pays the tip)
 
 flashblock = false # enable Flashblock sender
 flashblock_api_key = "{flashblock_api_key}" # Flashblock API key
@@ -72,6 +102,7 @@ flashblock_max_priority_fee = "{flashblock_max_prio}" # Flashblock max priority 
 flashblock_cooldown_ms = "{flashblock_cooldown_ms}" # Flashblock loop interval in ms
 
 hellomoon = false # enable HelloMoon Lunar Lander sender
+hellomoon_api_key = "{hellomoon_api_key}" # HelloMoon API key (required)
 hellomoon_tip_min_lamports = "{hellomoon_min_tip}" # HelloMoon min tip (>= 1_000_000)
 hellomoon_tip_max_lamports = "{hellomoon_max_tip}" # HelloMoon max tip
 hellomoon_min_priority_fee = "{hellomoon_min_prio}" # HelloMoon min priority fee
@@ -104,6 +135,7 @@ falcon_cooldown_ms = "{falcon_cooldown_ms}" # Falcon loop interval in ms
 
 stellium = false # enable Stellium sender
 stellium_api_key = "{stellium_api_key}" # Stellium API key
+# stellium_endpoints = ["http://fra1.flashrpc.com"] # optional: your Stellium endpoint URLs
 stellium_tip_min_lamports = "{stellium_min_tip}" # Stellium min tip (>= 1_000_000)
 stellium_tip_max_lamports = "{stellium_max_tip}" # Stellium max tip
 stellium_min_priority_fee = "{stellium_min_prio}" # Stellium min priority fee
@@ -126,3 +158,18 @@ fast_swqos_min_priority_fee = "{fast_swqos_min_prio}" # Fast SWQOS min priority 
 fast_swqos_max_priority_fee = "{fast_swqos_max_prio}" # Fast SWQOS max priority fee
 fast_swqos_cooldown_ms = "{fast_swqos_cooldown_ms}" # Fast SWQOS loop interval in ms
 
+nextblock = false # enable NextBlock sender
+nextblock_api_key = "" # NextBlock API key
+# nextblock_tip_min_lamports = 1000000
+# nextblock_tip_max_lamports = 2000000
+# nextblock_cooldown_ms = 300
+
+harmonic_bundle = false # Harmonic bundles (needs a keypair whitelisted by Harmonic)
+harmonic_bundle_auth_keypair = "" # path to the whitelisted keypair file
+# harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions or URLs
+# harmonic_bundle_all_endpoints = true
+# harmonic_bundle_require_profit = true
+# harmonic_bundle_cooldown_ms = 300
+
+# Old Go bot keys no longer used (harmless if left in your config): autoluts, autodelete_dead_luts, bin_limit, proxy,
+# temporal_transport, jito_endpoints, temporal_endpoints. Every key is explained in USER_CONFIG.md.
