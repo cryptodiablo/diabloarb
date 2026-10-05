@@ -91,6 +91,7 @@ temporal_max_priority_fee = "{temporal_max_prio}" # Temporal max priority fee
 temporal_cooldown_ms = "{temporal_cooldown_ms}" # Temporal loop interval in ms
 
 temporal_bundle = false # Temporal bundles (sendBundle): only profitable ones land, a miss is dropped and costs nothing; uses temporal_uuid
+temporal_bundle_uuid = "" # optional: a separate Temporal key for bundles; empty = the same temporal_uuid as above
 temporal_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Temporal's minimum for bundles)
 temporal_bundle_tip_max_lamports = 2000000
 temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop interval in ms

@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `7290675`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `6f79c4d`). Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -69,6 +69,8 @@ on-chain arbitrage bots earn most on right now.
 - **Live reload.** `config.toml` and `gas.json` are re-read every `files_updates_ms`; senders, fees and delays are
   rebuilt on the fly. Exception: the hot-mode keys (§8) are read once at start — restart after changing them.
 - Unknown keys are ignored (counted as "keys not used"), they do no harm.
+- **A key written twice** (e.g. a pasted `temporal_bundle = true` under the sample's `temporal_bundle = false`): the
+  last value is used. Better edit the existing line than add a second one.
 - **`gas.json` names mean nothing by themselves.** The sample `gas.json` has `enable_jito`, `enable_temporal`, …: they
   only act if `config.toml` references them, e.g. `jito = "{enable_jito}"`. The sample config writes `jito = true`
   directly, so changing `enable_jito` there does nothing. Check which `"{name}"` the config actually uses.
@@ -133,7 +135,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `helius` | none | Helius requires ≥ 200 000 | Helius Sender; fails without profit. |
 | `helius_swqos` | none | ≥ 5 000 | SWQoS-only; lands always. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
-| `temporal_bundle` | `temporal_bundle_uuid`, else `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
+| `temporal_bundle` | `temporal_bundle_uuid` if set (a separate key), else the same `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
