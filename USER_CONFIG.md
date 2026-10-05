@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `f228879`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `7290675`). Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -79,7 +79,7 @@ on-chain arbitrage bots earn most on right now.
 - The **tip** is an instruction inside the transaction: if the transaction fails, the tip is not paid; the priority
   fee still is.
 - **Lanes that fail without profit** (tip saved, fee+priority paid): Jito with `jito_require_profit = true`, Helius,
-  Temporal, Flashblock, HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast.
+  Temporal, Flashblock, HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast, Apex.
 - **Lanes that land even without profit** (an empty successful run, fee+priority paid): RPC (`spam_rpc`), Helius
   SWQoS, Fast SWQoS, Jito with `jito_require_profit = false` (then the tip is paid every time).
 - **Bundles** (Harmonic, Temporal bundles, `jito_classic`): a bundle without profit is dropped — nothing is paid.
@@ -142,10 +142,11 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `stellium` | `stellium_api_key` | 1 000 000 | `stellium_endpoints` = list of its URLs. |
 | `nextblock` | `nextblock_api_key` or `nextblock_auth_token` | none | |
 | `fast` | `fast_api_key` | 1 000 000 | |
+| `apex` | `apex_api_key` (OrbitFlare dashboard > Apex) | 1 000 000 (standard plan) | OrbitFlare Apex: one send raced to the leader over staked validators, Jito and direct TPU; a rejected or unlanded send costs nothing. `apex_regions` = region codes `fra` `ams` `dub` `lon` `nyc` `slc` `sgp` `tyo` `sqq` `global` — pick the one or two nearest to the server (Apex fans out itself); unset — every region but `global`; an unknown code is skipped with a warning. Fails without profit. |
 | `fast_swqos` | `fast_swqos_api_key`, else `fast_api_key` | 7 500 | SWQoS-only; lands always. |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file) | — (Harmonic's price is the priority) | `harmonic_bundle_endpoints` (`fra`, `lon`, `ams`, `ewr`/`ny`, `tyo`, `sgp`, `slc` or URLs; default fra lon ams ewr tyo sgp), `_all_endpoints` (true), `_cooldown_ms`, `_min/max_priority_fee`. A bundle without profit is always dropped — nothing paid (the old `harmonic_bundle_require_profit` is ignored). |
 
-**Rate per sender.** Every send goes to all regions of the sender at once; a sender sends at most once per its delay
+**Rate per sender.** Every send goes to all regions of the sender at once (Apex: to `apex_regions`); a sender sends at most once per its delay
 (`<name>_cooldown_ms`, Jito `jito_process_delay_ms`, RPC `process_delay_ms`). Providers have their own limits per
 key — too fast gives `❌ … send failed … 429`.
 

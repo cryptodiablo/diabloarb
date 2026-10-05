@@ -166,6 +166,15 @@ nextblock_tip_min_lamports = 1000000 # NextBlock min tip in lamports
 nextblock_tip_max_lamports = 2000000 # NextBlock max tip in lamports
 nextblock_cooldown_ms = 300 # NextBlock loop interval in ms
 
+apex = false # enable OrbitFlare Apex sender: one send raced to the leader over staked validators, Jito and direct TPU
+apex_api_key = "" # Apex API key (OrbitFlare dashboard > Apex)
+apex_regions = ["fra", "ams"] # nearest Apex regions: fra ams dub lon nyc slc sgp tyo sqq (unset = all of them)
+apex_tip_min_lamports = 1000000 # Apex min tip (>= 1_000_000)
+apex_tip_max_lamports = 2000000 # Apex max tip
+apex_min_priority_fee = 100 # Apex min priority fee
+apex_max_priority_fee = 500 # Apex max priority fee
+apex_cooldown_ms = 300 # Apex loop interval in ms
+
 harmonic_bundle = false # Harmonic bundles (needs a keypair whitelisted by Harmonic): only profitable ones land, a miss costs nothing
 harmonic_bundle_auth_keypair = "" # path to the whitelisted keypair file
 harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions (fra lon ams ny tyo sgp slc) or URLs
