@@ -206,9 +206,12 @@ file. The markets file is not used in these modes.
 |---|---|---|
 | `hot_sol_per_min` | 0.03 | Ladder threshold: the bots' earnings on a coin, SOL per minute, that turns it on. |
 | `hot_senders_x` | 2 | Ladder: tier 2 at this multiple of the threshold. |
-| `hot_jito_x` | 4 | Ladder: tier 3 (Jito) at this multiple, if Jito is not a sender. |
+| `hot_jito_x` | 4 | Ladder: tier 3 (Jito's own) at this multiple. |
+| `hot_rpc_sol_per_min`, `hot_senders_sol_per_min`, `hot_jito_sol_per_min` | `hot_sol_per_min` × 1, × `hot_senders_x`, × `hot_jito_x` | Ladder: each step's own threshold, SOL per minute, in place of the multiples (any order; a step that is off does not count). |
+| `hot_senders_on` | `true` | Ladder: the senders' step (tier 2) as a whole; `false` — never reached (the senders' own switches stay as they are). |
 | `hot_jito_as_sender` | `true` | Jito joins the senders' broadcast from tier 2. |
-| `hot_jito_step` | `true` only when `hot_jito_as_sender = false` | Ladder: Jito's own tier 3 (from `hot_jito_x`), also when it is one of the senders. |
+| `hot_jito_step` | `true` only when `hot_jito_as_sender = false` | Ladder: Jito's own tier 3 (from `hot_jito_x`), also when it is one of the senders. **Its tip is paid on every landing, win or not.** |
+| `hot_jito_step_tip_min_lamports`, `hot_jito_step_tip_max_lamports` | from the floor up to the coin's ceiling | Ladder: tier 3 Jito's tip range, lamports (never the senders' win-only tips). |
 | `process_delay_ms` | 400 | Ladder: the RPC tier's pause, ms. |
 | `hot_sender_pause_ms` | — | The senders' pause, ms (ladder: tier 2; flow: the shot itself). |
 | `hot_jito_pause_ms` | the senders' | Ladder: Jito's own tier's pause, ms. |
@@ -220,7 +223,7 @@ file. The markets file is not used in these modes.
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 
-Minimal ladder setup:
+Minimal ladder setup (without `mode`, `geyser_endpoint` and `geyser_x_token` the bot falls back to markets):
 
 ```toml
 geyser_endpoint = "https://your-geyser:443"
@@ -233,6 +236,125 @@ jito_max_tip_lamports = 100000
 temporal = true
 temporal_uuid = "…"
 temporal_tip_min_lamports = 1000000
+```
+
+Full ladder setup — every key of the mode with its default (commented lines are optional):
+
+```toml
+# base (any mode)
+rpc = "https://your-rpc"                 # reading
+send_rpcs = ["https://your-send-rpc"]    # RPCs that accept transactions
+keypair = "key.json"
+flashloan = true
+cu_limit = "auto"
+auto_unwrap = true
+min_sol_amount = 0.1
+
+# ladder: required
+mode = "ladder"
+geyser_endpoint = "https://your-geyser:443"
+geyser_x_token = "…"
+
+# thresholds: SOL a minute the arbitrage bots earn on a coin
+hot_sol_per_min = 0.03          # step 1 (RPC) turns on
+hot_senders_x = 2               # step 2 (senders) at 2x
+hot_jito_x = 4                  # step 3 (Jito's own) at 4x
+# hot_rpc_sol_per_min = 0.03    # or each step's own threshold
+# hot_senders_sol_per_min = 0.06
+# hot_jito_sol_per_min = 0.12
+hot_half_life_s = 15
+
+# step 1: RPC copies (priority from 1000 lamports up to what the winners pay, capped)
+spam_rpc = true
+process_delay_ms = 400
+hot_priority_cap = 100000
+
+# step 2: the senders' broadcast on one durable nonce
+hot_senders_on = true
+hot_sender_min_priority_fee = 1000   # the senders' priority, one range for all of them
+hot_sender_max_priority_fee = 10000
+hot_sender_pause_ms = 250            # unset: each sender's own <name>_cooldown_ms
+hot_lanes_off = []
+# each sender: on, its key, its own tips (lamports, drawn per copy, paid only on a win)
+temporal = true
+temporal_uuid = "…"
+temporal_tip_min_lamports = 1000000     # min 1 000 000
+temporal_tip_max_lamports = 5000000
+helius = true
+helius_tip_min_lamports = 200000        # min 200 000; no key
+helius_tip_max_lamports = 2000000
+# astralane = true
+# astralane_api_key = "…"
+# astralane_tip_min_lamports = 10000    # min 10 000
+# astralane_tip_max_lamports = 1000000
+# zeroslot = true
+# zeroslot_api_key = "…"
+# zeroslot_tip_min_lamports = 1000000   # 0slot; min 1 000 000
+# zeroslot_tip_max_lamports = 3000000
+# falcon = true
+# falcon_api_key = "…"
+# falcon_tip_min_lamports = 1000000     # min 1 000 000
+# falcon_tip_max_lamports = 3000000
+# stellium = true
+# stellium_api_key = "…"
+# stellium_tip_min_lamports = 1000000   # min 1 000 000; + stellium_endpoints = ["…"]
+# stellium_tip_max_lamports = 3000000
+# nextblock = true
+# nextblock_api_key = "…"
+# nextblock_tip_min_lamports = 100000   # no minimum
+# nextblock_tip_max_lamports = 1000000
+# flashblock = true
+# flashblock_api_key = "…"
+# flashblock_tip_min_lamports = 100000  # min 100 000
+# flashblock_tip_max_lamports = 1000000
+# hellomoon = true
+# hellomoon_api_key = "…"
+# hellomoon_tip_min_lamports = 1000000  # min 1 000 000
+# hellomoon_tip_max_lamports = 3000000
+# fast = true
+# fast_api_key = "…"
+# fast_tip_min_lamports = 1000000       # min 1 000 000
+# fast_tip_max_lamports = 3000000
+# apex = true
+# apex_api_key = "…"
+# apex_tip_min_lamports = 1000000       # min 1 000 000; + apex_regions = ["fra"]
+# apex_tip_max_lamports = 3000000
+
+# Jito (as a sender: the tip paid only on a win, raised to at least the other senders' lowest minimum tip)
+jito = true
+# jito_uuid = "…"               # optional, a real UUID only
+jito_min_tip_lamports = 1000
+jito_max_tip_lamports = 100000
+hot_jito_as_sender = true
+hot_jito_step = false           # true: Jito's own step 3, its tip paid on every landing
+# hot_jito_step_tip_min_lamports = 10000
+# hot_jito_step_tip_max_lamports = 1000000
+# hot_jito_pause_ms = 250
+
+# bundles in the background: non-stop, top routes, a miss is free
+hot_bundle_interval_ms = 100
+harmonic_bundle = true
+harmonic_bundle_auth_keypair = "harmonic.json"
+harmonic_bundle_min_priority_fee = 50000
+harmonic_bundle_max_priority_fee = 200000
+harmonic_bundle_cooldown_ms = 100
+temporal_bundle = true
+# temporal_bundle_uuid = "…"    # unset: temporal_uuid
+temporal_bundle_tip_min_lamports = 1000000
+temporal_bundle_tip_max_lamports = 5000000
+temporal_bundle_min_priority_fee = 20000
+temporal_bundle_max_priority_fee = 100000
+temporal_bundle_cooldown_ms = 200
+helius_bundle = true
+helius_bundle_tip_min_lamports = 1000000
+helius_bundle_tip_max_lamports = 30000000
+helius_bundle_min_priority_fee = 5000
+helius_bundle_max_priority_fee = 50000
+helius_bundle_cooldown_ms = 100
+
+# other
+# nonces = 32                   # created on start, ~0.00145 SOL rent each
+# arb_sources_file = "my-bots.txt"
 ```
 
 ## 9. Log lines

@@ -15,6 +15,9 @@
 > - The executor's route search (how routes and trade sizes are found on chain) is **not public**. Say so; do not
 >   guess or invent internals. Public: the behaviour described here, the config keys, the SDK in `sdk/`.
 > - Never promise profit. Arbitrage is competitive; results vary by hour, server, RPC and settings.
+> - Every config key, its default and what it does is in USER_CONFIG.md (tables per section; §7 senders with their
+>   minimum tips, §8 hot modes with a full ladder template). When writing a config for a user, use only keys listed
+>   there; a key the build does not read is silently ignored.
 > - If the answer is not here or in USER_CONFIG.md, say you don't know and suggest asking in the DiabloArb Discord.
 
 ## Contents
@@ -92,7 +95,9 @@ last value). Keys and defaults: USER_CONFIG.md.
 - **"No losing transactions" (bundles only):** turn off `spam_rpc` and the always-landing lanes, keep only bundle lanes
   (`temporal_bundle`, `helius_bundle`, `harmonic_bundle`, or Jito with `jito_classic = true`). A miss costs nothing; you
   pay only on wins. Fewer wins than spam lanes, but no bleeding.
-- **Ladder with Geyser (usually the best cost/benefit):**
+- **Ladder with Geyser (usually the best cost/benefit).** The full template — every ladder key with its default, every
+  sender with its key and tip range, the bundles at their own fees — is USER_CONFIG.md §8 "Full ladder setup": give it
+  when a user asks for a complete ladder config and keep only the senders they have keys for. Short version:
   ```toml
   geyser_endpoint = "https://your-yellowstone-endpoint"
   geyser_x_token = "your-token"     # keep secret
@@ -200,7 +205,10 @@ does not cover its own tip and fees never executes. There is no "required profit
   6. The heat fades with a 15 s half-life (`hot_half_life_s`); the coin stays on until it falls below a quarter of the
      threshold, then steps down and stops.
   Each lane can have its own threshold instead of the multiples: `hot_rpc_sol_per_min`, `hot_senders_sol_per_min`,
-  `hot_jito_sol_per_min`. Bundle lanes (Harmonic, Temporal/Helius bundles, `jito_classic`) run in the background every
+  `hot_jito_sol_per_min`. `hot_senders_on = false` removes step 2; `hot_lanes_off` leaves named senders out of the
+  mode; `arb_sources_file` replaces the built-in list of watched bots. Tips: each step-2 sender uses its own
+  `<name>_tip_min/max_lamports` (paid only on a win), priority `hot_sender_min/max_priority_fee` for all of them; the
+  RPC step has no tip, its priority goes from 1 000 lamports up to what the winners pay, at most `hot_priority_cap`. Bundle lanes (Harmonic, Temporal/Helius bundles, `jito_classic`) run in the background every
   `hot_bundle_interval_ms` (100), also while no coin is on: the top coin's best route first, then the next coins' that
   fit; their priority is their own `<name>_min/max_priority_fee` when set, else `hot_sender_min/max_priority_fee`.
   Hot-mode keys are read at start — restart after changing them.

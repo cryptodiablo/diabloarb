@@ -41,11 +41,19 @@ mode = "markets"
 hot_sol_per_min = 0.03 # ladder threshold, SOL per minute the bots earn on a coin
 hot_senders_x = 2 # ladder: senders join at this multiple of the threshold
 hot_jito_x = 4 # ladder: Jito's own tier 3 at this multiple (with hot_jito_step, see below)
+# hot_rpc_sol_per_min = 0.03 # or each step's own threshold, SOL/min, in place of the multiples:
+# hot_senders_sol_per_min = 0.06 #   RPC step, senders' step,
+# hot_jito_sol_per_min = 0.12 #   Jito's own step
+# hot_senders_on = true # ladder: false = no senders' step at all
 hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
 # hot_jito_step = false # ladder: Jito's own tier 3 on top of that (default: on only when hot_jito_as_sender = false)
 # hot_sender_pause_ms = 250 # the senders' pause, ms (ladder: tier 2; flow: the shot itself, 250 when unset);
 #                           # unset in ladder: each sender keeps its own <name>_cooldown_ms
 # hot_jito_pause_ms = 250 # ladder: Jito's own tier's pause, ms (unset: the senders' pause)
+# hot_jito_step_tip_min_lamports = 10000 # ladder: Jito's own tier's tip, paid on EVERY landing (unset: the floor up to
+# hot_jito_step_tip_max_lamports = 1000000 #   the coin's ceiling)
+# hot modes: each sender's tips are its own <name>_tip_min/max_lamports (sender blocks below), paid only on a win;
+# their priority is hot_sender_min/max_priority_fee
 # ladder: the RPC tier's pause is process_delay_ms (above)
 # flow: non-stop on the top 2 coins (one and the next one's pools when two do not fit)
 # both modes
@@ -55,6 +63,7 @@ hot_sender_max_priority_fee = 1000
 hot_priority_cap = 100000 # ladder: ceiling of the RPC copies' priority, lamports per tx (flow: the senders' range)
 hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
+# arb_sources_file = "my-bots.txt" # own list of arb bots to watch (default: built in)
 # (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
 #             # (~0.00145 SOL rent each; ./sender nonces close returns it). Uncomment only to change the number:
@@ -87,6 +96,8 @@ helius_bundle = false # Helius Sender bundles (sendBundle, no key): only profita
 helius_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Helius minimum for bundles); a random tip in min..max each bundle
 helius_bundle_tip_max_lamports = 30000000
 helius_bundle_cooldown_ms = 50 # Helius bundle loop interval in ms (one of 7 Sender regions by turn)
+# helius_bundle_min_priority_fee = 5000 # lamports per tx (>= 5000); in ladder/flow ahead of hot_sender_*
+# helius_bundle_max_priority_fee = 50000
 
 temporal = false # enable Temporal/Nozomi sender
 temporal_uuid = "{temporal_uuid}" # Temporal UUID (query param c=...)
@@ -100,7 +111,9 @@ temporal_bundle = false # Temporal bundles (sendBundle): only profitable ones la
 temporal_bundle_uuid = "" # optional: a separate Temporal key for bundles; empty = the same temporal_uuid as above
 temporal_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Temporal's minimum for bundles)
 temporal_bundle_tip_max_lamports = 2000000
-temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop interval in ms
+temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop interval in ms (key limit: 5 requests/s)
+# temporal_bundle_min_priority_fee = 20000 # lamports per tx; in ladder/flow ahead of hot_sender_*
+# temporal_bundle_max_priority_fee = 100000
 
 flashblock = false # enable Flashblock sender
 flashblock_api_key = "{flashblock_api_key}" # Flashblock API key
@@ -187,6 +200,8 @@ harmonic_bundle_auth_keypair = "" # path to the whitelisted keypair file
 harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions (fra lon ams ny tyo sgp slc) or URLs
 harmonic_bundle_all_endpoints = true # every endpoint each time
 harmonic_bundle_cooldown_ms = 300 # Harmonic loop interval in ms
+# harmonic_bundle_min_priority_fee = 50000 # lamports per tx — Harmonic's price (no tip); in ladder/flow ahead of
+# harmonic_bundle_max_priority_fee = 200000 #   hot_sender_* (unset: min/max_priority_fee; hot modes: hot_sender_*)
 
 # Old Go bot keys no longer used (harmless if left in your config): autoluts, autodelete_dead_luts, bin_limit, proxy,
 # temporal_transport, jito_endpoints, temporal_endpoints. Every key is explained in USER_CONFIG.md.
