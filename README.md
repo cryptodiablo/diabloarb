@@ -59,6 +59,9 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   most one lands — no double tips.
 - **15 landing services:** Jito, Helius (+SWQoS, + new Helius bundles), Temporal (+ new Temporal bundles), Harmonic bundles, Flashblock,
   HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS), plus your own RPCs.
+- **Helius with your API key.** `helius_api_key` (your Helius project key) lifts Helius Sender from 1 request a second per
+  server IP to 50 per region — for `helius`, `helius_swqos` and `helius_bundle`. `helius_swqos_require_profit = true` makes
+  the SWQoS copy fail without profit, so no tip is paid on a miss.
 - **Geyser optional.** With your Yellowstone gRPC (`geyser_endpoint`) pools update in real time; without it the bot
   polls them over RPC and still works.
 - **New coins handled on the fly.** Missing token accounts are created automatically while the other coins keep
@@ -223,6 +226,9 @@ senders once you see wins.
   nonce — садится не больше одной, чаевые дважды не платятся.
 - **15 сервисов отправки:** Jito, Helius (+SWQoS, + новые пакеты Helius), Temporal (+ новые пакеты Temporal), пакеты Harmonic, Flashblock,
   HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS) и ваши RPC.
+- **Helius со своим ключом API.** `helius_api_key` (ключ вашего проекта Helius) поднимает лимит Helius Sender с 1 запроса в
+  секунду на IP сервера до 50 на регион — для `helius`, `helius_swqos` и `helius_bundle`. `helius_swqos_require_profit = true`:
+  копия SWQoS без прибыли падает, чаевая за промах не платится.
 - **Geyser не обязателен.** Со своим Yellowstone gRPC (`geyser_endpoint`) пулы обновляются мгновенно, без него бот
   опрашивает их через RPC и тоже работает.
 - **Новые монеты на ходу.** Недостающие токен-счета создаются автоматически, остальные монеты в это время стреляют.
