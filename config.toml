@@ -40,7 +40,7 @@ mode = "markets"
 # ladder: a coin turns on when the bots earn >= hot_sol_per_min on it; RPC copies first, senders from 2x, Jito from 4x
 hot_sol_per_min = 0.03 # ladder threshold, SOL per minute the bots earn on a coin
 hot_senders_x = 2 # ladder: senders join at this multiple of the threshold
-hot_jito_x = 4 # ladder: Jito's own tier, only if hot_jito_as_sender = false
+hot_jito_x = 4 # ladder: Jito's own tier 3 at this multiple (with hot_jito_step, see below)
 hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
 # hot_jito_step = false # ladder: Jito's own tier 3 on top of that (default: on only when hot_jito_as_sender = false)
 # hot_sender_pause_ms = 250 # the senders' pause, ms (ladder: tier 2; flow: the shot itself, 250 when unset);

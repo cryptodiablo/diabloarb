@@ -173,21 +173,24 @@ does not cover its own tip and fees never executes. There is no "required profit
 - **ladder** (needs Geyser): spends only when there is money on the table.
   1. Measures how much SOL/min the known arb bots earn on each coin right now (a coin needs ≥ 3 paying trades in 30 s).
   2. Quiet coin → nothing sent, nothing paid.
-  3. Above `hot_sol_per_min` (0.03) → **step 1**: RPC copies every `hot_interval_ms` (250 ms); their priority follows
+  3. Above `hot_sol_per_min` (0.03) → **step 1**: RPC copies every `process_delay_ms` (400 ms); their priority follows
      what the winning bots pay (up to `hot_priority_cap`).
   4. Above `hot_senders_x` × (2×) → **step 2**: also one broadcast to all paid senders, signed over one durable nonce so at
-     most one copy lands; tips only on a win; extra shots every `hot_fast_ms` (60 ms). Jito is one of these senders by
-     default (`hot_jito_as_sender = true`).
+     most one copy lands; tips only on a win; one broadcast every `hot_sender_pause_ms` (unset: each sender at its own
+     `<name>_cooldown_ms`). Jito is one of these senders by default (`hot_jito_as_sender = true`).
   5. Above `hot_jito_x` × (4×) → **step 3**, only if Jito has its own lane (`hot_jito_as_sender = false` or
      `hot_jito_step = true`): Jito without priority, a tip that grows with the coin's heat and is **paid every time it
-     lands, win or not** (`hot_jito_step_tip_min/max_lamports` cap it). Use with care.
+     lands, win or not** (`hot_jito_step_tip_min/max_lamports` cap it), every `hot_jito_pause_ms` (unset: the senders'
+     pause). Use with care.
   6. The heat fades with a 15 s half-life (`hot_half_life_s`); the coin stays on until it falls below a quarter of the
      threshold, then steps down and stops.
   Each lane can have its own threshold instead of the multiples: `hot_rpc_sol_per_min`, `hot_senders_sol_per_min`,
-  `hot_jito_sol_per_min`. Bundle lanes run in the background on the hottest coin every `hot_bundle_interval_ms` (100).
+  `hot_jito_sol_per_min`. Bundle lanes (Harmonic, Temporal/Helius bundles, `jito_classic`) run in the background every
+  `hot_bundle_interval_ms` (100), also while no coin is on: the top coin's best route first, then the next coins' that
+  fit; their priority is their own `<name>_min/max_priority_fee` when set, else `hot_sender_min/max_priority_fee`.
   Hot-mode keys are read at start — restart after changing them.
-- **flow** (needs Geyser): never stops; the top `flow_top` coins of the last `flow_rank_s` seconds, sender broadcasts on
-  durable nonces, plus RPC copies when `spam_rpc = true`. Highest presence, highest cost.
+- **flow** (needs Geyser): never stops; one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins of the
+  last 900 s, sender broadcasts on durable nonces, plus RPC copies when `spam_rpc = true`. Highest presence, highest cost.
 - **Choosing:** new users — markets with bundles; with Geyser — ladder. Flow only with good senders and budget.
 
 ## 8. Senders cheat sheet
