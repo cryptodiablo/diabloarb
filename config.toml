@@ -27,7 +27,7 @@ spam_rpc = true # enable main RPC send loop
 min_priority_fee = "{enable_min_prio}" # base min priority fee (lamports)
 max_priority_fee = "{enable_max_prio}" # base max priority fee (lamports)
 process_delay_ms = "{spam_cooldown_ms}" # RPC loop interval in ms
-cu_limit = "430000" # compute-unit limit for all routes
+cu_limit = "auto" # "auto": each transaction gets its own compute-unit limit from its pools (as on diablo.bot); a number fixes it
 
 auto_unwrap = false # auto unwrap WSOL->SOL when SOL below threshold
 min_sol_amount = 0.1 # SOL threshold for auto_unwrap

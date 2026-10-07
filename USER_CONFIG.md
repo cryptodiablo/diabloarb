@@ -97,7 +97,7 @@ on-chain arbitrage bots earn most on right now.
 | `spam_rpc` | `true` | The RPC lane on/off. |
 | `process_delay_ms` | 400 | The RPC lane's delay; also the default delay of every lane without its own. |
 | `min_priority_fee`, `max_priority_fee` | 100, 1000 | Global priority range (lamports/tx): the RPC lane's, and of any sender without its own (§7). |
-| `cu_limit` | 360000 | Compute-unit limit of a transaction (max 1 400 000). Priority per CU = lamports × 10⁶ / `cu_limit`. |
+| `cu_limit` | `"auto"` | `"auto"` (or no key, or 0): each transaction gets its own limit from the pools it trades — as on diablo.bot. A number fixes the limit of every transaction (max 1 400 000). Priority lamports turn into a price per CU over `cu_limit` (360 000 when auto). Needs the build of 7 October 2026 or newer (it updates itself on restart). |
 | `flashloan` | `false` | `true`: the trade may use the DiabloArb vault's WSOL besides your own (bigger trades). The 7% fee is the same. |
 | `markets_file` | — | Markets file, path or URL (§2). Required in markets mode. |
 | `luts` | — | LUT list, path or URL. |
