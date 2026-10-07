@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 7 October 2026 (build `fe3d09d830a3`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 8 October 2026. Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -132,11 +132,11 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | Sender (flag) | Key | Tip minimum | Notes |
 |---|---|---|---|
 | `jito` | `jito_uuid` (optional) | none | Tips: `jito_min_tip_lamports`/`jito_max_tip_lamports`; delay `jito_process_delay_ms`; no priority unless `jito_min/max_priority_fee` set. `jito_require_profit` (default true when tipping): tip only on a win. `jito_classic = true`: sent as a bundle (`bundleOnly`), failing one costs nothing. A `jito_uuid` that is not a real UUID (e.g. the `"uuid"` placeholder) is ignored — Jito works without one at lower limits. All 8 regions. |
-| `helius` | none | Helius requires ≥ 200 000 | Helius Sender; fails without profit. |
-| `helius_swqos` | none | ≥ 5 000 | SWQoS-only; lands always. |
+| `helius` | `helius_api_key` (optional, your Helius project key; also used by `helius_swqos` and `helius_bundle`) | Helius requires ≥ 200 000 | Helius Sender; fails without profit. Without a key Helius takes 1 request a second per server IP per region; with one — 50 a second per key per region. |
+| `helius_swqos` | `helius_api_key` (optional) | ≥ 5 000 | SWQoS-only; lands always (fee + priority + tip on every landing). `helius_swqos_require_profit = true`: the copy fails without profit instead, its tip unpaid — only fee + priority on a miss. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
 | `temporal_bundle` | `temporal_bundle_uuid` if set (a separate key), else the same `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
-| `helius_bundle` | none | 1 000 000 | Helius Sender Max `sendBundle` (no credits). Keys `helius_bundle_tip_min/max_lamports` (default 0.001 SOL; the sample: random 0.001–0.03 SOL), `_min/max_priority_fee` (at least 5 000 lamports a transaction), `_cooldown_ms`, `_all_endpoints` (false: one of 7 Sender regions by turn; true: every region each time — 7× the requests). A bundle without profit is always dropped — nothing paid. Works next to `helius` and `temporal_bundle`. |
+| `helius_bundle` | `helius_api_key` (optional) | 1 000 000 | Helius Sender Max `sendBundle` (no credits). Keys `helius_bundle_tip_min/max_lamports` (default 0.001 SOL; the sample: random 0.001–0.03 SOL), `_min/max_priority_fee` (at least 5 000 lamports a transaction), `_cooldown_ms`, `_all_endpoints` (false: one of 7 Sender regions by turn; true: every region each time — 7× the requests). A bundle without profit is always dropped — nothing paid. Works next to `helius` and `temporal_bundle`. |
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
@@ -281,7 +281,8 @@ temporal_uuid = "…"
 temporal_tip_min_lamports = 1000000     # min 1 000 000
 temporal_tip_max_lamports = 5000000
 helius = true
-helius_tip_min_lamports = 200000        # min 200 000; no key
+# helius_api_key = "…"                 # optional: 50 requests/s per region instead of 1 per server IP
+helius_tip_min_lamports = 200000        # min 200 000
 helius_tip_max_lamports = 2000000
 # astralane = true
 # astralane_api_key = "…"

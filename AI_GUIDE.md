@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 7 October 2026 (build `fe3d09d830a3`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 8 October 2026 (build `7f5b4db41f4e`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -90,7 +90,7 @@ last value). Keys and defaults: USER_CONFIG.md.
   max_priority_fee = 1000
   flashloan = true
   temporal_bundle = true        # misses free; needs temporal_uuid
-  helius_bundle = true          # misses free; no key
+  helius_bundle = true          # misses free; key optional (helius_api_key)
   ```
 - **"No losing transactions" (bundles only):** turn off `spam_rpc` and the always-landing lanes, keep only bundle lanes
   (`temporal_bundle`, `helius_bundle`, `harmonic_bundle`, or Jito with `jito_classic = true`). A miss costs nothing; you
@@ -166,7 +166,7 @@ does not cover its own tip and fees never executes. There is no "required profit
 |---|---|---|
 | **Bundles** — Temporal bundles, Helius bundles, Harmonic bundles, Jito with `jito_classic = true` | Dropped whole: **nothing paid** | fee + priority + tip, covered by the profit |
 | **Senders that fail without profit** — Helius, Temporal, Astralane, Falcon, 0slot, NextBlock, Stellium, Flashblock, HelloMoon, Fast, Apex, Jito (default) | Lands as failed (`0x7 NoProfit`): **fee + priority paid, tip not** | fee + priority + tip |
-| **Always-landing** — RPC copies (`spam_rpc`), Helius SWQoS, Fast SWQoS, Jito with `jito_require_profit = false`, ladder step-3 Jito | Lands as an empty success: **fee + priority (+ tip, where it has one) paid** | same + profit |
+| **Always-landing** — RPC copies (`spam_rpc`), Helius SWQoS (unless `helius_swqos_require_profit = true`: then it fails without profit like the senders, tip unpaid), Fast SWQoS, Jito with `jito_require_profit = false`, ladder step-3 Jito | Lands as an empty success: **fee + priority (+ tip, where it has one) paid** | same + profit |
 
 `require_profit=true` in a sender's start line means its tip is paid only on a win.
 
@@ -226,14 +226,14 @@ replaces the senders' cooldowns; bundle lanes keep their own `<name>_cooldown_ms
 |---|---|---|---|
 | RPC (`spam_rpc`) | your RPC | fee + priority (always lands) | `send_rpcs` must accept `sendTransaction`. |
 | Jito | optional `jito_uuid` (a real UUID, else leave empty) | fee only (default) | Without a UUID: lower rate limits. `jito_classic = true` → bundle, miss free. |
-| Helius Sender | no | fee + priority | Tip ≥ 0.0002 SOL. Rate limit per server IP. |
-| Helius bundles (`helius_bundle`) | no | nothing | Tip ≥ 0.001 SOL, priority ≥ 5 000 lamports a transaction, one of 7 regions by turn. |
+| Helius Sender | optional `helius_api_key` (your Helius project key; shared by Helius bundles and SWQoS) | fee + priority | Tip ≥ 0.0002 SOL. Without a key Helius takes 1 request a second per server IP per region; with a key 50 a second per key per region. |
+| Helius bundles (`helius_bundle`) | optional `helius_api_key` | nothing | Tip ≥ 0.001 SOL, priority ≥ 5 000 lamports a transaction, one of 7 regions by turn. |
 | Temporal (Nozomi) | `temporal_uuid` | fee + priority | Tip ≥ 0.001 SOL. |
 | Temporal bundles | same key (or `temporal_bundle_uuid`) | nothing | Tip ≥ 0.001 SOL. |
 | Harmonic bundles | whitelisted keypair file | nothing | Price = priority. |
 | OrbitFlare Apex | `apex_api_key` | fee + priority if it lands as failed; nothing if rejected | Tip ≥ 0.001 SOL. Pick 1–2 nearest `apex_regions`. |
 | Astralane, 0slot, Falcon, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. |
-| Helius SWQoS, Fast SWQoS | none / Fast key | fee + priority + small tip (always lands) | Cheap presence, but every copy costs. |
+| Helius SWQoS, Fast SWQoS | optional `helius_api_key` / Fast key | fee + priority + small tip (always lands) | Cheap presence, but every copy costs. `helius_swqos_require_profit = true` makes the Helius SWQoS copy fail without profit: a miss then costs fee + priority only. |
 
 - Keys come from each provider's own dashboard/sign-up. A sender switched on without its key is skipped with `⚠️`.
 - `429` from a provider = too fast for that key/IP: raise its `_cooldown_ms` (hot modes: `hot_sender_pause_ms`).
@@ -303,7 +303,7 @@ Open the signature on solscan.io / solana.fm.
 | Sends, then stops | Minute summary: `PAUSED` → SOL at the reserve (§4); `0 groups` / `N pools still loading over RPC: <reason>` → markets still loading or the RPC fails (reason shown: better RPC or Geyser); hot modes `coins: none yet` / tier 0 → nothing hot, by design. |
 | Nothing sent at all | Dry run on? (`DIABLO_SENDER_DRY`); `⚠️` lines; no senders enabled; `spam_rpc = false` with no other lane; ladder with nothing hot. |
 | `RPC reads failed: N (last: …)` | The read RPC rejects or rate-limits. Use a paid RPC; public RPC works, slowly. |
-| `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender limits per IP. |
+| `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender without `helius_api_key`: 1 request a second per IP per region — set the key (50 a second). |
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
 | `❌ … 401/403` | Wrong or missing API key for that sender. |
 | `❌ token accounts not created` | `send_rpcs` must accept transactions and the wallet needs SOL. |
@@ -329,7 +329,7 @@ whole unless they remove keys first.
 - **Does the required profit include my tip?** Yes (§5): each copy's minimum = its fee + priority + its own tip.
 - **Is the dashboard profit after tips?** Yes: per-trade Net is the wallet's real change, fee and tip already out.
 - **Another send like Temporal bundles (miss = free)?** Helius bundles, Harmonic bundles, Jito with `jito_classic`.
-- **Helius Sender bundles vs Helius `sendBundle`?** The bot uses Sender bundles: no credits, no key, tip ≥ 0.001 SOL,
+- **Helius Sender bundles vs Helius `sendBundle`?** The bot uses Sender bundles: no credits, key optional, tip ≥ 0.001 SOL,
   priority ≥ 5 000 lamports a transaction, all-or-nothing — a miss costs nothing.
 - **Same key for Temporal and Temporal bundles?** Yes; `temporal_bundle_uuid` empty = `temporal_uuid` is used.
 - **In ladder, Harmonic (or Temporal/Helius) bundles at their own fees, the rest at the ladder's?** Yes: set
@@ -338,6 +338,10 @@ whole unless they remove keys first.
 - **`hot_bundle_interval_ms` vs `harmonic_bundle_cooldown_ms`?** The first is the timer that builds a bundle for all
   bundle lanes; the second is how often Harmonic itself may send. A lane sends on a tick only if its cooldown has
   passed, so Harmonic goes at the slower of the two.
+- **Helius rate-limits me (429)?** Without a key Helius Sender allows 1 request a second per server IP per region. Set
+  `helius_api_key = "<your Helius project key>"` (used by `helius`, `helius_swqos`, `helius_bundle`): 50 a second per region.
+- **Helius SWQoS without paying tips on misses?** `helius_swqos_require_profit = true`: the copy fails without profit
+  (`0x7 NoProfit`), tip unpaid, fee + priority still paid when it lands.
 - **Automatic compute-unit limit?** `cu_limit = "auto"` (or no key): each transaction gets its own limit.
 - **How does ladder work?** §7.
 - **Do I need Geyser?** For ladder/flow yes; markets works without it, slower.
@@ -377,6 +381,8 @@ whole unless they remove keys first.
   a token account closed while running is recreated; nonces created through every RPC and Jito (`664d3c8`). Memory stays
   flat (≈150–250 MB); a sender that stops answering cannot pile up waiting copies; in ladder/flow bundle lanes pay their
   own `<name>_min/max_priority_fee` (`fe3d09d830a3`).
+- **8 Oct 2026** — `helius_api_key` (50 requests a second per region instead of 1 per IP) on Helius Sender, SWQoS and
+  bundles; `helius_swqos_require_profit` (`7f5b4db41f4e`).
 
 ## 15. Glossary
 
