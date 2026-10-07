@@ -42,18 +42,20 @@ hot_sol_per_min = 0.03 # ladder threshold, SOL per minute the bots earn on a coi
 hot_senders_x = 2 # ladder: senders join at this multiple of the threshold
 hot_jito_x = 4 # ladder: Jito's own tier, only if hot_jito_as_sender = false
 hot_jito_as_sender = true # Jito joins the senders' broadcast from tier 2
-hot_fast_ms = 60 # ladder: extra senders' shots between ticks at tier 2+ (0 = off)
-# flow: non-stop on the top coins
-flow_top = 2 # flow: how many top coins
-flow_rank_s = 900 # flow: ranking window, seconds
+# hot_jito_step = false # ladder: Jito's own tier 3 on top of that (default: on only when hot_jito_as_sender = false)
+# hot_sender_pause_ms = 250 # the senders' pause, ms (ladder: tier 2; flow: the shot itself, 250 when unset);
+#                           # unset in ladder: each sender keeps its own <name>_cooldown_ms
+# hot_jito_pause_ms = 250 # ladder: Jito's own tier's pause, ms (unset: the senders' pause)
+# ladder: the RPC tier's pause is process_delay_ms (above)
+# flow: non-stop on the top 2 coins (one and the next one's pools when two do not fit)
 # both modes
-hot_interval_ms = 250 # one shot this often (set senders' cooldowns <= this for the full pace)
 hot_half_life_s = 15 # seconds a coin's temperature halves in
 hot_sender_min_priority_fee = 100 # senders' priority, lamports per tx, random in range
 hot_sender_max_priority_fee = 1000
-hot_priority_cap = 100000 # ceiling of the RPC copies' priority (lamports per tx)
+hot_priority_cap = 100000 # ladder: ceiling of the RPC copies' priority, lamports per tx (flow: the senders' range)
 hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
+# (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
 #             # (~0.00145 SOL rent each; ./sender nonces close returns it). Uncomment only to change the number:
 #             # set here, it is used in "markets" mode too, where nobody creates them.

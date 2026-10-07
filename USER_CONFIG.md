@@ -1,7 +1,7 @@
 # DiabloArb sender — configuration reference for AI assistants
 
 > **To the AI reading this:** this file describes every setting of the DiabloArb arbitrage bot (`sender`, from
-> github.com/cryptodiablo/diabloarb) as of 5 October 2026 (build `ed0af90`). Use it to explain to a person what each
+> github.com/cryptodiablo/diabloarb) as of 7 October 2026 (build `fe3d09d830a3`). Use it to explain to a person what each
 > setting does and to help them edit `config.toml` and `gas.json`. Answer in the person's language. Never ask the person
 > to paste a private key, a seed phrase or the contents of `key.json` — only file paths. API keys and UUIDs are
 > secrets too: tell the person where to put them, do not ask them to show them. Moving money (wrap, unwrap, nonces) is
@@ -172,29 +172,32 @@ file. The markets file is not used in these modes.
 - **Ladder** — a coin turns **on** when its rate ≥ `hot_sol_per_min` and the bots made at least 3 paying trades on it
   in those 30 s; it stays on until its temperature falls below a quarter of the threshold. The tier follows the
   temperature:
-  - tier 1 — on: RPC copies only (recent blockhash, lands even without profit). Their priority is random from
+  - tier 1 — on: RPC copies only, one every `process_delay_ms` (recent blockhash, lands even without profit). Their priority is random from
     1 000 lamports up to a ceiling: twice the median priority the winning bots pay on that coin (last 60 s), at most
     10% of the bots' earnings per our landings per minute, never above `hot_priority_cap`;
-  - tier 2 — temperature ≥ `hot_senders_x` × threshold: plus one broadcast to every configured sender, all copies
-    signed over one durable nonce (at most one lands). Each sender's tip is its own `<name>_tip_*` range, priority
+  - tier 2 — temperature ≥ `hot_senders_x` × threshold: plus a broadcast to every configured sender every
+    `hot_sender_pause_ms`, all copies signed over one durable nonce (at most one lands). Each sender's tip is its own `<name>_tip_*` range, priority
     random in `hot_sender_min/max_priority_fee`. Jito joins if `hot_jito_as_sender`; its tip is then raised to at
-    least the lowest minimum tip of the other senders (within its own max). Plus extra broadcast shots every
-    `hot_fast_ms`;
-  - tier 3 — temperature ≥ `hot_jito_x` × threshold: Jito with its own tier (only when `hot_jito_as_sender = false`).
+    least the lowest minimum tip of the other senders (within its own max);
+  - tier 3 — temperature ≥ `hot_jito_x` × threshold: Jito with its own tier (`hot_jito_step`), every
+    `hot_jito_pause_ms` (unset: the senders' pause).
+  Each tier shoots at its own pause, on a timer of their common step (`hot_interval_ms`, `hot_fast_ms` are not read).
   The transaction carries the top coin's best route first, then other hot coins' routes that fit. When no coin is
   on, nothing is sent (no fees) — idle periods are normal.
 - **Bundle lanes** (Temporal bundles, Harmonic, `jito_classic`) get the hottest route every `hot_bundle_interval_ms`
-  whenever any coin is tracked — also while no coin is on; a bundle without profit costs nothing.
-- **Flow** — non-stop: every `hot_interval_ms` the top `flow_top` coins (every coin with any profit in
-  `flow_rank_s` competes; the place is the higher of its average rate over `flow_rank_s` and its temperature), by the
-  senders' broadcast on durable nonces plus RPC copies when `spam_rpc = true`, Jito as one of the senders, priority random from
+  whenever any coin is tracked — also while no coin is on; a bundle without profit costs nothing. Their tips are their
+  own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
+  `helius_bundle_…`, lamports a transaction) when set, else the senders' `hot_sender_min/max_priority_fee`.
+- **Flow** — non-stop: one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins, or one and the
+  next one's pools when two do not fit (every coin with any profit in the last 900 s competes; the place is the higher
+  of its average rate over those 900 s and its temperature; `hot_interval_ms`, `flow_top`, `flow_rank_s` are not read), by the
+  senders' broadcast on durable nonces plus RPC copies when `spam_rpc = true` (the same transaction on the same nonce,
+  at the senders' priority and pause), Jito as one of the senders, priority random from
   `hot_sender_min_priority_fee` to `hot_sender_max_priority_fee`. Costs fees all the time, also when nothing is hot.
-- **Sender delays still apply.** A sender whose `<name>_cooldown_ms` is longer than `hot_interval_ms` (or
-  `hot_fast_ms`) skips the shots in between. For the mode's full pace set the senders' delays ≤ `hot_interval_ms`
-  (and mind the providers' limits).
+- **Pauses.** `hot_sender_pause_ms` is every sender's pause in place of its `<name>_cooldown_ms`: a copy to all its
+  regions at most this often. Without it each sender keeps its own cooldown (and mind the providers' limits).
 - **Still used in hot modes:** the senders and their keys/tips, `flashloan`, `memo`, `cu_limit`, `send_rpcs`,
-  `auto_unwrap`. **Not used:** `markets_file`, `luts` (tables come from what the bots use), `process_delay_ms` as the
-  pace.
+  `auto_unwrap`. **Not used:** `markets_file`, `luts` (tables come from what the bots use).
 - **Durable nonces.** The broadcast to many senders is signed over one durable nonce per shot, so at most one copy
   lands (no double tips). On a start that sends, missing nonce accounts are created (≈0.00145 SOL rent each,
   32 ≈ 0.046 SOL); `./sender nonces close` returns the rent. A dry run only reports them.
@@ -205,13 +208,13 @@ file. The markets file is not used in these modes.
 | `hot_senders_x` | 2 | Ladder: tier 2 at this multiple of the threshold. |
 | `hot_jito_x` | 4 | Ladder: tier 3 (Jito) at this multiple, if Jito is not a sender. |
 | `hot_jito_as_sender` | `true` | Jito joins the senders' broadcast from tier 2. |
-| `hot_interval_ms` | 250 | One shot this often. |
-| `hot_fast_ms` | 60 (ladder), 0 (flow) | Extra broadcast shots between ticks at tier ≥ 2, each on its own nonce. 0 = off. |
+| `hot_jito_step` | `true` only when `hot_jito_as_sender = false` | Ladder: Jito's own tier 3 (from `hot_jito_x`), also when it is one of the senders. |
+| `process_delay_ms` | 400 | Ladder: the RPC tier's pause, ms. |
+| `hot_sender_pause_ms` | — | The senders' pause, ms (ladder: tier 2; flow: the shot itself). |
+| `hot_jito_pause_ms` | the senders' | Ladder: Jito's own tier's pause, ms. |
 | `hot_half_life_s` | 15 | Seconds in which a coin's temperature halves. |
-| `flow_top` | 2 | Flow: how many top coins. |
-| `flow_rank_s` | 900 | Flow: ranking window, seconds. |
 | `hot_sender_min_priority_fee`, `hot_sender_max_priority_fee` | 100, 1000 | Senders' priority, lamports/tx, random in the range. |
-| `hot_priority_cap` | 100000 | Ceiling of the RPC copies' priority (lamports/tx). |
+| `hot_priority_cap` | 100000 | Ladder: ceiling of the RPC copies' priority (lamports/tx). Flow: not used — RPC copies take the senders' range. |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
