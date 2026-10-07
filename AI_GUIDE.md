@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 5 October 2026 (build `ed0af90`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 7 October 2026 (build `fe3d09d830a3`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -102,8 +102,23 @@ last value). Keys and defaults: USER_CONFIG.md.
   temporal = true
   temporal_bundle = true
   helius_bundle = true
+  hot_sender_pause_ms = 250         # step-2 broadcast at most this often (unset: each sender's own cooldown)
   ```
-- **Maximum presence (flow):** `mode = "flow"`, more senders, short cooldowns. Costs fees all the time.
+- **Ladder plus Harmonic bundles at Harmonic's own fees** (bundles go non-stop in the background, also while no coin is
+  on; RPC/Jito/senders keep the ladder's fees):
+  ```toml
+  mode = "ladder"
+  harmonic_bundle = true
+  harmonic_bundle_auth_keypair = "harmonic.json"   # whitelisted keypair file
+  harmonic_bundle_min_priority_fee = 50000         # lamports per tx — Harmonic's price
+  harmonic_bundle_max_priority_fee = 200000
+  harmonic_bundle_cooldown_ms = 100                # Harmonic's own pace (unset: process_delay_ms, 400)
+  hot_bundle_interval_ms = 100                     # the bundle timer (all bundle lanes)
+  hot_sender_min_priority_fee = 1000               # the ladder's senders
+  hot_sender_max_priority_fee = 10000
+  ```
+- **Maximum presence (flow):** `mode = "flow"`, more senders, a short `hot_sender_pause_ms` (one shot this often, 250 ms
+  when unset). Costs fees all the time.
 
 ## 4. Wallet, SOL, WSOL, rent
 
@@ -196,7 +211,8 @@ does not cover its own tip and fees never executes. There is no "required profit
 ## 8. Senders cheat sheet
 
 Keys and minimum tips: USER_CONFIG.md §7. Each sender is its own loop: `<name>_cooldown_ms` (default
-`process_delay_ms`), tip and priority ranges, all its regions per send.
+`process_delay_ms`), tip and priority ranges, all its regions per send. In ladder/flow `hot_sender_pause_ms`, when set,
+replaces the senders' cooldowns; bundle lanes keep their own `<name>_cooldown_ms` and fire on `hot_bundle_interval_ms`.
 
 | Sender | Key needed | Miss costs | Notes |
 |---|---|---|---|
@@ -212,7 +228,9 @@ Keys and minimum tips: USER_CONFIG.md §7. Each sender is its own loop: `<name>_
 | Helius SWQoS, Fast SWQoS | none / Fast key | fee + priority + small tip (always lands) | Cheap presence, but every copy costs. |
 
 - Keys come from each provider's own dashboard/sign-up. A sender switched on without its key is skipped with `⚠️`.
-- `429` from a provider = too fast for that key/IP: raise its `_cooldown_ms`.
+- `429` from a provider = too fast for that key/IP: raise its `_cooldown_ms` (hot modes: `hot_sender_pause_ms`).
+- A sender that stops answering (timeouts) holds at most 32 copies waiting; the next copies to it are skipped until it
+  answers again — the other senders are not slowed.
 - More senders = more chances on hot coins; each failing copy that lands still pays fee + priority.
 
 ## 9. Reading the log
@@ -220,7 +238,7 @@ Keys and minimum tips: USER_CONFIG.md §7. Each sender is its own loop: `<name>_
 Example start (values vary):
 
 ```text
-😈 DiabloArb sender 0.1.0 (ed0af909f6f9, rust) — config config.toml   ← build and config
+😈 DiabloArb sender 0.1.0 (fe3d09d830a3, rust) — config config.toml   ← build and config
 🔑 Wallet: 7xKX…                                                       ← public address
 🏦 Flashloan: on                                                       ← vault lending
 ☀️ helius bundle enabled: endpoints=7 (one by turn), tip 1000000..30000000 lamports, priority 100..3000 lamports, require_profit=true
@@ -291,6 +309,8 @@ Open the signature on solscan.io / solana.fm.
 | Wallet stuck, unwrap fails | Locked wallet (§4): top up ~0.001–0.01 SOL. |
 | A setting has no effect | Key written twice (last wins); a `gas.json` name not referenced from `config.toml`; hot-mode keys need a restart. |
 | Old config from the Go bot | Works as is; unsupported keys are ignored (USER_CONFIG §10). |
+| The bot's memory keeps growing (hundreds of MB an hour) | Old build: restart to update. Builds since 7 October 2026 (`fe3d09d830a3`) stay at ≈150–250 MB. |
+| Hot-mode key has no effect (`hot_interval_ms`, `hot_fast_ms`, `flow_top`, `flow_rank_s`) | No longer read: the pace is `process_delay_ms` (ladder RPC step), `hot_sender_pause_ms`, `hot_jito_pause_ms`; flow takes the top 2 coins of 900 s. |
 
 Ask the user for: the first ~30 log lines after start (wallet, senders, mode, data source), the last few `📊 Last minute`
 lines, any `❌`/`⚠️`/`💧` lines, and a transaction signature if they ask about one. Never ask for `config.toml` as a
@@ -304,6 +324,13 @@ whole unless they remove keys first.
 - **Helius Sender bundles vs Helius `sendBundle`?** The bot uses Sender bundles: no credits, no key, tip ≥ 0.001 SOL,
   priority ≥ 5 000 lamports a transaction, all-or-nothing — a miss costs nothing.
 - **Same key for Temporal and Temporal bundles?** Yes; `temporal_bundle_uuid` empty = `temporal_uuid` is used.
+- **In ladder, Harmonic (or Temporal/Helius) bundles at their own fees, the rest at the ladder's?** Yes: set
+  `harmonic_bundle_min/max_priority_fee` (or `temporal_bundle_…`, `helius_bundle_…`); unset, bundles take
+  `hot_sender_min/max_priority_fee`. They go non-stop every `hot_bundle_interval_ms`, top route first (§3, §7).
+- **`hot_bundle_interval_ms` vs `harmonic_bundle_cooldown_ms`?** The first is the timer that builds a bundle for all
+  bundle lanes; the second is how often Harmonic itself may send. A lane sends on a tick only if its cooldown has
+  passed, so Harmonic goes at the slower of the two.
+- **Automatic compute-unit limit?** `cu_limit = "auto"` (or no key): each transaction gets its own limit.
 - **How does ladder work?** §7.
 - **Do I need Geyser?** For ladder/flow yes; markets works without it, slower.
 - **Which RPC?** Any Solana RPC for `rpc`; a paid one is more reliable. `send_rpcs` must accept transactions.
@@ -335,6 +362,13 @@ whole unless they remove keys first.
 - **5 Oct 2026** — hot modes `ladder`/`flow` with their keys; Temporal bundles; Harmonic bundles no longer stall;
   a key written twice is allowed; OrbitFlare Apex; auto-unwrap without a temporary account's rent; Helius Sender bundles
   (`helius_bundle`); SOL reserve with sending pause and priority auto-unwrap, no spending cap (`ed0af90`).
+- **6 Oct 2026** — ladder: each step on its own pause (`process_delay_ms`, `hot_sender_pause_ms`, `hot_jito_pause_ms`);
+  flow: one shot per senders' pause on the top 2 coins, RPC copies on the same nonce; auto-unwrap lands reliably
+  (confirmed blockhash, also through Jito) (`e10c9ab`).
+- **7 Oct 2026** — `cu_limit = "auto"`; a copy the wallet cannot pay is not sent; a config re-read keeps the rate limits;
+  a token account closed while running is recreated; nonces created through every RPC and Jito (`664d3c8`). Memory stays
+  flat (≈150–250 MB); a sender that stops answering cannot pile up waiting copies; in ladder/flow bundle lanes pay their
+  own `<name>_min/max_priority_fee` (`fe3d09d830a3`).
 
 ## 15. Glossary
 
