@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `94fb12e45a1d`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `04f56ba83a6a`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -218,7 +218,7 @@ does not cover its own tip and fees never executes. There is no "required profit
   routes of any coin, not only of the top coins; a second coin goes in when it fits, else more routes of the first; the
   set changes only when the scores do. Before 8 October only the top coins of the last minutes could be in a shot.
   `route_memory = false` brings that back. More coins in the shots mean more token accounts (≈0.002 SOL rent each, §4).
-  **Route length (`max_hops`, 4 by default, 2–5):** a shot lists routes of up to four pools — the loops through a second
+  **Route length (`max_hops`, 4 by default, 2–5; every mode):** a shot lists routes of up to four pools — the loops through a second
   base, e.g. SOL → USDC → coin A → coin B → SOL — and a remembered route is recognised whichever base the other bot
   started it from. Longer routes ask a higher compute-unit limit; `max_hops = 3` keeps the shots as before.
 - **flow** (needs Geyser): never stops; one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins of the
@@ -358,8 +358,9 @@ whole unless they remove keys first.
 - **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_8 = true`, each with its own
   `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); they work while `temporal_bundle = true`
   (USER_CONFIG §5).
-- **Can the bot do 4-hop routes?** Yes, in ladder and flow: `max_hops = 4` is the default (2–5; the on-chain program
-  runs up to 5). In `markets` mode routes stay up to 3 pools.
+- **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
+  runs up to 5). In `markets` mode a group of four pools in the markets file gives its four-pool loop; in ladder and flow
+  the bot builds them from the routes it remembers. `max_hops = 3` keeps the routes as before.
 - **Why does the bot shoot coins that are not hot right now?** `route_memory` (on by default): a route that paid over the
   last half hour stays in the shot while it is worth more per account than a fresher but smaller one. See §7.
 - **What is `route-memory.txt`?** The routes the bot remembers (hot modes). Safe to delete: it fills again in minutes.
@@ -408,7 +409,7 @@ whole unless they remove keys first.
   (`max_hops`, 4 by default) and a remembered route recognised from any base (`474b59e93124`).
 - **9 Oct 2026** — PumpSwap hops as the 17-account v2 trades (`pump_v2`, on by default); a reserve Geyser
   (`DIABLO_GEYSER_BACKUP`: a silent stream is reconnected, then the reserve, then back); further Temporal bundle streams
-  (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`).
+  (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`). Routes of up to four pools in `markets` mode too (`04f56ba83a6a`).
 
 ## 15. Glossary
 

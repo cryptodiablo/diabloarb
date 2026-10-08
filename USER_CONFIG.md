@@ -227,7 +227,7 @@ file. The markets file is not used in these modes.
 | `hot_sender_min_priority_fee`, `hot_sender_max_priority_fee` | 100, 1000 | Senders' priority, lamports/tx, random in the range. |
 | `hot_priority_cap` | 100000 | Ladder: ceiling of the RPC copies' priority (lamports/tx). Flow: not used — RPC copies take the senders' range. |
 | `route_memory` | `true` | Both modes: the routes the arbitrage bots won on are remembered for hours (file `route-memory.txt` next to the config, kept over restarts) and every shot is the best single transaction by them — routes of any coin, by their profit (last 15 s, 150 s, 30 min) per account they take; the room left is filled as before. `false`: the selection as before (the top coins of the last minutes only). |
-| `max_hops` | `4` | Both modes: the longest route a shot lists, 2 to 5 pools (the program runs 5). Four covers the loops through a second base — SOL → USDC → coin A → coin B → SOL; a remembered route is recognised whichever base it starts from. A longer route asks more compute units of a transaction: set `3` to keep the shots as before. |
+| `max_hops` | `4` | Every mode, markets too: the longest route a shot lists, 2 to 5 pools (the program runs 5). Four covers the loops through a second base — SOL → USDC → coin A → coin B → SOL; in markets mode a group of four pools gives its four-pool loop; in ladder and flow a remembered route is recognised whichever base it starts from. A longer route asks more compute units of a transaction: set `3` to keep the shots as before. |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
@@ -287,7 +287,7 @@ hot_sender_max_priority_fee = 10000
 hot_sender_pause_ms = 250            # unset: each sender's own <name>_cooldown_ms
 hot_lanes_off = []
 route_memory = true                  # every shot the best transaction by the routes remembered (false: as before)
-max_hops = 4                         # the longest route of a shot, 2-5 pools (3: as before)
+max_hops = 4                         # the longest route of a shot in every mode, 2-5 pools (3: as before)
 # each sender: on, its key, its own tips (lamports, drawn per copy, paid only on a win)
 temporal = true
 temporal_uuid = "…"
