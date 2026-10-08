@@ -184,6 +184,11 @@ file. The markets file is not used in these modes.
   Each tier shoots at its own pause, on a timer of their common step (`hot_interval_ms`, `hot_fast_ms` are not read).
   The transaction carries the top coin's best route first, then other hot coins' routes that fit. When no coin is
   on, nothing is sent (no fees) — idle periods are normal.
+- **What a shot carries (`route_memory`, on by default).** The bot remembers every route the arbitrage bots won on, for
+  hours, and scores it by what it paid lately (15 s, 150 s and 30 min scales). Each shot is the best single transaction:
+  the best route first, then the routes with the most score per account they add, of any coin — a second coin goes in
+  when it fits, otherwise the room goes to more routes of the first. The set changes only when the scores do. A copy
+  sent less than 200 ms after another gives its room to the next routes on the list.
 - **Bundle lanes** (Temporal bundles, Harmonic, `jito_classic`) get the hottest route every `hot_bundle_interval_ms`
   whenever any coin is tracked — also while no coin is on; a bundle without profit costs nothing. Their tips are their
   own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
@@ -218,6 +223,7 @@ file. The markets file is not used in these modes.
 | `hot_half_life_s` | 15 | Seconds in which a coin's temperature halves. |
 | `hot_sender_min_priority_fee`, `hot_sender_max_priority_fee` | 100, 1000 | Senders' priority, lamports/tx, random in the range. |
 | `hot_priority_cap` | 100000 | Ladder: ceiling of the RPC copies' priority (lamports/tx). Flow: not used — RPC copies take the senders' range. |
+| `route_memory` | `true` | Both modes: the routes the arbitrage bots won on are remembered for hours (file `route-memory.txt` next to the config, kept over restarts) and every shot is the best single transaction by them — routes of any coin, by their profit (last 15 s, 150 s, 30 min) per account they take; the room left is filled as before. `false`: the selection as before (the top coins of the last minutes only). |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
@@ -275,6 +281,7 @@ hot_sender_min_priority_fee = 1000   # the senders' priority, one range for all 
 hot_sender_max_priority_fee = 10000
 hot_sender_pause_ms = 250            # unset: each sender's own <name>_cooldown_ms
 hot_lanes_off = []
+route_memory = true                  # every shot the best transaction by the routes remembered (false: as before)
 # each sender: on, its key, its own tips (lamports, drawn per copy, paid only on a win)
 temporal = true
 temporal_uuid = "…"

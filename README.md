@@ -52,6 +52,9 @@ unchanged**, and the old binary updates itself to the new one on its next restar
 - **Hot modes (new, need Geyser).** `mode = "ladder"` watches the arbitrage bots live and only shoots while they are
   earning, escalating from cheap RPC copies to paid senders as a coin heats up; `mode = "flow"` shoots the top coins
   non-stop. These are the modes we run ourselves. See [`USER_CONFIG.md`](USER_CONFIG.md#8-hot-modes-mode--ladder-and-mode--flow).
+- **Route memory (hot modes).** The bot remembers for hours every route the on-chain arbitrage bots won on and makes
+  each shot the best single transaction by them — routes of any coin, ranked by what they paid lately per account they
+  take. On by default; `route_memory = false` turns it off.
 - **Bundles in the background (hot modes).** Bundle lanes (Harmonic, Temporal and Helius bundles) shoot the top routes
   every `hot_bundle_interval_ms` even while no coin is hot, at their own `<name>_min/max_priority_fee` when set — a
   missed bundle costs nothing.
@@ -219,6 +222,9 @@ senders once you see wins.
 - **Горячие режимы (нужен Geyser).** `mode = "ladder"` (лестница) следит за ботами в сети и стреляет только пока они
   зарабатывают, поднимая расходы по мере «нагрева» монеты: сначала дешёвые RPC-копии, потом платные отправители.
   `mode = "flow"` (поток) — без остановки по верхним монетам. Это режимы, на которых работаем мы сами.
+- **Память маршрутов (горячие режимы).** Бот часами помнит каждый маршрут, на котором выигрывали арбитражные боты в сети, и
+  каждый выстрел делает лучшей одной транзакцией по ним: маршруты любой монеты, по недавней прибыли на занятый счёт.
+  Включено по умолчанию; `route_memory = false` выключает.
 - **Пакеты в фоне (горячие режимы).** Пакетные полосы (Harmonic, пакеты Temporal и Helius) стреляют по лучшим маршрутам
   каждые `hot_bundle_interval_ms`, даже когда ни одна монета не горячая, со своими `<name>_min/max_priority_fee`, если
   они заданы, — промах пакета ничего не стоит.
