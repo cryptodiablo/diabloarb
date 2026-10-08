@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 8 October 2026 (build `474b59e93124`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `94fb12e45a1d`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -351,6 +351,13 @@ whole unless they remove keys first.
   `helius_api_key = "<your Helius project key>"` (used by `helius`, `helius_swqos`, `helius_bundle`): 50 a second per region.
 - **Helius SWQoS without paying tips on misses?** `helius_swqos_require_profit = true`: the copy fails without profit
   (`0x7 NoProfit`), tip unpaid, fee + priority still paid when it lands.
+- **What changed with the Pump update of 8 October 2026?** PumpSwap got 17-account trades (`sell_v2`,
+  `buy_exact_quote_in_v2`): the same prices and fees over fewer accounts. The bot uses them by default (`pump_v2 = true`,
+  every mode), so more routes fit one transaction; pools of cashback coins keep the older trades by themselves.
+  `pump_v2 = false` brings the older trades back everywhere. Nothing to change in a config.
+- **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_8 = true`, each with its own
+  `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); they work while `temporal_bundle = true`
+  (USER_CONFIG §5).
 - **Can the bot do 4-hop routes?** Yes, in ladder and flow: `max_hops = 4` is the default (2–5; the on-chain program
   runs up to 5). In `markets` mode routes stay up to 3 pools.
 - **Why does the bot shoot coins that are not hot right now?** `route_memory` (on by default): a route that paid over the
@@ -399,6 +406,9 @@ whole unless they remove keys first.
   bundles; `helius_swqos_require_profit` (`7f5b4db41f4e`). Route memory: every shot the best single transaction by the
   routes remembered for hours, any coin (`route_memory`, on by default in ladder and flow) (`fdc9fdbed619`). Routes of up to four pools
   (`max_hops`, 4 by default) and a remembered route recognised from any base (`474b59e93124`).
+- **9 Oct 2026** — PumpSwap hops as the 17-account v2 trades (`pump_v2`, on by default); a reserve Geyser
+  (`DIABLO_GEYSER_BACKUP`: a silent stream is reconnected, then the reserve, then back); further Temporal bundle streams
+  (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`).
 
 ## 15. Glossary
 

@@ -1,6 +1,7 @@
 rpc = "https://read-rpc.com/" # read-only RPC for quotes/accounts (get one on diablosender.com)
 keypair = "key.json" # signer keypair path
 flashloan = true # use WSOL vault flashloan budget in on-chain sizing
+pump_v2 = true # PumpSwap hops as the 17-account v2 trades of the Pump program (8 Oct 2026): more routes in one transaction; false: the older trades
 
 send_rpcs = [ # broadcast RPC endpoints used by spam_rpc path
   "https://sender-rpc1.com/", # send RPC endpoint (FRA)

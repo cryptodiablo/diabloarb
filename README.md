@@ -55,6 +55,8 @@ unchanged**, and the old binary updates itself to the new one on its next restar
 - **Route memory (hot modes).** The bot remembers for hours every route the on-chain arbitrage bots won on and makes
   each shot the best single transaction by them — routes of any coin, ranked by what they paid lately per account they
   take. On by default; `route_memory = false` turns it off.
+- **Pump.fun's new trades.** PumpSwap hops use the 17-account `sell_v2` / `buy_exact_quote_in_v2` of the Pump update of
+  8 October 2026: fewer accounts a pool, more routes in one transaction. On by default (`pump_v2`).
 - **Longer routes (hot modes).** A shot lists routes of up to four pools (`max_hops`, 4 by default, up to 5) — the loops
   through a second base — and recognises a remembered route whichever base the other bot started it from.
 - **Bundles in the background (hot modes).** Bundle lanes (Harmonic, Temporal and Helius bundles) shoot the top routes
@@ -227,6 +229,9 @@ senders once you see wins.
 - **Память маршрутов (горячие режимы).** Бот часами помнит каждый маршрут, на котором выигрывали арбитражные боты в сети, и
   каждый выстрел делает лучшей одной транзакцией по ним: маршруты любой монеты, по недавней прибыли на занятый счёт.
   Включено по умолчанию; `route_memory = false` выключает.
+- **Новые сделки Pump.fun.** Шаги через PumpSwap идут инструкциями `sell_v2` / `buy_exact_quote_in_v2` на 17 аккаунтах
+  (обновление Pump 8 октября 2026): меньше аккаунтов на пул — больше маршрутов в одной транзакции. Включено по умолчанию
+  (`pump_v2`).
 - **Длинные маршруты (горячие режимы).** В выстреле маршруты до четырёх пулов (`max_hops`, по умолчанию 4, до 5) — круги
   через вторую базу; запомненный маршрут узнаётся, с какой бы базы его ни начал другой бот.
 - **Пакеты в фоне (горячие режимы).** Пакетные полосы (Harmonic, пакеты Temporal и Helius) стреляют по лучшим маршрутам

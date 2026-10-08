@@ -55,6 +55,7 @@ on-chain arbitrage bots earn most on right now.
 | `DIABLO_SENDER_DRY=1` | Dry run: everything is built and logged with `[dry]`, nothing is sent, no accounts created. |
 | `DIABLO_SENDER_AUTO_UPDATE=0` | Do not self-update on start. |
 | `DIABLO_GEYSER_ENDPOINT`, `DIABLO_GEYSER_TOKEN` | Geyser instead of `geyser_endpoint`/`geyser_x_token` in the config. |
+| `DIABLO_GEYSER_BACKUP` (and `DIABLO_GEYSER_BACKUP_TOKEN` if its key differs) | A reserve Geyser. A stream with no data for 30 s is reconnected; two empty connections or refusals in a row switch to the reserve; the main one is probed every 60 s and taken back as soon as it gives data. Without the variable: the reconnect only. |
 
 ## 4. Value rules (apply to every key)
 
@@ -99,6 +100,7 @@ on-chain arbitrage bots earn most on right now.
 | `min_priority_fee`, `max_priority_fee` | 100, 1000 | Global priority range (lamports/tx): the RPC lane's, and of any sender without its own (§7). |
 | `cu_limit` | `"auto"` | `"auto"` (or no key, or 0): each transaction gets its own limit from the pools it trades — as on diablo.bot. A number fixes the limit of every transaction (max 1 400 000). Priority lamports turn into a price per CU over `cu_limit` (360 000 when auto). Needs the build of 7 October 2026 or newer (it updates itself on restart). |
 | `flashloan` | `false` | `true`: the trade may use the DiabloArb vault's WSOL besides your own (bigger trades). The 7% fee is the same. |
+| `pump_v2` | `true` | Pump.fun AMM (PumpSwap) hops use the 17-account `sell_v2` / `buy_exact_quote_in_v2` trades (in the Pump program since 8 October 2026): the same prices and fees over fewer accounts, so more routes fit one transaction. Pools of cashback coins keep the older trades by themselves. `false`: the older trades everywhere. |
 | `markets_file` | — | Markets file, path or URL (§2). Required in markets mode. |
 | `luts` | — | LUT list, path or URL. |
 | `files_updates_ms` | 50 | How often local files and `config.toml`/`gas.json` are re-read. |
@@ -136,6 +138,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `helius_swqos` | `helius_api_key` (optional) | ≥ 5 000 | SWQoS-only; lands always (fee + priority + tip on every landing). `helius_swqos_require_profit = true`: the copy fails without profit instead, its tip unpaid — only fee + priority on a miss. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
 | `temporal_bundle` | `temporal_bundle_uuid` if set (a separate key), else the same `temporal_uuid` | 1 000 000 | Temporal `sendBundle` (lands via Jito/Harmonic block builders). Keys `temporal_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (true). A bundle without profit is always dropped — nothing paid; no key changes that. Works next to `temporal`. |
+| `temporal_bundle_2` … `temporal_bundle_8` | `temporal_bundle_N_uuid` if set, else the first stream's key | 1 000 000 | More Temporal bundle streams (while `temporal_bundle = true`), each its own lane: switch `temporal_bundle_N = true`, own key, tips `temporal_bundle_N_tip_min/max_lamports` (default 0.001 SOL), `temporal_bundle_N_min/max_priority_fee`, `temporal_bundle_N_cooldown_ms` (its own pace: in `markets` the delay, in ladder/flow its own timer; empty = the first stream's — `temporal_bundle_cooldown_ms` / `hot_bundle_interval_ms`), `temporal_bundle_N_all_endpoints`. Use them to send the same bundle under several UUIDs or tip ranges at once; a miss still costs nothing. |
 | `helius_bundle` | `helius_api_key` (optional) | 1 000 000 | Helius Sender Max `sendBundle` (no credits). Keys `helius_bundle_tip_min/max_lamports` (default 0.001 SOL; the sample: random 0.001–0.03 SOL), `_min/max_priority_fee` (at least 5 000 lamports a transaction), `_cooldown_ms`, `_all_endpoints` (false: one of 7 Sender regions by turn; true: every region each time — 7× the requests). A bundle without profit is always dropped — nothing paid. Works next to `helius` and `temporal_bundle`. |
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
@@ -253,6 +256,7 @@ rpc = "https://your-rpc"                 # reading
 send_rpcs = ["https://your-send-rpc"]    # RPCs that accept transactions
 keypair = "key.json"
 flashloan = true
+pump_v2 = true                       # PumpSwap hops as the 17-account v2 trades (false: the older ones)
 cu_limit = "auto"
 auto_unwrap = true
 min_sol_amount = 0.1
