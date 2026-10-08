@@ -63,6 +63,7 @@ hot_sender_max_priority_fee = 1000
 hot_priority_cap = 100000 # ladder: ceiling of the RPC copies' priority, lamports per tx (flow: the senders' range)
 hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 route_memory = true # remember the routes the arb bots won on for hours (route-memory.txt next to the config); every shot is the
+max_hops = 4 # the longest route of a shot in ladder/flow, 2-5 pools; 4 covers loops through a second base (3: as before)
 #                   # best single transaction by them, routes of any coin; false = the selection as before
 hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
 # arb_sources_file = "my-bots.txt" # own list of arb bots to watch (default: built in)

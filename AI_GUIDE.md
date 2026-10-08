@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 8 October 2026 (build `fdc9fdbed619`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 8 October 2026 (build `474b59e93124`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -218,6 +218,9 @@ does not cover its own tip and fees never executes. There is no "required profit
   routes of any coin, not only of the top coins; a second coin goes in when it fits, else more routes of the first; the
   set changes only when the scores do. Before 8 October only the top coins of the last minutes could be in a shot.
   `route_memory = false` brings that back. More coins in the shots mean more token accounts (≈0.002 SOL rent each, §4).
+  **Route length (`max_hops`, 4 by default, 2–5):** a shot lists routes of up to four pools — the loops through a second
+  base, e.g. SOL → USDC → coin A → coin B → SOL — and a remembered route is recognised whichever base the other bot
+  started it from. Longer routes ask a higher compute-unit limit; `max_hops = 3` keeps the shots as before.
 - **flow** (needs Geyser): never stops; one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins of the
   last 900 s, sender broadcasts on durable nonces, plus RPC copies when `spam_rpc = true`. Highest presence, highest cost.
 - **Choosing:** new users — markets with bundles; with Geyser — ladder. Flow only with good senders and budget.
@@ -348,6 +351,8 @@ whole unless they remove keys first.
   `helius_api_key = "<your Helius project key>"` (used by `helius`, `helius_swqos`, `helius_bundle`): 50 a second per region.
 - **Helius SWQoS without paying tips on misses?** `helius_swqos_require_profit = true`: the copy fails without profit
   (`0x7 NoProfit`), tip unpaid, fee + priority still paid when it lands.
+- **Can the bot do 4-hop routes?** Yes, in ladder and flow: `max_hops = 4` is the default (2–5; the on-chain program
+  runs up to 5). In `markets` mode routes stay up to 3 pools.
 - **Why does the bot shoot coins that are not hot right now?** `route_memory` (on by default): a route that paid over the
   last half hour stays in the shot while it is worth more per account than a fresher but smaller one. See §7.
 - **What is `route-memory.txt`?** The routes the bot remembers (hot modes). Safe to delete: it fills again in minutes.
@@ -392,7 +397,8 @@ whole unless they remove keys first.
   own `<name>_min/max_priority_fee` (`fe3d09d830a3`).
 - **8 Oct 2026** — `helius_api_key` (50 requests a second per region instead of 1 per IP) on Helius Sender, SWQoS and
   bundles; `helius_swqos_require_profit` (`7f5b4db41f4e`). Route memory: every shot the best single transaction by the
-  routes remembered for hours, any coin (`route_memory`, on by default in ladder and flow) (`fdc9fdbed619`).
+  routes remembered for hours, any coin (`route_memory`, on by default in ladder and flow) (`fdc9fdbed619`). Routes of up to four pools
+  (`max_hops`, 4 by default) and a remembered route recognised from any base (`474b59e93124`).
 
 ## 15. Glossary
 
