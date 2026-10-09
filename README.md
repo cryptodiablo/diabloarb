@@ -62,6 +62,10 @@ unchanged**, and the old binary updates itself to the new one on its next restar
 - **Bundles in the background (hot modes).** Bundle lanes (Harmonic, Temporal and Helius bundles) shoot the top routes
   every `hot_bundle_interval_ms` even while no coin is hot, at their own `<name>_min/max_priority_fee` when set — a
   missed bundle costs nothing.
+- **Harmonic bundles without a whitelist (9 Oct).** Harmonic opened its bundles to everyone: set `harmonic_bundle = true`
+  and `harmonic_bundle_public = true` — no whitelisted key, no application. The public limits are lower, so the bot
+  sends there only when it sees a profit itself; a miss still costs nothing. Right after the opening Harmonic answers
+  most public requests with `rate limited` — that is their limit, the bot shows it in the log; a whitelisted key has none of it.
 - **One landing per shot.** In the hot modes all copies of a shot to different senders share one durable nonce, so at
   most one lands — no double tips.
 - **15 landing services:** Jito, Helius (+SWQoS, + new Helius bundles), Temporal (+ new Temporal bundles), Harmonic bundles, Flashblock,
@@ -237,6 +241,10 @@ senders once you see wins.
 - **Пакеты в фоне (горячие режимы).** Пакетные полосы (Harmonic, пакеты Temporal и Helius) стреляют по лучшим маршрутам
   каждые `hot_bundle_interval_ms`, даже когда ни одна монета не горячая, со своими `<name>_min/max_priority_fee`, если
   они заданы, — промах пакета ничего не стоит.
+- **Пакеты Harmonic без белого списка (9 октября).** Harmonic открыл пакеты всем: `harmonic_bundle = true` и
+  `harmonic_bundle_public = true` — без ключа из белого списка и без заявки. Лимиты открытого сервиса ниже, поэтому бот
+  шлёт туда только когда сам видит прибыль; промах по-прежнему ничего не стоит. Сразу после открытия Harmonic отвечает на
+  большинство открытых запросов `rate limited` — это их лимит, бот показывает его в журнале; с ключом из белого списка его нет.
 - **Одна посадка на выстрел.** В горячих режимах копии выстрела для разных отправителей подписаны одним durable
   nonce — садится не больше одной, чаевые дважды не платятся.
 - **15 сервисов отправки:** Jito, Helius (+SWQoS, + новые пакеты Helius), Temporal (+ новые пакеты Temporal), пакеты Harmonic, Flashblock,

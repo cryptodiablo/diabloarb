@@ -205,6 +205,8 @@ apex_cooldown_ms = 300 # Apex loop interval in ms
 
 harmonic_bundle = false # Harmonic bundles (needs a keypair whitelisted by Harmonic): only profitable ones land, a miss costs nothing
 harmonic_bundle_auth_keypair = "" # path to the whitelisted keypair file
+harmonic_bundle_public = false # true: Harmonic's public bundle service — no whitelisted key needed; lower rate limits, so a
+                               # bundle goes only when the bot sees a profit itself. Then set harmonic_bundle_all_endpoints = false
 harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions (fra lon ams ny tyo sgp slc) or URLs
 harmonic_bundle_all_endpoints = true # every endpoint each time
 harmonic_bundle_cooldown_ms = 300 # Harmonic loop interval in ms

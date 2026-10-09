@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `806f86bba51e`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `a885ed2fce4a`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -247,7 +247,7 @@ replaces the senders' cooldowns; bundle lanes keep their own `<name>_cooldown_ms
 | Helius bundles (`helius_bundle`) | optional `helius_api_key` | nothing | Tip ≥ 0.001 SOL, priority ≥ 5 000 lamports a transaction, one of 7 regions by turn. |
 | Temporal (Nozomi) | `temporal_uuid` | fee + priority | Tip ≥ 0.001 SOL. |
 | Temporal bundles | same key (or `temporal_bundle_uuid`) | nothing | Tip ≥ 0.001 SOL. |
-| Harmonic bundles | whitelisted keypair file | nothing | Price = priority. |
+| Harmonic bundles | whitelisted keypair file, or nothing with `harmonic_bundle_public = true` | nothing | Price = priority. Public: lower rate limits, a bundle only when a profit is seen now. |
 | OrbitFlare Apex | `apex_api_key` | fee + priority if it lands as failed; nothing if rejected | Tip ≥ 0.001 SOL. Pick 1–2 nearest `apex_regions`. |
 | Astralane, 0slot, Falcon, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. |
 | Helius SWQoS, Fast SWQoS | optional `helius_api_key` / Fast key | fee + priority + small tip (always lands) | Cheap presence, but every copy costs. `helius_swqos_require_profit = true` makes the Helius SWQoS copy fail without profit: a miss then costs fee + priority only. |
@@ -324,7 +324,7 @@ Open the signature on solscan.io / solana.fm.
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
 | `❌ … 401/403` | Wrong or missing API key for that sender. |
 | `❌ token accounts not created` | `send_rpcs` must accept transactions and the wallet needs SOL. |
-| Harmonic bundles stop | Usually markets not loaded (`0 groups`) — the minute summary tells why. Check the keypair is whitelisted. |
+| Harmonic bundles stop | Usually markets not loaded (`0 groups`) — the minute summary tells why. Check the keypair is whitelisted (or use `harmonic_bundle_public = true`: no key; then few bundles is normal — one goes only when a profit is seen). |
 | `⚠️ mode = … needs Geyser` | Ladder/flow need `geyser_endpoint`; the bot fell back to markets. |
 | Geyser errors / reconnects | Endpoint or `geyser_x_token` wrong, or the provider limits streams. |
 | Lots of `0x7 NoProfit` | Normal in moderation; reduce priority/pace, add bundle lanes. |
@@ -346,6 +346,12 @@ whole unless they remove keys first.
 - **Does the required profit include my tip?** Yes (§5): each copy's minimum = its fee + priority + its own tip.
 - **Is the dashboard profit after tips?** Yes: per-trade Net is the wallet's real change, fee and tip already out.
 - **Another send like Temporal bundles (miss = free)?** Helius bundles, Harmonic bundles, Jito with `jito_classic`.
+- **Harmonic without a whitelisted key?** Yes, from 9 Oct 2026: `harmonic_bundle = true` and
+  `harmonic_bundle_public = true`, no `harmonic_bundle_auth_keypair`, and `harmonic_bundle_all_endpoints = false`
+  (Harmonic forwards between its regions itself). Harmonic's public service has lower rate limits and drops senders
+  whose bundles keep reverting, so the bot sends there only when it sees a profit itself — far fewer bundles than
+  with a key, each one aimed. `rate limited` in the log is Harmonic's answer (on 9 Oct 2026 the public service gave it
+  to every request we made, from several servers) — not a config error; a whitelisted key is the way around it. With a whitelisted key leave it off: the key's limits are higher.
 - **Helius Sender bundles vs Helius `sendBundle`?** The bot uses Sender bundles: no credits, key optional, tip ≥ 0.001 SOL,
   priority ≥ 5 000 lamports a transaction, all-or-nothing — a miss costs nothing.
 - **Same key for Temporal and Temporal bundles?** Yes; `temporal_bundle_uuid` empty = `temporal_uuid` is used.
@@ -420,6 +426,7 @@ whole unless they remove keys first.
   (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`). Routes of up to four pools in `markets` mode too (`04f56ba83a6a`). A PumpSwap v2 hop is counted at 70 thousand compute
   units in a transaction's limit instead of 109 (measured: 50–60 thousand): the same priority buys a better place in the
   block (`806f86bba51e`).
+- **9 Oct 2026** — `harmonic_bundle_public`: Harmonic bundles without a whitelisted key (build `a885ed2fce4a`).
 
 ## 15. Glossary
 
