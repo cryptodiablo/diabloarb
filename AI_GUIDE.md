@@ -146,6 +146,12 @@ last value). Keys and defaults: USER_CONFIG.md.
   summary) so the wallet can still pay for an unwrap; it resumes when SOL is back. With `auto_unwrap = true`, once
   SOL < `min_sol_amount` (at least ≈0.0107 SOL) the whole WSOL is unwrapped automatically, with a priority fee, resent
   until it lands.
+- **Idle token accounts (`auto_close_atas = true`, off by default):** every coin the bot shoots needs a token account
+  (rent ≈0.00204 SOL). With the key on, empty accounts of coins not shot for 24 hours are closed and the rent returns
+  (`🧹 Closed N idle token account(s) … SOL back`). The bot goes by its own record of shots (`<config>.atas.json`) and
+  asks the RPC nothing until there is something to close. Accounts holding any coin and WSOL/USDC/USDT are never
+  closed; an empty account that existed before the key was turned on waits 24 hours first; a coin that comes back gets
+  its account again by itself.
 - **Locked wallet:** if SOL is already at the network minimum (≈0.00065), no transaction of that wallet can land — not
   even an unwrap. Fix: send ~0.001–0.01 SOL from another wallet; a current build unwraps by itself within seconds.
   Builds since 5 October 2026 (`ed0af90`) prevent this.

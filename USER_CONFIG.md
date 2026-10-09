@@ -110,6 +110,7 @@ on-chain arbitrage bots earn most on right now.
 | `memo` | — | Optional memo text added to each transaction (for tracing). |
 | `geyser_endpoint`, `geyser_x_token` | — | Yellowstone gRPC. Without it pools are polled over `rpc` every second (works, slower). **Required for ladder/flow modes.** |
 | `auto_unwrap`, `min_sol_amount` | `false`, — | SOL is checked every second; once SOL < `min_sol_amount` (SOL; at least ≈0.0107 is used) the whole WSOL balance is unwrapped to SOL with a priority fee, resent until it lands (the WSOL account stays). **Always on, whatever `auto_unwrap`:** below the network's rent minimum + 0.005 SOL (≈0.0057 SOL) the bot pauses sending (`PAUSED` in the minute summary) so the wallet never gets locked; with no WSOL left it asks for a top-up. |
+| `auto_close_atas` | `false` | Closes the wallet's **empty** token accounts of coins the bot sent no shot with for 24 hours — the rent (≈0.00204 SOL each) returns to the wallet. The bot decides by its own record (the time of the last shot per coin, kept in `<config>.atas.json` next to the config), so it makes **no RPC requests** until there is something to close: then one read of those accounts and the close itself, up to 10 accounts a transaction, simulated first. Checked 3 minutes after the start, then hourly. An empty account found at the start that the record does not know waits its 24 hours from that moment. Never touched: an account holding any amount of a coin, WSOL/USDC/USDT, a frozen account. A coin that returns gets its account created again before its next shot. |
 | `nonces` | 32 in hot modes | Number of durable nonce accounts for the hot modes' sender broadcast (max 100). |
 | `mode` | `"markets"` | `"markets"` (pools from the markets file), `"ladder"` or `"flow"` (§8). |
 
@@ -205,7 +206,7 @@ file. The markets file is not used in these modes.
 - **Pauses.** `hot_sender_pause_ms` is every sender's pause in place of its `<name>_cooldown_ms`: a copy to all its
   regions at most this often. Without it each sender keeps its own cooldown (and mind the providers' limits).
 - **Still used in hot modes:** the senders and their keys/tips, `flashloan`, `memo`, `cu_limit`, `send_rpcs`,
-  `auto_unwrap`. **Not used:** `markets_file`, `luts` (tables come from what the bots use).
+  `auto_unwrap`, `auto_close_atas`. **Not used:** `markets_file`, `luts` (tables come from what the bots use).
 - **Durable nonces.** The broadcast to many senders is signed over one durable nonce per shot, so at most one copy
   lands (no double tips). On a start that sends, missing nonce accounts are created (≈0.00145 SOL rent each,
   32 ≈ 0.046 SOL); `./sender nonces close` returns the rent. A dry run only reports them.
@@ -260,6 +261,7 @@ pump_v2 = true                       # PumpSwap hops as the 17-account v2 trades
 cu_limit = "auto"
 auto_unwrap = true
 min_sol_amount = 0.1
+auto_close_atas = true               # rent of token accounts idle for 24 h back to the wallet (default false)
 
 # ladder: required
 mode = "ladder"
