@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `04f56ba83a6a`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `806f86bba51e`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -409,7 +409,9 @@ whole unless they remove keys first.
   (`max_hops`, 4 by default) and a remembered route recognised from any base (`474b59e93124`).
 - **9 Oct 2026** — PumpSwap hops as the 17-account v2 trades (`pump_v2`, on by default); a reserve Geyser
   (`DIABLO_GEYSER_BACKUP`: a silent stream is reconnected, then the reserve, then back); further Temporal bundle streams
-  (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`). Routes of up to four pools in `markets` mode too (`04f56ba83a6a`).
+  (`temporal_bundle_2` … `_8`) (`94fb12e45a1d`). Routes of up to four pools in `markets` mode too (`04f56ba83a6a`). A PumpSwap v2 hop is counted at 70 thousand compute
+  units in a transaction's limit instead of 109 (measured: 50–60 thousand): the same priority buys a better place in the
+  block (`806f86bba51e`).
 
 ## 15. Glossary
 
