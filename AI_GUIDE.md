@@ -369,7 +369,7 @@ whole unless they remove keys first.
   `buy_exact_quote_in_v2`): the same prices and fees over fewer accounts. The bot uses them by default (`pump_v2 = true`,
   every mode), so more routes fit one transaction; pools of cashback coins keep the older trades by themselves.
   `pump_v2 = false` brings the older trades back everywhere. Nothing to change in a config.
-- **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_8 = true`, each with its own
+- **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_100 = true`, each with its own
   `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); they work while `temporal_bundle = true`
   (USER_CONFIG §5).
 - **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
