@@ -370,7 +370,7 @@ whole unless they remove keys first.
   every mode), so more routes fit one transaction; pools of cashback coins keep the older trades by themselves.
   `pump_v2 = false` brings the older trades back everywhere. Nothing to change in a config.
 - **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_100 = true`, each with its own
-  `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); they work while `temporal_bundle = true`
+  `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); each works by its own switch (`temporal_bundle = false` turns off the first stream only; builds before 11 October 2026 turned the whole block off)
   (USER_CONFIG §5).
 - **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
   runs up to 5). In `markets` mode a group of four pools in the markets file gives its four-pool loop; in ladder and flow
