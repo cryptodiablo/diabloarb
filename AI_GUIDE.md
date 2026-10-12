@@ -93,7 +93,7 @@ last value). Keys and defaults: USER_CONFIG.md.
   helius_bundle = true          # misses free; key optional (helius_api_key)
   ```
 - **"No losing transactions" (bundles only):** turn off `spam_rpc` and the always-landing lanes, keep only bundle lanes
-  (`temporal_bundle`, `helius_bundle`, `harmonic_bundle`, or Jito with `jito_classic = true`). A miss costs nothing; you
+  (`temporal_bundle`, `helius_bundle`, `astralane_bundle`, `jito_bundle`, `harmonic_bundle`, or Jito with `jito_classic = true`). A miss costs nothing; you
   pay only on wins. Fewer wins than spam lanes, but no bleeding.
 - **Ladder with Geyser (usually the best cost/benefit).** The full template — every ladder key with its default, every
   sender with its key and tip range, the bundles at their own fees — is USER_CONFIG.md §8 "Full ladder setup": give it
@@ -172,7 +172,7 @@ does not cover its own tip and fees never executes. There is no "required profit
 
 | Lane type | Miss (no profit) | Win |
 |---|---|---|
-| **Bundles** — Temporal bundles, Helius bundles, Harmonic bundles, Jito with `jito_classic = true` | Dropped whole: **nothing paid** | fee + priority + tip, covered by the profit |
+| **Bundles** — Temporal bundles, Helius bundles, Astralane bundles (`astralane_bundle`), Jito bundles (`jito_bundle`), Harmonic bundles, Jito with `jito_classic = true` | Dropped whole: **nothing paid** | fee + priority + tip, covered by the profit |
 | **Senders that fail without profit** — Helius, Temporal, Astralane, Falcon, 0slot, NextBlock, Stellium, Flashblock, HelloMoon, Fast, Apex, Jito (default) | Lands as failed (`0x7 NoProfit`): **fee + priority paid, tip not** | fee + priority + tip |
 | **Always-landing** — RPC copies (`spam_rpc`), Helius SWQoS (unless `helius_swqos_require_profit = true`: then it fails without profit like the senders, tip unpaid), Fast SWQoS, Jito with `jito_require_profit = false`, ladder step-3 Jito | Lands as an empty success: **fee + priority (+ tip, where it has one) paid** | same + profit |
 
@@ -243,10 +243,12 @@ replaces the senders' cooldowns; bundle lanes keep their own `<name>_cooldown_ms
 |---|---|---|---|
 | RPC (`spam_rpc`) | your RPC | fee + priority (always lands) | `send_rpcs` must accept `sendTransaction`. |
 | Jito | optional `jito_uuid` (a real UUID, else leave empty) | fee only (default) | Without a UUID: lower rate limits. `jito_classic = true` → bundle, miss free. |
+| Jito bundles (`jito_bundle`) | optional `jito_uuid` (the same) | nothing | From 12 Oct 2026. Its own tips `jito_bundle_tip_min/max_lamports` (default 10 000) and pause `jito_bundle_cooldown_ms`; works next to `jito`. |
 | Helius Sender | optional `helius_api_key` (your Helius project key; shared by Helius bundles and SWQoS) | fee + priority | Tip ≥ 0.0002 SOL. Without a key Helius takes 1 request a second per server IP per region; with a key 50 a second per key per region. |
 | Helius bundles (`helius_bundle`) | optional `helius_api_key` | nothing | Tip ≥ 0.001 SOL, priority ≥ 5 000 lamports a transaction, one of 7 regions by turn. |
 | Temporal (Nozomi) | `temporal_uuid` | fee + priority | Tip ≥ 0.001 SOL. |
 | Temporal bundles | same key (or `temporal_bundle_uuid`) | nothing | Tip ≥ 0.001 SOL. |
+| Astralane bundles (`astralane_bundle`) | `astralane_api_key` (the same as `astralane`) | nothing | From 12 Oct 2026. Tip ≥ 10 000 lamports (`astralane_bundle_tip_min/max_lamports`), pause `astralane_bundle_cooldown_ms`; works next to `astralane`. |
 | Harmonic bundles | whitelisted keypair file, or nothing with `harmonic_bundle_public = true` | nothing | Price = priority. Public: lower rate limits, a bundle only when a profit is seen now. |
 | OrbitFlare Apex | `apex_api_key` | fee + priority if it lands as failed; nothing if rejected | Tip ≥ 0.001 SOL. Pick 1–2 nearest `apex_regions`. |
 | Astralane, 0slot, Falcon, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. |
@@ -345,7 +347,10 @@ whole unless they remove keys first.
 
 - **Does the required profit include my tip?** Yes (§5): each copy's minimum = its fee + priority + its own tip.
 - **Is the dashboard profit after tips?** Yes: per-trade Net is the wallet's real change, fee and tip already out.
-- **Another send like Temporal bundles (miss = free)?** Helius bundles, Harmonic bundles, Jito with `jito_classic`.
+- **Another send like Temporal bundles (miss = free)?** Helius bundles, Astralane bundles (`astralane_bundle = true`),
+  Jito bundles (`jito_bundle = true`), Harmonic bundles, Jito with `jito_classic`.
+- **I turned a bundle lane on and nothing lands — is it broken?** Usually not: a bundle lands only on a win, so the
+  wallet history stays quiet for hours while «sent» grows. Check the bot's status in the cabinet and the lane's key.
 - **Harmonic without a whitelisted key?** Yes, from 9 Oct 2026: `harmonic_bundle = true` and
   `harmonic_bundle_public = true`, no `harmonic_bundle_auth_keypair`, and `harmonic_bundle_all_endpoints = false`
   (Harmonic forwards between its regions itself). Harmonic's public service has lower rate limits and drops senders
@@ -427,6 +432,9 @@ whole unless they remove keys first.
   units in a transaction's limit instead of 109 (measured: 50–60 thousand): the same priority buys a better place in the
   block (`806f86bba51e`).
 - **9 Oct 2026** — `harmonic_bundle_public`: Harmonic bundles without a whitelisted key (build `a885ed2fce4a`).
+- **12 Oct 2026** — bundle lanes `astralane_bundle` and `jito_bundle` (a miss costs nothing); a durable nonce left stale
+  by a dropped block is replaced at once (before: copies vanished for minutes in `flow` with RPC copies); address tables
+  deactivated by their owners are no longer used (before: up to half of a bot's copies silently refused) (build `452b2fa7e30a`).
 
 ## 15. Glossary
 

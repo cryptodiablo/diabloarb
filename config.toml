@@ -67,7 +67,7 @@ hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 route_memory = true # remember the routes the arb bots won on for hours (route-memory.txt next to the config); every shot is the
 max_hops = 4 # the longest route of a shot in every mode (markets too), 2-5 pools; 4 covers loops through a second base (3: as before)
 #                   # best single transaction by them, routes of any coin; false = the selection as before
-hot_bundle_interval_ms = 100 # bundle lanes (Temporal bundles, Harmonic, jito_classic) get the hottest route this often
+hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bundles, Harmonic, jito_classic) get the hottest route this often
 # arb_sources_file = "my-bots.txt" # own list of arb bots to watch (default: built in)
 # (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
@@ -82,6 +82,14 @@ jito_uuid = "uuid" # optional Jito UUID for higher limits ("uuid" placeholder = 
 jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito min tip (lamports)
 jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito max tip (lamports)
 jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms
+
+jito_bundle = false # Jito bundles (sendBundle; the same jito_uuid, optional): only profitable ones land, a miss is dropped and costs nothing
+jito_bundle_tip_min_lamports = 10000 # a random tip in min..max each bundle
+jito_bundle_tip_max_lamports = 1000000
+jito_bundle_cooldown_ms = 50 # Jito bundle loop interval in ms (one Jito region by turn)
+# jito_bundle_all_endpoints = true # every Jito region each time
+# jito_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
+# jito_bundle_max_priority_fee = 10000
 
 helius = false # enable Helius sender (tip + priority)
 helius_api_key = "" # optional Helius project key for helius / helius_swqos / helius_bundle: 50 requests/s per region
@@ -146,6 +154,14 @@ astralane_tip_max_lamports = "{astralane_max_tip}" # Astralane max tip
 astralane_min_priority_fee = "{astralane_min_prio}" # Astralane min priority fee
 astralane_max_priority_fee = "{astralane_max_prio}" # Astralane max priority fee
 astralane_cooldown_ms = "{astralane_cooldown_ms}" # Astralane loop interval in ms
+
+astralane_bundle = false # Astralane bundles (sendBundle with revert protection; the same astralane_api_key): a miss is dropped and costs nothing
+astralane_bundle_tip_min_lamports = 10000 # min 10 000 (Astralane minimum); a random tip in min..max each bundle
+astralane_bundle_tip_max_lamports = 1000000
+astralane_bundle_cooldown_ms = 50 # Astralane bundle loop interval in ms (one region by turn)
+# astralane_bundle_all_endpoints = true # every Astralane region each time
+# astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
+# astralane_bundle_max_priority_fee = 10000
 
 zeroslot = false # enable 0slot staked_conn sender
 zeroslot_api_key = "{zeroslot_api_key}" # 0slot API key
