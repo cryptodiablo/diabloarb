@@ -70,8 +70,8 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   most one lands — no double tips.
 - **15 landing services:** Jito (+ new Jito bundles), Helius (+SWQoS, + Helius bundles), Temporal (+ Temporal bundles), Harmonic bundles, Flashblock,
   HelloMoon, Astralane (+ new Astralane bundles), 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS), plus your own RPCs.
-- **New bundle lanes (12 Oct 2026):** `astralane_bundle = true` (Astralane `sendBundle`, the same `astralane_api_key`) and
-  `jito_bundle = true` (Jito `sendBundle`, the same `jito_uuid`) work next to the plain senders; a bundle without profit
+- **New bundle lanes (12 Oct 2026):** `astralane_bundle = true` (Astralane `sendBundle`; its own `astralane_bundle_api_key` or the same `astralane_api_key`) and
+  `jito_bundle = true` (Jito `sendBundle`; its own `jito_bundle_uuid` or the same `jito_uuid`) work next to the plain senders; a bundle without profit
   is dropped — nothing is paid.
 - **Steadier landing (12 Oct 2026):** a durable nonce left stale by a dropped block is replaced at once, and address
   tables their owners deactivated are no longer put into transactions — both used to make copies vanish without a trace.
@@ -254,8 +254,8 @@ senders once you see wins.
   nonce — садится не больше одной, чаевые дважды не платятся.
 - **15 сервисов отправки:** Jito (+ новые пакеты Jito), Helius (+SWQoS, + пакеты Helius), Temporal (+ пакеты Temporal), пакеты Harmonic, Flashblock,
   HelloMoon, Astralane (+ новые пакеты Astralane), 0slot, Falcon, Stellium, NextBlock, Fast (+SWQoS) и ваши RPC.
-- **Новые полосы пакетов (12 октября 2026):** `astralane_bundle = true` (Astralane `sendBundle`, тот же `astralane_api_key`) и
-  `jito_bundle = true` (Jito `sendBundle`, тот же `jito_uuid`) работают рядом с обычными отправителями; пакет без прибыли
+- **Новые полосы пакетов (12 октября 2026):** `astralane_bundle = true` (Astralane `sendBundle`; свой `astralane_bundle_api_key` или общий `astralane_api_key`) и
+  `jito_bundle = true` (Jito `sendBundle`; свой `jito_bundle_uuid` или общий `jito_uuid`) работают рядом с обычными отправителями; пакет без прибыли
   отбрасывается — ничего не платится.
 - **Посадки стабильнее (12 октября 2026):** durable nonce, устаревший после отброшенного блока, заменяется сразу, а таблицы
   адресов, отключённые владельцами, больше не подставляются в транзакции — раньше из-за этого копии пропадали без следа.

@@ -137,7 +137,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | Sender (flag) | Key | Tip minimum | Notes |
 |---|---|---|---|
 | `jito` | `jito_uuid` (optional) | none | Tips: `jito_min_tip_lamports`/`jito_max_tip_lamports`; delay `jito_process_delay_ms`; no priority unless `jito_min/max_priority_fee` set. `jito_require_profit` (default true when tipping): tip only on a win. `jito_classic = true`: sent as a bundle (`bundleOnly`), failing one costs nothing. A `jito_uuid` that is not a real UUID (e.g. the `"uuid"` placeholder) is ignored — Jito works without one at lower limits. All 8 regions. |
-| `jito_bundle` | `jito_uuid` (optional, the same as `jito`) | none (default 10 000) | Jito `sendBundle`, a lane of its own next to `jito` (from 12 Oct 2026). Keys `jito_bundle_tip_min/max_lamports` (default 10 000), `_cooldown_ms`, `_all_endpoints` (false: one Jito region by turn; true: every region each time), `_min/max_priority_fee` (ladder/flow). A bundle without profit is always dropped — nothing paid. |
+| `jito_bundle` | `jito_bundle_uuid` if set (a separate UUID), else the same `jito_uuid`; optional | none (default 10 000) | Jito `sendBundle`, a lane of its own next to `jito` (from 12 Oct 2026). Keys `jito_bundle_tip_min/max_lamports` (default 10 000), `_cooldown_ms`, `_all_endpoints` (false: one Jito region by turn; true: every region each time), `_min/max_priority_fee` (ladder/flow). A bundle without profit is always dropped — nothing paid. |
 | `helius` | `helius_api_key` (optional, your Helius project key; also used by `helius_swqos` and `helius_bundle`) | Helius requires ≥ 200 000 | Helius Sender; fails without profit. Without a key Helius takes 1 request a second per server IP per region; with one — 50 a second per key per region. |
 | `helius_swqos` | `helius_api_key` (optional) | ≥ 5 000 | SWQoS-only; lands always (fee + priority + tip on every landing). `helius_swqos_require_profit = true`: the copy fails without profit instead, its tip unpaid — only fee + priority on a miss. |
 | `temporal` | `temporal_uuid` | 1 000 000 (0.001 SOL; less is dropped by Temporal) | Nozomi, 9 regions. `temporal_tip_accounts` overrides the tip accounts. |
@@ -147,7 +147,7 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `flashblock` | `flashblock_api_key` | 100 000 | |
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
-| `astralane_bundle` | `astralane_api_key` (the same as `astralane`) | 10 000 | Astralane `sendBundle` with revert protection, a lane of its own next to `astralane` (from 12 Oct 2026). Keys `astralane_bundle_tip_min/max_lamports` (default 10 000), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (false: one region by turn; true: every region each time). A bundle without profit is always dropped — nothing paid. |
+| `astralane_bundle` | `astralane_bundle_api_key` if set (a separate key), else the same `astralane_api_key` | 10 000 | Astralane `sendBundle` with revert protection, a lane of its own next to `astralane` (from 12 Oct 2026). Keys `astralane_bundle_tip_min/max_lamports` (default 10 000), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (false: one region by turn; true: every region each time). A bundle without profit is always dropped — nothing paid. |
 | `zeroslot` | `zeroslot_api_key` | 1 000 000 | 0slot. |
 | `falcon` | `falcon_api_key` | 1 000 000 | |
 | `stellium` | `stellium_api_key` | 1 000 000 | `stellium_endpoints` = list of its URLs. |
@@ -307,10 +307,12 @@ helius_tip_max_lamports = 2000000
 # astralane_api_key = "…"
 # astralane_tip_min_lamports = 10000    # min 10 000
 # astralane_tip_max_lamports = 1000000
-# astralane_bundle = true               # Astralane bundles: a miss costs nothing (same astralane_api_key)
+# astralane_bundle = true               # Astralane bundles: a miss costs nothing
+# astralane_bundle_api_key = "…"        # optional: a separate key; unset = astralane_api_key
 # astralane_bundle_tip_min_lamports = 10000
 # astralane_bundle_tip_max_lamports = 1000000
-# jito_bundle = true                    # Jito bundles: a miss costs nothing (same jito_uuid, optional)
+# jito_bundle = true                    # Jito bundles: a miss costs nothing
+# jito_bundle_uuid = "…"                # optional: a separate UUID; unset = jito_uuid
 # jito_bundle_tip_min_lamports = 10000
 # jito_bundle_tip_max_lamports = 1000000
 # zeroslot = true
