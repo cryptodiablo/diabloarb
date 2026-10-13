@@ -349,6 +349,12 @@ whole unless they remove keys first.
 - **Is the dashboard profit after tips?** Yes: per-trade Net is the wallet's real change, fee and tip already out.
 - **Another send like Temporal bundles (miss = free)?** Helius bundles, Astralane bundles (`astralane_bundle = true`),
   Jito bundles (`jito_bundle = true`), Harmonic bundles, Jito with `jito_classic`.
+- **I set a bundle lane's `_cooldown_ms` to 30 but it sends only ~10 bundles a second?** In `ladder`/`flow` the bundle
+  lanes go on one timer, `hot_bundle_interval_ms` (default 100 ms = 10 a second) — lower it to send more often (every
+  bundle lane then speeds up). Lanes with a pace of their own there: `astralane_bundle_cooldown_ms`,
+  `jito_bundle_cooldown_ms` (from build `961ae47e967c`, 13 Oct 2026) and `temporal_bundle_N_cooldown_ms` of the extra
+  Temporal streams; `temporal_bundle_cooldown_ms`, `helius_bundle_cooldown_ms` and `harmonic_bundle_cooldown_ms` act in
+  `markets` mode only.
 - **I turned a bundle lane on and nothing lands — is it broken?** Usually not: a bundle lands only on a win, so the
   wallet history stays quiet for hours while «sent» grows. Check the bot's status in the cabinet and the lane's key.
 - **Harmonic without a whitelisted key?** Yes, from 9 Oct 2026: `harmonic_bundle = true` and

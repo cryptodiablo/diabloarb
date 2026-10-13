@@ -87,7 +87,7 @@ jito_bundle = false # Jito bundles (sendBundle): only profitable ones land, a mi
 jito_bundle_uuid = "" # optional separate Jito UUID for the bundles; empty = jito_uuid
 jito_bundle_tip_min_lamports = 10000 # a random tip in min..max each bundle
 jito_bundle_tip_max_lamports = 1000000
-jito_bundle_cooldown_ms = 50 # Jito bundle loop interval in ms (one Jito region by turn)
+jito_bundle_cooldown_ms = 50 # Jito bundle interval in ms (one Jito region by turn); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # jito_bundle_all_endpoints = true # every Jito region each time
 # jito_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # jito_bundle_max_priority_fee = 10000
@@ -160,7 +160,7 @@ astralane_bundle = false # Astralane bundles (sendBundle with revert protection)
 astralane_bundle_api_key = "" # optional separate Astralane key for the bundles; empty = astralane_api_key
 astralane_bundle_tip_min_lamports = 10000 # min 10 000 (Astralane minimum); a random tip in min..max each bundle
 astralane_bundle_tip_max_lamports = 1000000
-astralane_bundle_cooldown_ms = 50 # Astralane bundle loop interval in ms (one region by turn)
+astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region by turn); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # astralane_bundle_all_endpoints = true # every Astralane region each time
 # astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # astralane_bundle_max_priority_fee = 10000
