@@ -67,7 +67,7 @@ hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 route_memory = true # remember the routes the arb bots won on for hours (route-memory.txt next to the config); every shot is the
 max_hops = 4 # the longest route of a shot in every mode (markets too), 2-5 pools; 4 covers loops through a second base (3: as before)
 #                   # best single transaction by them, routes of any coin; false = the selection as before
-hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bundles, Harmonic, jito_classic) get the hottest route this often
+hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bundles, Harmonic) get the hottest route this often
 # arb_sources_file = "my-bots.txt" # own list of arb bots to watch (default: built in)
 # (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
@@ -75,22 +75,34 @@ hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bund
 #             # set here, it is used in "markets" mode too, where nobody creates them.
 
 
+# --- Jito: three ways to send -------------------------------------------------------------------------------------
+# 1) Jito, the tip paid only on a win (the default). A shot without profit lands as failed: the network fee is paid,
+#    the tip is not.
 jito = true # enable Jito send loop
-jito_classic = false # true => sent as a bundle (bundleOnly): a bundle without profit is dropped, nothing paid
-jito_require_profit = true #true = the tip is paid only if the arbitrage is successful / false = always tipping
+jito_require_profit = true # true = the tip is paid only if the arbitrage is successful / false = always tipping (see 2)
 jito_uuid = "uuid" # optional Jito UUID for higher limits ("uuid" placeholder = no UUID)
-jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito min tip (lamports)
+jito_min_tip_lamports = "{enable_jito_min_tip}" # Jito min tip (lamports); a random tip in min..max each send
 jito_max_tip_lamports = "{enable_jito_max_tip}" # Jito max tip (lamports)
-jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms
+jito_process_delay_ms = "{jito_cooldown_ms}" # Jito loop interval in ms (markets mode; ladder/flow: hot_sender_pause_ms / hot_jito_pause_ms)
 
-jito_bundle = false # Jito bundles (sendBundle): only profitable ones land, a miss is dropped and costs nothing
+# 2) Jito, tipping always: the same lane with jito_require_profit = false. Every shot lands and pays the network fee
+#    AND the tip, profit or not — the most expensive way; keep the tips small.
+# jito = true
+# jito_require_profit = false
+# jito_min_tip_lamports = 1000
+# jito_max_tip_lamports = 3000
+
+# 3) Jito bundles: a lane of its own (works with jito = true or false, next to 1 or 2). A bundle without profit does
+#    not land at all — nothing is paid, neither fee nor tip.
+jito_bundle = false # enable Jito bundles (sendBundle)
 jito_bundle_uuid = "" # optional separate Jito UUID for the bundles; empty = jito_uuid
-jito_bundle_tip_min_lamports = 10000 # a random tip in min..max each bundle
+jito_bundle_tip_min_lamports = 10000 # a random tip in min..max each bundle, paid only on a win
 jito_bundle_tip_max_lamports = 1000000
 jito_bundle_cooldown_ms = 50 # Jito bundle interval in ms (one Jito region by turn); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # jito_bundle_all_endpoints = true # every Jito region each time
 # jito_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # jito_bundle_max_priority_fee = 10000
+# -------------------------------------------------------------------------------------------------------------------
 
 helius = false # enable Helius sender (tip + priority)
 helius_api_key = "" # optional Helius project key for helius / helius_swqos / helius_bundle: 50 requests/s per region
