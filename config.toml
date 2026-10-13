@@ -8,8 +8,11 @@ send_rpcs = [ # broadcast RPC endpoints used by spam_rpc path
   "http://sender-rpc2.com/", # send RPC endpoint (AMS)
 ] # end send_rpcs - diablosender.com is your best choise also; they must accept transactions: new coins' token accounts are created through them
 
+# The lookup tables of the pools in markets_file. Needed in mode = "markets" (the default), with or without Geyser: it is
+# the only source of the pools' tables there — without it routes of several pools stop fitting into a transaction.
+# Not read in mode = "ladder" / "flow" (there the tables come from the watched bots' transactions).
 luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path or URL)
-luts_update_ms = 1000 # LUT file refresh interval in ms
+luts_update_ms = 1000 # LUT file refresh interval in ms (markets mode)
 
 markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
 files_updates_ms = 200 # local files refresh interval (gas + markets) in ms
