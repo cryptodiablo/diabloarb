@@ -235,9 +235,27 @@ does not cover its own tip and fees never executes. There is no "required profit
 
 ## 8. Senders cheat sheet
 
-Keys and minimum tips: USER_CONFIG.md §7. Each sender is its own loop: `<name>_cooldown_ms` (default
-`process_delay_ms`), tip and priority ranges, all its regions per send. In ladder/flow `hot_sender_pause_ms`, when set,
-replaces the senders' cooldowns; bundle lanes keep their own `<name>_cooldown_ms` and fire on `hot_bundle_interval_ms`.
+Keys and minimum tips: USER_CONFIG.md §7; **every key of every lane, with defaults and which pause acts in which mode:
+USER_CONFIG.md §7a — answer config questions from that table, never invent a key.** Each sender is its own loop:
+`<name>_cooldown_ms` (default `process_delay_ms`), tip and priority ranges, all its regions per send. In ladder/flow
+`hot_sender_pause_ms`, when set, replaces the plain senders' cooldowns.
+
+**Rules for answering config questions:**
+- Key pattern: `<lane>` on/off (default `false`), `<lane>_tip_min_lamports`/`_tip_max_lamports`,
+  `<lane>_min_priority_fee`/`_max_priority_fee` (lamports per transaction), `<lane>_cooldown_ms`, `<lane>_all_endpoints`.
+  Exceptions: Jito's tips are `jito_min_tip_lamports`/`jito_max_tip_lamports` and its pause `jito_process_delay_ms`.
+- A lane is off unless its switch is `true`. The bot prints one `… enabled` line per lane at start — ask for those lines
+  to see what is really on; `config: ignored keys …` lists misspelled or unknown keys.
+- Bundle lanes in ladder/flow: `temporal_bundle` (first stream), `helius_bundle`, `harmonic_bundle` go on the timer
+  `hot_bundle_interval_ms` (100 ms = 10 a second) — their own `_cooldown_ms` acts in markets mode only. With a pace of
+  their own in ladder/flow too: `temporal_bundle_N_cooldown_ms` (streams 2…100), `astralane_bundle_cooldown_ms`,
+  `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later).
+- Regions: plain senders always send to all their regions. Bundle lanes: `<lane>_all_endpoints = false` — one region by
+  turn (`temporal_bundle` and each `temporal_bundle_N` default to `true` = all 9 regions, 9 requests a bundle; set
+  `false` on each stream to cut `429`); `helius_bundle`, `jito_bundle`, `astralane_bundle` default to `false`.
+- Temporal answers: `429 Too Many Requests` — the key's rate limit (≈40–45 a second per key); `401` — key missing or
+  invalid; `403 Forbidden` — Temporal does not permit this key to send bundles (or restricts a program in it); only
+  Temporal can change that — a new key or their support.
 
 | Sender | Key needed | Miss costs | Notes |
 |---|---|---|---|
@@ -324,7 +342,7 @@ Open the signature on solscan.io / solana.fm.
 | `RPC reads failed: N (last: …)` | The read RPC rejects or rate-limits. Use a paid RPC; public RPC works, slowly. |
 | `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender without `helius_api_key`: 1 request a second per IP per region — set the key (50 a second). |
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
-| `❌ … 401/403` | Wrong or missing API key for that sender. |
+| `❌ … 401/403` | Wrong or missing API key for that sender. Temporal bundles `403 Forbidden`: the key is not permitted to send bundles — a new key or Temporal's support. |
 | `❌ token accounts not created` | `send_rpcs` must accept transactions and the wallet needs SOL. |
 | Harmonic bundles stop | Usually markets not loaded (`0 groups`) — the minute summary tells why. Check the keypair is whitelisted (or use `harmonic_bundle_public = true`: no key; then few bundles is normal — one goes only when a profit is seen). |
 | `⚠️ mode = … needs Geyser` | Ladder/flow need `geyser_endpoint`; the bot fell back to markets. |
@@ -355,6 +373,10 @@ whole unless they remove keys first.
   `jito_bundle_cooldown_ms` (from build `961ae47e967c`, 13 Oct 2026) and `temporal_bundle_N_cooldown_ms` of the extra
   Temporal streams; `temporal_bundle_cooldown_ms`, `helius_bundle_cooldown_ms` and `harmonic_bundle_cooldown_ms` act in
   `markets` mode only.
+- **How do I make Temporal bundles go to one region at a time?** `temporal_bundle_all_endpoints = false`, and for each
+  extra stream `temporal_bundle_N_all_endpoints = false` (each stream has its own; default `true` = all 9 regions).
+- **The bot sends Astralane (or Jito) bundles but I did not enable them.** They start only with `astralane_bundle = true`
+  (`jito_bundle = true`); check the `… bundle enabled` line at start and the config for that key (copied sample, AI edit).
 - **I turned a bundle lane on and nothing lands — is it broken?** Usually not: a bundle lands only on a win, so the
   wallet history stays quiet for hours while «sent» grows. Check the bot's status in the cabinet and the lane's key.
 - **Harmonic without a whitelisted key?** Yes, from 9 Oct 2026: `harmonic_bundle = true` and
@@ -445,6 +467,8 @@ whole unless they remove keys first.
 
 ## 15. Glossary
 
+- **15 Oct 2026** — USER_CONFIG.md §7a: every lane's keys in one table (defaults, which pause acts in which mode,
+  regions); `config.toml` shows `temporal_bundle_all_endpoints`, an extra Temporal stream and `helius_bundle_all_endpoints`.
 - **Tip** — payment to a landing service inside the transaction; paid only if it succeeds.
 - **Priority fee** — fee to the validator for compute; paid by every landed transaction.
 - **Bundle** — a group sent all-or-nothing; a failing bundle is dropped, nothing paid.

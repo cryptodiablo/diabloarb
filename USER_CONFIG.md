@@ -103,7 +103,7 @@ on-chain arbitrage bots earn most on right now.
 | `flashloan` | `false` | `true`: the trade may use the DiabloArb vault's WSOL besides your own (bigger trades). The 7% fee is the same. |
 | `pump_v2` | `true` | Pump.fun AMM (PumpSwap) hops use the 17-account `sell_v2` / `buy_exact_quote_in_v2` trades (in the Pump program since 8 October 2026): the same prices and fees over fewer accounts, so more routes fit one transaction. Pools of cashback coins keep the older trades by themselves. `false`: the older trades everywhere. |
 | `markets_file` | — | Markets file, path or URL (§2). Required in markets mode. |
-| `luts` | — | LUT list, path or URL. |
+| `luts` | — | The lookup tables of the markets file's pools, path or URL. Needed in `markets` mode (with or without Geyser): without it routes of several pools stop fitting into a transaction. Not read in `ladder`/`flow`. |
 | `files_updates_ms` | 50 | How often local files and `config.toml`/`gas.json` are re-read. |
 | `remote_files_update_ms` | 10000 | How often URL markets file / LUT list are re-fetched (with ETag). |
 | `luts_update_ms` | 1000 | LUT list refresh. |
@@ -114,6 +114,7 @@ on-chain arbitrage bots earn most on right now.
 | `auto_close_atas` | `false` | Closes the wallet's **empty** token accounts of coins the bot sent no shot with for 24 hours — the rent (≈0.0015–0.002 SOL each) returns to the wallet. The bot decides by its own record (the time of the last shot per coin, kept in `<config>.atas.json` next to the config), so it makes **no RPC requests** until there is something to close: then one read of those accounts and the close itself, up to 10 accounts a transaction, simulated first. Checked 3 minutes after the start, then hourly. An empty account found at the start that the record does not know waits its 24 hours from that moment. Never touched: an account holding any amount of a coin, WSOL/USDC/USDT, a frozen account. A coin that returns gets its account created again before its next shot. |
 | — | — | **Close them all now:** `./sender atas list` counts the wallet's empty token accounts and their rent; `./sender atas close` closes all of them at once (10 a transaction, each waited for), whatever their age. Accounts holding a coin and WSOL/USDC/USDT stay; with a bot running, the accounts of coins it shot in the last 15 minutes stay too, and the bot learns the closed ones by itself. A config path may be added: `./sender atas close config.toml`. |
 | `nonces` | 32 in hot modes | Number of durable nonce accounts for the hot modes' sender broadcast (max 100). |
+| `interval_ms`, `copy_fees`, `copy_cu`, `attempt_journal` | — | Advanced, leave unset: the markets mode's tick, tips/priority/CU copied from the watched bots as a percent, an attempts journal file. |
 | `mode` | `"markets"` | `"markets"` (pools from the markets file), `"ladder"` or `"flow"` (§8). |
 
 ## 6a. Markets mode (default, `mode` unset or `"markets"`)
@@ -157,12 +158,69 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `fast_swqos` | `fast_swqos_api_key`, else `fast_api_key` | 7 500 | SWQoS-only; lands always. |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file) — or none with `harmonic_bundle_public = true` | — (Harmonic's price is the priority) | `harmonic_bundle_endpoints` (`fra`, `lon`, `ams`, `ewr`/`ny`, `tyo`, `sgp`, `slc` or URLs; default fra lon ams ewr tyo sgp), `_all_endpoints` (true), `_cooldown_ms`, `_min/max_priority_fee`. A bundle without profit is always dropped — nothing paid (the old `harmonic_bundle_require_profit` is ignored). **`harmonic_bundle_public = true`** (from 9 Oct 2026): Harmonic's public bundle service, open to everyone — no whitelisted key, no application. Its rate limits are lower, so a bundle goes to one region by turn (`_all_endpoints` defaults to false here) and **only when the sender itself sees a profit now that covers the bundle's cost**: Harmonic removes access from a flow of reverting bundles, so nothing is sent blind. With a whitelisted key leave it off — the key's limits are higher. `rate limited` in the log is Harmonic's own answer (9 Oct 2026: the public service gave it to every request we made), not a config error. |
 
-**Rate per sender.** Every send goes to all regions of the sender at once (Apex: to `apex_regions`; `helius_bundle`: one Sender region by turn); a sender sends at most once per its delay
-(`<name>_cooldown_ms`, Jito `jito_process_delay_ms`, RPC `process_delay_ms`). Providers have their own limits per
-key — too fast gives `❌ … send failed … 429`.
+**Rate per sender.** A plain sender (`jito`, `helius`, `temporal`, `astralane`, …) sends every copy to all of its
+regions at once — not configurable (Apex: to `apex_regions`). A bundle lane has its own `<lane>_all_endpoints`:
+`temporal_bundle` and its streams default to `true` (all 9 regions each bundle), `helius_bundle`, `jito_bundle`,
+`astralane_bundle` default to `false` (one region by turn), `harmonic_bundle` to `true` (`false` with
+`harmonic_bundle_public`). Which pause applies depends on the mode — see the table in §7a. Providers have their own
+limits per key — too fast gives `❌ … send failed … 429`.
 
 Priority without a sender's own range: Helius, NextBlock and Harmonic copy a single given bound; others use 0..max;
 none set: the global `min_priority_fee`/`max_priority_fee`.
+
+## 7a. Every lane's keys (complete reference)
+
+Key names follow one pattern: `<lane>` switches the lane on (`true`/`false`, default `false`), `<lane>_tip_min_lamports`
+/ `<lane>_tip_max_lamports` — the tip range (a random value per copy, never under the service's minimum),
+`<lane>_min_priority_fee` / `<lane>_max_priority_fee` — the priority range in **lamports per transaction**,
+`<lane>_cooldown_ms` — the pause between copies, `<lane>_all_endpoints` — every region at once (`true`) or one region by
+turn (`false`). A key the bot does not know is ignored and listed at start (`config: ignored keys …`).
+
+**Plain senders.** A shot without profit lands as failed (fee + priority paid, the tip not), except the lanes marked
+"lands always". Every copy goes to all the sender's regions. In `ladder`/`flow` their priority is
+`hot_sender_min/max_priority_fee` (§8), not the per-sender priority keys below, and `hot_sender_pause_ms`, when set,
+replaces every plain sender's pause (unset: each sender's own pause from the table).
+
+| Lane (switch) | Key | Tip keys (service minimum) | Priority keys (unset) | Pause in `markets` | Notes |
+|---|---|---|---|---|---|
+| `jito` | `jito_uuid` (optional; a real UUID only) | `jito_min_tip_lamports`, `jito_max_tip_lamports` (none) | `jito_min/max_priority_fee` (none: no priority) | `jito_process_delay_ms` | `jito_require_profit` (default `true` when a tip is set): the tip only on a win; `false`: lands always, the tip paid every time. In `ladder`: `hot_jito_as_sender`, `hot_jito_step`, `hot_jito_pause_ms`, `hot_jito_step_tip_min/max_lamports` (§8). |
+| `helius` | `helius_api_key` (optional) | `helius_tip_min/max_lamports` (200 000) | `helius_min/max_priority_fee` (one end set: copied to the other; none: global) | `helius_cooldown_ms` | Without a key 1 request/s per IP per region, with one 50. |
+| `helius_swqos` | `helius_api_key` (optional) | `helius_swqos_tip_min/max_lamports` (5 000) | `helius_swqos_min/max_priority_fee` (each unset end: the global one) | `helius_swqos_cooldown_ms` | Lands always; `helius_swqos_require_profit = true`: fails without profit, tip unpaid. |
+| `temporal` | `temporal_uuid` | `temporal_tip_min/max_lamports` (1 000 000) | `temporal_min/max_priority_fee` (none: global) | `temporal_cooldown_ms` | `temporal_tip_accounts` overrides the tip accounts. |
+| `astralane` | `astralane_api_key` | `astralane_tip_min/max_lamports` (10 000) | `astralane_min/max_priority_fee` (none: global) | `astralane_cooldown_ms` | |
+| `zeroslot` | `zeroslot_api_key` | `zeroslot_tip_min/max_lamports` (1 000 000) | `zeroslot_min/max_priority_fee` | `zeroslot_cooldown_ms` | 0slot. |
+| `falcon` | `falcon_api_key` | `falcon_tip_min/max_lamports` (1 000 000) | `falcon_min/max_priority_fee` | `falcon_cooldown_ms` | |
+| `stellium` | `stellium_api_key` | `stellium_tip_min/max_lamports` (1 000 000) | `stellium_min/max_priority_fee` | `stellium_cooldown_ms` | `stellium_endpoints = ["…"]` — its hosts. |
+| `nextblock` | `nextblock_api_key` (or `nextblock_auth_token`) | `nextblock_tip_min/max_lamports` (none) | `nextblock_min/max_priority_fee` (one end: copied) | `nextblock_cooldown_ms` | |
+| `flashblock` | `flashblock_api_key` | `flashblock_tip_min/max_lamports` (100 000) | `flashblock_min/max_priority_fee` | `flashblock_cooldown_ms` | |
+| `hellomoon` | `hellomoon_api_key` | `hellomoon_tip_min/max_lamports` (1 000 000) | `hellomoon_min/max_priority_fee` | `hellomoon_cooldown_ms` | |
+| `fast` | `fast_api_key` | `fast_tip_min/max_lamports` (1 000 000) | `fast_min/max_priority_fee` | `fast_cooldown_ms` | |
+| `fast_swqos` | `fast_swqos_api_key`, else `fast_api_key` | `fast_swqos_tip_min/max_lamports` (7 500) | `fast_swqos_min/max_priority_fee` (each unset end: global) | `fast_swqos_cooldown_ms` | Lands always. |
+| `apex` | `apex_api_key` | `apex_tip_min/max_lamports` (1 000 000) | `apex_min/max_priority_fee` | `apex_cooldown_ms` | `apex_regions = ["fra", …]` — the regions (default: all but `global`). |
+| RPC (`spam_rpc`) | — (`send_rpcs`, else `rpc`) | no tip | `min/max_priority_fee` (100–1 000) | `process_delay_ms` | Lands always. In `ladder` its own step (`hot_rpc_sol_per_min`, `hot_priority_cap`); in `flow` with the senders, at their pause. |
+
+A pause unset: `process_delay_ms` (400). Priority "none: global": both ends unset take the global
+`min_priority_fee`/`max_priority_fee`; only the min set — fixed at it; only the max set — from 0 to it. "One end set:
+copied" — the single given value is used for both ends.
+
+**Bundle lanes.** A bundle without profit is dropped whole — nothing is paid, neither fee nor tip. They run next to
+the plain senders and do not depend on their switches (`astralane_bundle` works with `astralane = false`, `jito_bundle`
+with `jito = false`) nor on `hot_senders_on`; in `ladder`/`flow` they shoot on every tick of the bundle timer, also
+while no coin is hot. Their priority keys are lamports a transaction and act in `ladder`/`flow` too (unset there: the
+senders' `hot_sender_min/max_priority_fee`).
+
+| Lane (switch) | Key (unset → fallback) | Tips (unset → default) | Priority keys | Pause in `markets` | Pause in `ladder`/`flow` | Regions (default) |
+|---|---|---|---|---|---|---|
+| `temporal_bundle` | `temporal_bundle_uuid` → `temporal_uuid` | `temporal_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `temporal_bundle_min/max_priority_fee` | `temporal_bundle_cooldown_ms` | `hot_bundle_interval_ms` (100) | `temporal_bundle_all_endpoints` (`true`) |
+| `temporal_bundle_N` (N = 2…100) | `temporal_bundle_N_uuid` → `temporal_bundle_uuid` → `temporal_uuid` | `temporal_bundle_N_tip_min/max_lamports` → 1 000 000 | `temporal_bundle_N_min/max_priority_fee` | `temporal_bundle_N_cooldown_ms` → `temporal_bundle_cooldown_ms` | `temporal_bundle_N_cooldown_ms` → `hot_bundle_interval_ms` | `temporal_bundle_N_all_endpoints` (`true`; not taken from the first stream) |
+| `helius_bundle` | `helius_api_key` (optional) | `helius_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `helius_bundle_min/max_priority_fee` (at least 5 000) | `helius_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `helius_bundle_all_endpoints` (`false`) |
+| `astralane_bundle` | `astralane_bundle_api_key` → `astralane_api_key` (required) | `astralane_bundle_tip_min/max_lamports` → 10 000 (minimum 10 000) | `astralane_bundle_min/max_priority_fee` | `astralane_bundle_cooldown_ms` | `astralane_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `astralane_bundle_all_endpoints` (`false`) |
+| `jito_bundle` | `jito_bundle_uuid` → `jito_uuid` (optional) | `jito_bundle_tip_min/max_lamports` → 10 000 | `jito_bundle_min/max_priority_fee` (none: no priority) | `jito_bundle_cooldown_ms` | `jito_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `jito_bundle_all_endpoints` (`false`) |
+| `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file), or `harmonic_bundle_public = true` | no tip (the priority is the price) | `harmonic_bundle_min/max_priority_fee` (one end: copied) | `harmonic_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `harmonic_bundle_endpoints` (fra, lon, ams, ewr, tyo, sgp or URLs); `harmonic_bundle_all_endpoints` (`true`; `false` with public) |
+
+Requests a second per lane = 1000 / pause × regions per copy (all regions: 9 for Temporal, 7 Helius, 8 Jito, 11
+Astralane). A key's limit (Temporal accepted ≈40–45 a second per key in our measurements) counts all lanes that use it — more streams on one key do not send
+more, they only collect `429`.
 
 ## 8. Hot modes: `mode = "ladder"` and `mode = "flow"`
 
