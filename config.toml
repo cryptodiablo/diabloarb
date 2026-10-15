@@ -128,6 +128,7 @@ helius_bundle = false # Helius Sender bundles (sendBundle; helius_api_key option
 helius_bundle_tip_min_lamports = 1000000 # min 0.001 SOL (Helius minimum for bundles); a random tip in min..max each bundle
 helius_bundle_tip_max_lamports = 30000000
 helius_bundle_cooldown_ms = 50 # Helius bundle loop interval in ms (one of 7 Sender regions by turn)
+# helius_bundle_all_endpoints = true # every Helius Sender region each time (7x the requests); unset/false = one region by turn
 # helius_bundle_min_priority_fee = 5000 # lamports per tx (>= 5000); in ladder/flow ahead of hot_sender_*
 # helius_bundle_max_priority_fee = 50000
 
@@ -146,6 +147,12 @@ temporal_bundle_tip_max_lamports = 2000000
 temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop interval in ms (key limit: 5 requests/s)
 # temporal_bundle_min_priority_fee = 20000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # temporal_bundle_max_priority_fee = 100000
+temporal_bundle_all_endpoints = true # true = each bundle to all 9 Temporal regions at once (9 requests); false = one region by turn (9x fewer requests, far fewer 429 "Too Many Requests" on the key's limit)
+# More Temporal bundle streams (2…100), each with its own switch, key, tips, pause and regions setting:
+# temporal_bundle_2 = true
+# temporal_bundle_2_uuid = ""                 # empty = the first stream's key
+# temporal_bundle_2_cooldown_ms = 100
+# temporal_bundle_2_all_endpoints = false     # each stream its own; unset = true (all regions)
 
 flashblock = false # enable Flashblock sender
 flashblock_api_key = "{flashblock_api_key}" # Flashblock API key
