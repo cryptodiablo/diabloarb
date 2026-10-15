@@ -295,7 +295,7 @@ file. The markets file is not used in these modes.
 | `max_hops` | `4` | Every mode, markets too: the longest route a shot lists, 2 to 5 pools (the program runs 5). Four covers the loops through a second base — SOL → USDC → coin A → coin B → SOL; in markets mode a group of four pools gives its four-pool loop; in ladder and flow a remembered route is recognised whichever base it starts from. A longer route asks more compute units of a transaction: set `3` to keep the shots as before. |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
-| `arb_sources_file` | built in | Own list of bots to watch: `<address> <program|wallet|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
+| `arb_sources_file` | built in | Own list of bots to watch: `<address> <program\|wallet\|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 
 Minimal ladder setup (without `mode`, `geyser_endpoint` and `geyser_x_token` the bot falls back to markets):
