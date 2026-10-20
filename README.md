@@ -78,6 +78,8 @@ unchanged**, and the old binary updates itself to the new one on its next restar
 - **Bundle lanes spare your keys (14–20 Oct 2026):** a lane whose key the service refused 20 times in a row (401/403)
   stops until the bot restarts; sends to every region go once per server — Temporal's `pit` and `ewr` are one server,
   a bundle no longer hits it twice, and Temporal's `429` are gone (up to 5 bundles a second per key).
+- **Idle token accounts on your clock (20 Oct 2026):** `auto_close_atas_idle_hours` sets after how long without a shot a
+  coin's empty token account is closed (24 by default, from 1) — on a small balance the rent comes back within the hour.
 - **Helius with your API key.** `helius_api_key` (your Helius project key) lifts Helius Sender from 1 request a second per
   server IP to 50 per region — for `helius`, `helius_swqos` and `helius_bundle`. `helius_swqos_require_profit = true` makes
   the SWQoS copy fail without profit, so no tip is paid on a miss.
@@ -265,6 +267,8 @@ senders once you see wins.
 - **Полосы пакетов берегут ключи (14–20 октября 2026):** полоса, ключ которой сервис отверг 20 раз подряд (401/403),
   останавливается до перезапуска бота; рассылка во все регионы идёт по одной копии на сервер — у Temporal `pit` и `ewr`
   один сервер, пакет больше не попадает туда дважды, и ответы `429` от Temporal пропали (до 5 пакетов в секунду на ключ).
+- **Токен-счета закрываются по вашему времени (20 октября 2026):** `auto_close_atas_idle_hours` — через сколько часов без
+  выстрела пустой токен-счёт монеты закрывается (по умолчанию 24, от 1): на малом балансе аренда вернётся в пределах часа.
 - **Helius со своим ключом API.** `helius_api_key` (ключ вашего проекта Helius) поднимает лимит Helius Sender с 1 запроса в
   секунду на IP сервера до 50 на регион — для `helius`, `helius_swqos` и `helius_bundle`. `helius_swqos_require_profit = true`:
   копия SWQoS без прибыли падает, чаевая за промах не платится.

@@ -36,6 +36,7 @@ cu_limit = "auto" # "auto": each transaction gets its own compute-unit limit fro
 auto_unwrap = false # auto unwrap WSOL->SOL when SOL below threshold
 min_sol_amount = 0.1 # SOL threshold for auto_unwrap
 auto_close_atas = false # close empty token accounts of coins not shot for 24 h; their rent returns to the wallet; all at once: ./sender atas close
+# auto_close_atas_idle_hours = 24 # idle after this many hours without a shot (from 1; e.g. 1 on a small balance)
 
 # Mode: "markets" (default) shoots markets_file; "ladder" / "flow" watch the on-chain arbitrage bots over Geyser and
 # shoot the coins they earn on right now (markets_file is not used then). Defaults below = what we run ourselves.

@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 October 2026 (build `843a019f75f0`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 October 2026 (build `66352cb6b2d0`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -147,7 +147,8 @@ last value). Keys and defaults: USER_CONFIG.md.
   SOL < `min_sol_amount` (at least ≈0.0107 SOL) the whole WSOL is unwrapped automatically, with a priority fee, resent
   until it lands.
 - **Idle token accounts (`auto_close_atas = true`, off by default):** every coin the bot shoots needs a token account
-  (rent ≈0.0015–0.002 SOL). With the key on, empty accounts of coins not shot for 24 hours are closed and the rent returns
+  (rent ≈0.0015–0.002 SOL). With the key on, empty accounts of coins not shot for 24 hours (`auto_close_atas_idle_hours`,
+  from 1 — e.g. `1` on a small balance) are closed and the rent returns
   (`🧹 Closed N idle token account(s) … SOL back`). The bot goes by its own record of shots (`<config>.atas.json`) and
   asks the RPC nothing until there is something to close. Accounts holding any coin and WSOL/USDC/USDT are never
   closed; an empty account that existed before the key was turned on waits 24 hours first; a coin that comes back gets
@@ -469,6 +470,8 @@ whole unless they remove keys first.
   the bundle lanes take keys of their own, `astralane_bundle_api_key` and `jito_bundle_uuid` (unset: the plain lane's key).
 - **14 Oct 2026** — a bundle lane whose key the service refused 20 times in a row (401/403) stops until the bot restarts:
   no more sending into a banned key (log `⛔ … stopped`) (build `2c257ca07ef3`).
+- **20 Oct 2026** — `auto_close_atas_idle_hours`: the idle time before an empty token account is closed, 24 by default, from 1
+  (a user's ask: the rent back sooner on a small balance).
 - **20 Oct 2026** — sends to every region go once per server: Temporal's `pit` and `ewr` regions are one server, a bundle
   reached it twice and about every tenth request got `429`; now 8 copies a bundle and no `429` at up to 5 bundles a
   second per key (build `843a019f75f0`).
