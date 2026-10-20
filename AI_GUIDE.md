@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 9 October 2026 (build `a885ed2fce4a`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 October 2026 (build `843a019f75f0`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -251,11 +251,14 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
   their own in ladder/flow too: `temporal_bundle_N_cooldown_ms` (streams 2…100), `astralane_bundle_cooldown_ms`,
   `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later).
 - Regions: plain senders always send to all their regions. Bundle lanes: `<lane>_all_endpoints = false` — one region by
-  turn (`temporal_bundle` and each `temporal_bundle_N` default to `true` = all 9 regions, 9 requests a bundle; set
-  `false` on each stream to cut `429`); `helius_bundle`, `jito_bundle`, `astralane_bundle` default to `false`.
-- Temporal answers: `429 Too Many Requests` — the key's rate limit (≈40–45 a second per key); `401` — key missing or
+  turn (`temporal_bundle` and each `temporal_bundle_N` default to `true` = all regions, 8 requests a bundle — `pit` and `ewr`
+  are one Temporal server and get one copy; set `false` on each stream to cut `429`); `helius_bundle`, `jito_bundle`, `astralane_bundle` default to `false`.
+- Temporal answers: `429 Too Many Requests` — the key's rate limit: 5 requests a second per key per Temporal server
+  (≈40 over all), so with all regions a lane of more than 5 bundles a second gets `429`; `401` — key missing or
   invalid; `403 Forbidden` — Temporal does not permit this key to send bundles (or restricts a program in it); only
-  Temporal can change that — a new key or their support.
+  Temporal can change that — a new key or their support. After 20 refusals (401/403) in a row the bot stops that lane
+  until it restarts (log `⛔ … stopped`). `403` on every key at once from one server, while the same key works from
+  another IP, is Temporal blocking that server's IP — their support.
 
 | Sender | Key needed | Miss costs | Notes |
 |---|---|---|---|
@@ -342,7 +345,7 @@ Open the signature on solscan.io / solana.fm.
 | `RPC reads failed: N (last: …)` | The read RPC rejects or rate-limits. Use a paid RPC; public RPC works, slowly. |
 | `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender without `helius_api_key`: 1 request a second per IP per region — set the key (50 a second). |
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
-| `❌ … 401/403` | Wrong or missing API key for that sender. Temporal bundles `403 Forbidden`: the key is not permitted to send bundles — a new key or Temporal's support. |
+| `❌ … 401/403` | Wrong or missing API key for that sender. Temporal bundles `403 Forbidden`: the key is not permitted to send bundles — a new key or Temporal's support; after 20 in a row the lane stops until a restart. |
 | `❌ token accounts not created` | `send_rpcs` must accept transactions and the wallet needs SOL. |
 | Harmonic bundles stop | Usually markets not loaded (`0 groups`) — the minute summary tells why. Check the keypair is whitelisted (or use `harmonic_bundle_public = true`: no key; then few bundles is normal — one goes only when a profit is seen). |
 | `⚠️ mode = … needs Geyser` | Ladder/flow need `geyser_endpoint`; the bot fell back to markets. |
@@ -464,6 +467,11 @@ whole unless they remove keys first.
   by a dropped block is replaced at once (before: copies vanished for minutes in `flow` with RPC copies); address tables
   deactivated by their owners are no longer used (before: up to half of a bot's copies silently refused) (build `452b2fa7e30a`);
   the bundle lanes take keys of their own, `astralane_bundle_api_key` and `jito_bundle_uuid` (unset: the plain lane's key).
+- **14 Oct 2026** — a bundle lane whose key the service refused 20 times in a row (401/403) stops until the bot restarts:
+  no more sending into a banned key (log `⛔ … stopped`) (build `2c257ca07ef3`).
+- **20 Oct 2026** — sends to every region go once per server: Temporal's `pit` and `ewr` regions are one server, a bundle
+  reached it twice and about every tenth request got `429`; now 8 copies a bundle and no `429` at up to 5 bundles a
+  second per key (build `843a019f75f0`).
 
 ## 15. Glossary
 

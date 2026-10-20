@@ -160,10 +160,11 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 
 **Rate per sender.** A plain sender (`jito`, `helius`, `temporal`, `astralane`, …) sends every copy to all of its
 regions at once — not configurable (Apex: to `apex_regions`). A bundle lane has its own `<lane>_all_endpoints`:
-`temporal_bundle` and its streams default to `true` (all 9 regions each bundle), `helius_bundle`, `jito_bundle`,
+`temporal_bundle` and its streams default to `true` (every region each bundle: 8 servers — Temporal's `pit` and `ewr`
+are one server and get one copy), `helius_bundle`, `jito_bundle`,
 `astralane_bundle` default to `false` (one region by turn), `harmonic_bundle` to `true` (`false` with
 `harmonic_bundle_public`). Which pause applies depends on the mode — see the table in §7a. Providers have their own
-limits per key — too fast gives `❌ … send failed … 429`.
+limits per key — too fast gives `❌ … send failed … 429` (Temporal: 5 requests a second per key per server).
 
 Priority without a sender's own range: Helius, NextBlock and Harmonic copy a single given bound; others use 0..max;
 none set: the global `min_priority_fee`/`max_priority_fee`.
@@ -218,9 +219,10 @@ senders' `hot_sender_min/max_priority_fee`).
 | `jito_bundle` | `jito_bundle_uuid` → `jito_uuid` (optional) | `jito_bundle_tip_min/max_lamports` → 10 000 | `jito_bundle_min/max_priority_fee` (none: no priority) | `jito_bundle_cooldown_ms` | `jito_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `jito_bundle_all_endpoints` (`false`) |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file), or `harmonic_bundle_public = true` | no tip (the priority is the price) | `harmonic_bundle_min/max_priority_fee` (one end: copied) | `harmonic_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `harmonic_bundle_endpoints` (fra, lon, ams, ewr, tyo, sgp or URLs); `harmonic_bundle_all_endpoints` (`true`; `false` with public) |
 
-Requests a second per lane = 1000 / pause × regions per copy (all regions: 9 for Temporal, 7 Helius, 8 Jito, 11
-Astralane). A key's limit (Temporal accepted ≈40–45 a second per key in our measurements) counts all lanes that use it — more streams on one key do not send
-more, they only collect `429`.
+Requests a second per lane = 1000 / pause × regions per copy (all regions: 8 for Temporal — its `pit` and `ewr` are one
+server and get one copy since build `843a019f75f0`; 7 Helius, 8 Jito, 11 Astralane). A key's limit counts all lanes that
+use it — Temporal's is 5 requests a second per key per server (≈40 over its 8 servers), so with all regions a key carries
+at most 5 bundles a second; more streams on one key do not send more, they only collect `429`.
 
 ## 8. Hot modes: `mode = "ladder"` and `mode = "flow"`
 
@@ -464,6 +466,7 @@ helius_bundle_cooldown_ms = 100
 | `🎯 Starting spam loop... every N ms` | Running; `(dry run: nothing sent)` with `DIABLO_SENDER_DRY=1`. |
 | `📤 Dispatched tx`, `⚡ Dispatched Jito tx`, `🌀 Dispatched temporal tx/bundle`, `🎼 Dispatched Harmonic bundle`, … | One transaction sent: tip, priority, number of regions, signature start. |
 | `❌ <sender> send failed (N in 10 s): …` | A sender refused requests (bad key, rate limit, 400/429). At most one line per 10 s. |
+| `⛔ <lane> stopped: its key was refused 20 times in a row (HTTP 403); it sends again after a restart` | A bundle lane whose key the service refused (401/403) 20 times running is stopped until the bot restarts — no more requests into a refused key. A new key, or the service's support; then restart. |
 | `✅ [n] Success! +X SOL (wallet …)` | A win: the base token balance grew. |
 | `📊 Last minute: …` | Per-minute summary: sent, failed, wins, balances; in markets mode pools/groups, in hot modes the top 2 coins with their rate and tier. |
 | `⚠️ …` | Configuration warning (sender without key, bad UUID, unknown mode). |
