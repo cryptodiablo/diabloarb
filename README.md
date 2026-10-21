@@ -8,6 +8,7 @@
 - Beginners Guide: https://telegra.ph/DiabloArb--Full-Guide-Overview-Quick-Start-Risks-and-FAQ-01-30
 - RU Beginners Guide: https://telegra.ph/Diablo-Arb-Bot---gajd-01-26
 - **Ask an AI about the bot:** [how](#-ask-an-ai-about-the-bot) — knowledge base [`AI_GUIDE.md`](AI_GUIDE.md), index [`llms.txt`](llms.txt)
+- **FAQ — diablo.bot and self-hosted, settings presets:** [`FAQ.md`](FAQ.md)
 - **Full settings reference for your AI assistant:** [`USER_CONFIG.md`](USER_CONFIG.md)
 - **Build your own sender on our executor (SDK, IDL, AI-agent guide):** [`sdk/`](sdk/README.md)
 - 🇷🇺 **На русском:** [описание бота на русском](#-на-русском)
@@ -19,7 +20,7 @@ modes, log lines, "why did it stop". Paste this as your first message:
 
 ```
 Read https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/llms.txt and every file it lists
-(AI_GUIDE.md and USER_CONFIG.md completely). Then answer my questions about the DiabloArb bot using only them.
+(AI_GUIDE.md, FAQ.md and USER_CONFIG.md completely). Then answer my questions about the DiabloArb bot using only them.
 ```
 
 Running Claude Code or Codex inside the bot's folder? It reads [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) by

@@ -4,6 +4,7 @@
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
 > in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 October 2026 (build `e96545b6fb69`).
+> Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -18,7 +19,8 @@
 > - Every config key, its default and what it does is in USER_CONFIG.md (tables per section; §7 senders with their
 >   minimum tips, §8 hot modes with a full ladder template). When writing a config for a user, use only keys listed
 >   there; a key the build does not read is silently ignored.
-> - If the answer is not here or in USER_CONFIG.md, say you don't know and suggest asking in the DiabloArb Discord.
+> - If the answer is not here, in FAQ.md or in USER_CONFIG.md, say you don't know and suggest asking in the DiabloArb
+  Discord (https://discord.gg/ygBdptG4dX).
 
 ## Contents
 
@@ -499,6 +501,7 @@ whole unless they remove keys first.
 ## 16. Files
 
 - [USER_CONFIG.md](USER_CONFIG.md) — every config key, senders, modes, log lines.
+- [FAQ.md](FAQ.md) — short answers for diablo.bot and self-hosted, settings presets.
 - [README.md](README.md) — install, run, wallet commands, supported DEXs.
 - [sdk/README.md](sdk/README.md) — building your own sender against the executor (public ABI).
 - `config.toml`, `gas.json` — the sample configuration.

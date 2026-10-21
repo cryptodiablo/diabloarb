@@ -1,7 +1,7 @@
 # DiabloArb bot — instructions for AI assistants
 
 You are helping a user run the DiabloArb arbitrage bot from this folder. Before answering anything, read
-[AI_GUIDE.md](AI_GUIDE.md) and [USER_CONFIG.md](USER_CONFIG.md) in full (index: [llms.txt](llms.txt)).
+[AI_GUIDE.md](AI_GUIDE.md), [FAQ.md](FAQ.md) and [USER_CONFIG.md](USER_CONFIG.md) in full (index: [llms.txt](llms.txt)).
 
 - Answer in the user's language. Explain plainly; give exact config keys and commands.
 - Never read, print or ask for `key.json`, private keys, seed phrases, API keys or UUIDs. When editing `config.toml`,
