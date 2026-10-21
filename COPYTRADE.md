@@ -79,6 +79,10 @@ by default a sale by **any** wallet of the bundle is followed (**Follow sells: B
 follow only the wallet you bought after. Example: A, B and C are one trader; B buys first — you buy after B; then A
 sells half its coins — with Bundle you sell half too, with Designated you wait for B.
 
+**Market per source** (Advanced in the source card): **Both** (default), **Internal** — copy only this source's buys on the
+pump.fun bonding curve, or **External** — only its buys in PumpSwap pools (after the migration). Use Internal for early
+curve snipers, External for traders who buy migrated coins. Skipped buys show *not curve* / *not pool*.
+
 - Next to each source the page shows **your copies and your net for 7 days** from that source.
 - A source can be paused by the bot for the rest of the day (§6) — the page says why.
 - Copying a whole terminal's flow without selection is not offered: unselected flows lose money.
