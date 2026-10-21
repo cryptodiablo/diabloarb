@@ -338,6 +338,7 @@ Open the signature on solscan.io / solana.fm.
 - Per-trade **Net, SOL** = what actually landed in the wallet (after fee and tip); **Fee + tip** shown next to it.
 - Health `no SOL for fees` = SOL too low (§4); `losing since start` = fees outrun profit over the run.
 - diablo.bot can also run bots for users (hosted): the same sender, settings in the cabinet; the same costs and keys apply.
+- CopyTrade (Solana → Copytrade): see [COPYTRADE.md](COPYTRADE.md).
 
 ## 12. Troubleshooting by symptom
 
@@ -502,6 +503,7 @@ whole unless they remove keys first.
 
 - [USER_CONFIG.md](USER_CONFIG.md) — every config key, senders, modes, log lines.
 - [FAQ.md](FAQ.md) — short answers for diablo.bot and self-hosted, settings presets.
+- CopyTrade (Solana → Copytrade): see [COPYTRADE.md](COPYTRADE.md).
 - [README.md](README.md) — install, run, wallet commands, supported DEXs.
 - [sdk/README.md](sdk/README.md) — building your own sender against the executor (public ABI).
 - `config.toml`, `gas.json` — the sample configuration.

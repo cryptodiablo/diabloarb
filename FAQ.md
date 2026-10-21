@@ -14,7 +14,7 @@ State of 21 October 2026. Support: [Discord](https://discord.gg/ygBdptG4dX) · [
 3. [Dashboard numbers](#3-dashboard-numbers) · 4. [SOL, rent, token accounts and nonces](#4-sol-rent-token-accounts-and-nonces) ·
 5. [Ladder: "Starts at" and why nothing is sent](#5-ladder-starts-at-and-why-nothing-is-sent) ·
 6. [Other senders: Helius, Diablo Sender, Harmonic](#6-other-senders-helius-diablo-sender-harmonic) ·
-7. [Self-hosted setup](#7-self-hosted-setup) · 8. [Settings presets](#8-settings-presets)
+7. [Self-hosted setup](#7-self-hosted-setup) · 8. [Settings presets](#8-settings-presets) · 9. [CopyTrade](#9-copytrade)
 
 ## 1. diablo.bot or self-hosted?
 
@@ -163,3 +163,9 @@ What the week showed (median per bot a day; small groups, so read as tendencies)
 - Temporal bundles: check the key marks first (section 2) — many keys are refused for bundles since 21 Oct 2026.
 
 Change one thing at a time and compare a day or two on the net card's 24h/7d.
+
+## 9. CopyTrade
+
+CopyTrade on diablo.bot (**Solana → Copytrade**) copies the meme-coin trades of the wallets you pick, from the same
+wallet as your Arb bot. Setup, sources, entry and exit rules, limits, the 1% fee, wallet safety and troubleshooting:
+[COPYTRADE.md](COPYTRADE.md).

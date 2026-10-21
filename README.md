@@ -43,6 +43,7 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **CopyTrade on diablo.bot** — copy the meme-coin trades of wallets you pick, from your Arb wallet — see [`COPYTRADE.md`](COPYTRADE.md).
 - **New on-chain executor.** The trade size is no longer guessed off-chain: the program finds the best amount at the
   moment of execution, using up to your WSOL/USDC/USDT balance plus — with `flashloan = true` — the whole DiabloArb
   flash-loan vault. If the opportunity is gone, the transaction does nothing and paid lanes keep their tip.

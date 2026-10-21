@@ -12,6 +12,7 @@
 - [AI_GUIDE.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/AI_GUIDE.md): support knowledge base — money and costs, modes, dashboard, troubleshooting by symptom, users' questions with answers, glossary
 - [USER_CONFIG.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/USER_CONFIG.md): every config key, senders (landing services), hot modes, log lines
 - [FAQ.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/FAQ.md): short answers to the most asked questions for diablo.bot (hosted) and self-hosted, settings presets
+- [COPYTRADE.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/COPYTRADE.md): CopyTrade on diablo.bot — copying wallets' meme-coin trades: setup, sources, entry, exits, limits, 1% fee, wallet safety, troubleshooting, Q&A
 - [README.md](https://raw.githubusercontent.com/cryptodiablo/diabloarb/main/README.md): install, run, wallet commands, supported DEXs, what's new
 
 ## Configuration samples
