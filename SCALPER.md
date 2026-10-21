@@ -62,12 +62,27 @@ Scalper can be stopped at any time with **stop**; open positions still exit by t
 | Preset | Status | What it does | Exit |
 |---|---|---|---|
 | **Curve dip bounce (ML)** | live | a big sale knocks a pump.fun curve down 10%+; the model scores the dip; the best ones are bought with a 5% price bound | all of it 10 s after the buy (or by your exits); after a migration — in the pool with the brain |
-| **My coins** | coming | your own list of coins or pools; buys when a sale drops one of them by your % (or it falls by your % from its recent high) | your exits |
+| **My coins** | live | your own list of coins or pools; buys when a sale drops one of them by your % (or it falls by your % from its recent high) | your exits (timer 60 s by default) |
 | **Fast scalp** | soon | coins you arm from the radar; bounces after a sale through a terminal | timer 60 s, sell into a big buy, crowd ahead |
 | **Runner** | soon | an armed runner bought on a pullback | take-profit ladder, trailing, stop |
 
-Only one strategy trades now: **Curve dip bounce (ML)**. The others are shown as "soon" until they pass their check on
-fresh days.
+Two strategies trade now: **Curve dip bounce (ML)** and **My coins**; each has its own switch, size, exits and limits, and
+both can run at the same time. Pick one by clicking its card; **start / stop** acts on the picked one. Fast scalp and
+Runner are shown as "soon" until they pass their check on fresh days.
+
+### My coins
+
+| Setting | What | Default |
+|---|---|---|
+| **Coins or pools** | up to 20 addresses: a pump.fun coin's mint (its curve, or its pool after the migration) or a PumpSwap pool; coins priced in SOL | — |
+| **Dip: one sale** | one sale of at least **Sale at least** SOL drops the price by **Dip, %** or more (price just before vs just after it) | 15%, 0.2 SOL |
+| **Dip: from the peak** | the price is **Dip, %** or more below its highest of the last **Window** seconds | 15%, 60 s |
+| **Price bound** | at most this much worse than the price after the dip | 5% |
+| **Again after** | no new buy of the same coin sooner than this | 30 s |
+| **SOL per buy, exits, limits** | as for the ML preset (§5–§7), separate values | timer 60 s |
+
+The bot sees every trade of your coins as it executes and buys right after the dip, at the price after it. My coins has
+no model: it buys every dip of your size, so pick coins you know and keep the limits tight.
 
 ## 4. How the ML signal works
 
@@ -142,7 +157,7 @@ pool after a migration.
 | **Open positions, max** | Scalper positions at once (1–4: your wallet has 4 nonce accounts for sending) | 3 |
 | **SOL in positions, max** | SOL in Scalper positions at once | 0.3 SOL |
 
-Scalper's limits and day are counted on Scalper's trades only — Copytrade's trades do not count in them, and Scalper's
+Each strategy's limits and day are counted on its own trades only (ML and My coins separately) — Copytrade's trades do not count in them, and Scalper's
 do not count in Copytrade's. Two things are shared with Copytrade, set on the Copytrade tab: **Keep for arb** (SOL never
 spent, so your Arb bot keeps its fees) and the **per-coin cap** (the most SOL in one coin across both). If the per-coin
 cap is below your Scalper buy size, Scalper's buys are skipped — raise it on the Copytrade tab.
@@ -180,9 +195,9 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | **signals** | buys made, buys missed by the price bound, open positions |
 | **fees** | 1% fee and network costs |
 | **balance** | the wallet's SOL and SOL in Scalper positions |
-| **Open positions** | coin, bought when, SOL in, value now, PnL, timer left, **sell** |
+| **Open positions** | coin, strategy (ML / My coins), bought when, SOL in, value now, PnL, timer left, **sell** |
 | **Radar** | the last dips the brain scored: dip %, SOL sold, market cap, curve fill, buyers in the last minute, the seller's route (direct, terminal, router), score vs bar |
-| **Trades** | every closed trade: SOL in and out, costs, net, which exit sold it |
+| **Trades** | every closed trade: strategy, SOL in and out, costs, net, which exit sold it |
 
 ## 11. What results to expect, and why they differ
 
@@ -212,8 +227,8 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 
 **Is it automatic?** Yes, like the Arb bot: set it up, press start, it trades by itself until you stop it.
 
-**Do I choose the coins?** For the ML preset, no — the model picks the dips. Your own list of coins is the **My coins**
-preset (§3).
+**Do I choose the coins?** For the ML preset, no — the model picks the dips. For your own coins use **My coins** (§3):
+add up to 20 coins or pools, the dip % and your exits.
 
 **Will Scalper use my Arb's WSOL?** No. It spends SOL only and keeps the **Keep for arb** reserve.
 
@@ -238,7 +253,8 @@ reaches the browser or any log.
 
 - **Bonding curve** — pump.fun's built-in market for a new coin, before it "migrates" to a PumpSwap pool.
 - **Migration** — the moment a coin's curve fills and its trading moves to a PumpSwap pool.
-- **Dip** — a single sale that drops the price by 10% or more.
+- **Dip** — for the ML preset, a single sale that drops the price by 10% or more; for My coins, your own % (one sale, or
+  from the recent high).
 - **Brain** — the one model that decides which dips to buy, for everyone with Scalper on.
 - **Price bound (slippage)** — the worst price you accept; past it the buy fails on chain.
 - **Position** — one buy and its exits.
