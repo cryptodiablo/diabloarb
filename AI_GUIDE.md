@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 October 2026 (build `66352cb6b2d0`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 October 2026 (build `e96545b6fb69`).
 >
 > Rules:
 > - Answer in the user's language, plainly: the short answer first, details when asked. Give exact keys and commands.
@@ -379,6 +379,11 @@ whole unless they remove keys first.
   `markets` mode only.
 - **How do I make Temporal bundles go to one region at a time?** `temporal_bundle_all_endpoints = false`, and for each
   extra stream `temporal_bundle_N_all_endpoints = false` (each stream has its own; default `true` = all 9 regions).
+- **How do I send Temporal bundles only to some regions?** `temporal_bundle_regions = ["ams", "fra"]`, and
+  `temporal_bundle_N_regions` for each extra stream (codes `ams fra lon ewr pit ash lax tyo sgp`; unset or `[]` — all).
+  With `_all_endpoints = true` each bundle goes to every region picked, with `false` to one of them by turn. On diablo.bot
+  the near regions are `ams`, `fra`, `lon` (≈8 ms); the dashboard has the same picker under "all regions". Build
+  `e96545b6fb69` and later.
 - **The bot sends Astralane (or Jito) bundles but I did not enable them.** They start only with `astralane_bundle = true`
   (`jito_bundle = true`); check the `… bundle enabled` line at start and the config for that key (copied sample, AI edit).
 - **I turned a bundle lane on and nothing lands — is it broken?** Usually not: a bundle lands only on a win, so the

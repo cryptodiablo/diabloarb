@@ -164,7 +164,11 @@ regions at once — not configurable (Apex: to `apex_regions`). A bundle lane ha
 `temporal_bundle` and its streams default to `true` (every region each bundle: 8 servers — Temporal's `pit` and `ewr`
 are one server and get one copy), `helius_bundle`, `jito_bundle`,
 `astralane_bundle` default to `false` (one region by turn), `harmonic_bundle` to `true` (`false` with
-`harmonic_bundle_public`). Which pause applies depends on the mode — see the table in §7a. Providers have their own
+`harmonic_bundle_public`). Temporal streams can be limited to chosen regions: `temporal_bundle_regions = ["ams", "fra"]`
+and `temporal_bundle_N_regions` for each extra stream (codes `ams fra lon ewr pit ash lax tyo sgp`; unset or empty — all;
+an unknown code is left out with a warning at start). From diablo.bot's server `ams`, `fra` and `lon` answer in about 8 ms,
+the American regions in 70–130, `sgp` and `tyo` in 160–210: the near ones are usually enough and spend fewer of the key's
+requests. From build `e96545b6fb69`, 21 Oct 2026. Which pause applies depends on the mode — see the table in §7a. Providers have their own
 limits per key — too fast gives `❌ … send failed … 429` (Temporal: 5 requests a second per key per server).
 
 Priority without a sender's own range: Helius, NextBlock and Harmonic copy a single given bound; others use 0..max;
@@ -437,6 +441,7 @@ temporal_bundle_tip_max_lamports = 5000000
 temporal_bundle_min_priority_fee = 20000
 temporal_bundle_max_priority_fee = 100000
 temporal_bundle_cooldown_ms = 200
+# temporal_bundle_regions = ["ams", "fra", "lon"]   # unset: every region
 helius_bundle = true
 helius_bundle_tip_min_lamports = 1000000
 helius_bundle_tip_max_lamports = 30000000

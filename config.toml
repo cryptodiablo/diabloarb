@@ -149,6 +149,7 @@ temporal_bundle_cooldown_ms = "{temporal_cooldown_ms}" # Temporal bundle loop in
 # temporal_bundle_min_priority_fee = 20000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # temporal_bundle_max_priority_fee = 100000
 temporal_bundle_all_endpoints = true # true = each bundle to all 9 Temporal regions at once (9 requests); false = one region by turn (9x fewer requests, far fewer 429 "Too Many Requests" on the key's limit)
+# temporal_bundle_regions = ["ams", "fra", "lon"] # only these Temporal regions (codes: ams fra lon ewr pit ash lax tyo sgp); unset or [] = all; streams: temporal_bundle_N_regions
 # More Temporal bundle streams (2…100), each with its own switch, key, tips, pause and regions setting:
 # temporal_bundle_2 = true
 # temporal_bundle_2_uuid = ""                 # empty = the first stream's key
