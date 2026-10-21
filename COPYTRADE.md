@@ -163,14 +163,50 @@ at 0.01 SOL per copy the network is ~2–3% of the buy per round trip; at 0.1 SO
 
 ## 10. The dashboard
 
-- **Copies:** each copy — coin, source, terminal, **In, SOL**, **Now, SOL** (open) or result (closed), **Fee 1%**,
-  **Network**, **Net, SOL**, state and transactions. Exit reasons are shown: timer, followed the wallet, take profit, stop
-  loss, ×N, crowd, sold by you.
-- **Today:** closed copies since 00:00 MSK; net = back − in − 1% − network.
-- **Who to copy:** sources with your copies and net for 7 days; paused sources with the reason.
-- **Settings:** Entry, Exit, Limits. Saving applies within seconds; if settings were changed in another tab, the page
-  reloads them — edit again.
-- Signals that were not copied are counted with reasons (crowd, slippage, first buy only, limits…).
+### Open positions
+
+Every buy is a row with its own exits ("every buy sells on its own timer and rules").
+
+| Column | Meaning |
+|---|---|
+| **Coin** | the coin; a "via USDC" (or other token) mark when it is bought through that quote token |
+| **Source** | which source it copied (a wallet, a @username, a list entry like `pnl7d +913.5 SOL · 802 trades`) and the terminal tag |
+| **Landed** | how fast your buy landed after the copied trade (in slots: "same slot", "+1 slot"…). **`sending…`** = the buy was sent and is waiting for the network to confirm it — normally a fraction of a second. If a row stays in `sending…` for minutes, the transaction did not land: no SOL is spent; the row is cleared automatically |
+| **In, SOL** | SOL you put in |
+| **Now, SOL** | what the position is worth now (sold part + the rest at the current price); `pool` = coin in a pool, price shown after the next trade; `—` = not known yet |
+| **PnL** | % gain or loss of the position so far |
+| **Exit** | the rules that will sell it, e.g. `with wallet · timer 300 s · crowd` = sells when the copied wallet sells, or 300 s after your buy, or earlier if a crowd bought ahead of you |
+| **Next** | countdown to the next timer step; `waits` = no timer left, it waits for another rule (wallet sells, TP/SL…) |
+| **sell** | sell this position now (`selling…` while the sale goes) |
+
+### Copied trades
+
+| Column | Meaning |
+|---|---|
+| **When** | when it closed (or was tried) |
+| **Coin / Source** | as above |
+| **Exit** | why it sold: `timer`, `wallet sold 50%`, `take profit +15%`, `stop loss`, `×2 — initial out`, `crowd ahead ≥ 2 SOL · 5 s`, `sold by you`, `sold by another trader` (another mode on the wallet sold it), `missed — price past your 20% slippage` (not bought), `not filled — <reason>` (the buy failed on-chain) |
+| **In, SOL** | SOL put in |
+| **Net, SOL** | back − in − 1% − network |
+| **Fee 1%** | the service fee of this buy |
+| **Network** | Solana fees, priority and tips of its transactions |
+| **Transaction** | link to the buy/sale on Solscan |
+
+Amounts come from the chain, not from estimates. **Today** at the top: closed copies since 00:00 MSK, net after the 1% and
+the network.
+
+### Who to copy
+
+- **sources** — your sources: **On** (switch), **Source**, **Via** (terminal), **Copier 7d** (coming: what copying it
+  would have made), **Net** for the period, **Copies**, **State** (copying / paused for the day and why).
+- **recommended** — ready lists: **FOMO top traders 7d** first (`@handle · pnl7d +X SOL · N trades`), FOMO influencers
+  and others; **copy** one account or **copy list** for all; **Your copies 7d / Your net 7d** — your own results from it.
+- Add a source: paste a wallet address or type a FOMO `@username`.
+
+### Settings
+
+**Entry**, **Exit**, **Limits** — see §4–§6. Saving applies within seconds. If the settings were changed in another tab,
+the page reloads them — edit again.
 
 ## 11. Troubleshooting by symptom
 
@@ -182,6 +218,7 @@ at 0.01 SOL per copy the network is ~2–3% of the buy per round trip; at 0.1 SO
 | Copies skipped "balance" / "keep" | SOL is below buy size + Keep for arb | top up or lower the size |
 | Copies stopped for the day | Daily stop reached, or the source paused (cost / rugs) | resumes at 00:00 MSK; adjust limits if needed |
 | Copying paused 10 minutes | 10 failed buys in a row (network trouble) | resumes by itself |
+| A row stays in `sending…` for minutes | the buy did not land (network or a temporary fault) | nothing is spent; the row clears itself; copying continues |
 | A position does not sell | sale retries failed (price beyond Sell slippage, coin rugged) | use **Sell**; raise Sell slippage for illiquid coins |
 | Coin account rent not returned | the account still held another position's or another mode's tokens, so it was left open | it closes with the last sale of that coin; ~0.002 SOL |
 | Result worse than the copied wallet | see §9 | judge by your net per source |
