@@ -50,6 +50,9 @@ State of 21 October 2026. Support: [Discord](https://discord.gg/ygBdptG4dX) · [
   of its answers or more in 5 minutes; red **key rejected · stream stopped** — 20 refusals in a row, the bot stopped
   that stream (on diablo.bot its switch is also turned off); yellow **limit used up** — too many `429`, raise "Every".
   No mark — the key works. Put in a new key and Save to turn a stopped stream back on.
+  The same marks stand next to every sender in the senders list — Astralane, Jito, 0slot, NextBlock, Falcon and the
+  rest (build `8a7b1cf1e3fd`, dashboard from 22 Oct 2026): a key the service refuses is shown, and stopped after 20
+  refusals in a row, the same way.
 - **`429 Too Many Requests`?** Temporal's limit is 5 requests a second per key per Temporal server. With all regions a
   stream sends one copy to each server, so keep a stream at no more than 5 bundles a second (Every ≥ 200 ms) or use
   more keys (extra streams).
