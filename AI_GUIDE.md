@@ -520,6 +520,12 @@ whole unless they remove keys first.
   wallets (sub-accounts) under one login; **Your RPC** with the bot server's IP for allowlists; OrbitFlare Virginia, Salt
   Lake City and Los Angeles added to every bot's send RPCs; Temporal region picker removed (all regions); feed watchdog
   (the bot pauses while its stream lags the network); problem reports via @diablo_support_bot (§11).
+- **23 Oct 2026** — in `ladder`/`flow` the pauses you set now pace the shots: one shot every shortest pause of a lane on
+  (`process_delay_ms` for the ladder's RPC step, `hot_sender_pause_ms` for the senders; in `flow` the RPC copies use the
+  senders' pause too), 20 ms at least. Before, a hidden 250 ms timer paced them and the pauses only capped the lanes, so
+  50 or 200 ms changed nothing. Measured on one bot (blocks ≈0.21 s): 200 ms ≈ 1 transaction a block (90% of blocks),
+  100 ms ≈ 2 (94%), 50 ms ≈ 4 (96%). A lower pause costs more fees. `hot_fast_ms` is not read in `flow`; `markets` mode
+  is unchanged (build `3581ebc01a7b`).
 
 ## 15. Glossary
 
