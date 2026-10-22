@@ -166,10 +166,11 @@ all rules off, positions sell only by hand.
 | *advanced:* **Sell the rest below** | after a partial sale, what is left is worth less than X SOL — sell it | off |
 | *advanced:* **Moonbag** | X% of the position is never sold by the rules | off |
 | *advanced:* **Moved to the pool — sell** | the coin leaves the curve for its PumpSwap pool — sell X% | off |
+| *advanced:* **Dev sold ≥ X% — sell all** | the coin's creator sold that share of what he held (on the curve or in its pool) — sell the whole position | off |
 | *advanced:* **Bundle sales** (any / designated) | for a bundle source: follow a sale by any of its wallets, or only by the one you bought after | Bundle |
 
 **Which rule sells first.** Rules are checked in this order, and the first that fires sells: your manual sell → the
-copied wallet's sale (Follow the wallet) → migration → stop loss → take-profit timeout → clear the rest → crowd ahead →
+copied wallet's sale (Follow the wallet) → dev sold → migration → stop loss → take-profit timeout → clear the rest → crowd ahead →
 take initial → take profit → trailing → timer. Each position has its own clock and its own high.
 
 **Trailing, step by step.** Each phase has **Activate** (+X% over your entry), **Drawdown** (Z% down from the high) and
@@ -206,6 +207,10 @@ sells everything. The moonbag's cost counts as spent in the position's result.
 
 **Moved to the pool — sell.** When a coin fills its curve and moves to its PumpSwap pool, the price often jumps and then falls.
 With 50% the bot sells half right after the migration; the rest follows the other rules (sales go to the pool).
+
+**Dev sold ≥ X% — sell all.** A creator dumping his own coin is the classic rug. With 50%: once the dev has sold half of
+what he held, your position sells at once. His holding is counted from his buys the bot saw; if it never saw them (an
+older coin), any sale of his counts as all. Such sales show the reason *dev sold*.
 
 - A sale sells **exactly that position's tokens** — never more.
 - A coin that migrates from the curve to its PumpSwap pool keeps its position: the sale goes to the pool.
@@ -325,7 +330,10 @@ The day runs from **00:00 Moscow time (MSK, UTC+3)**.
 
 **Your own priority fee and tip** (the **Limits** block, «advanced ▾» under **Sell slippage** → **Own priority fee and tip**). By default the bot uses its fixed fees: a buy pays 0.0001 SOL priority
 and a 0.0001 SOL tip, a sale 0.00002 SOL priority and a 0.000005 SOL tip. You can set your own for buys and for sales (up
-to 0.01 SOL each). When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
+to 0.01 SOL each). Every transaction goes out **two ways at once** and the first to land wins: **route 1** with the tip to
+tip-taking senders (Jito and others) at your priority, **route 2** without a tip to plain RPCs at its own priority (by
+default twice the buy's priority, the sale's priority) — the "high tip, low fee / low tip, high fee" pair of other
+bots. Set both in **Own priority fee and tip**. When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
 better price — but every trade costs that much more, win or lose. A buy's fees never exceed 3% of the buy: anything over
 is cut, the tip first. Example: with 0.05 SOL buys a 0.001 SOL tip is 2% of each buy; it pays off only if it often gets
 you in ahead of other copiers. Changes apply at once.
