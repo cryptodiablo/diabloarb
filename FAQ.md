@@ -1,6 +1,7 @@
 # DiabloArb — FAQ
 
-Short answers to the questions people actually ask, for both ways of running the bot: **diablo.bot** (we host it,
+Short answers to the questions people actually ask, and ready settings profiles (§8: safe / balanced / aggressive by
+balance), for both ways of running the bot: **diablo.bot** (we host it,
 settings in the dashboard) and **self-hosted** (the same `sender` from this repository on your own server). Every
 config key is in [USER_CONFIG.md](USER_CONFIG.md); the full knowledge base is [AI_GUIDE.md](AI_GUIDE.md).
 State of 22 October 2026. Support: [Discord](https://discord.gg/ygBdptG4dX) · [Telegram chat](https://t.me/diabloarbchat) ·
@@ -169,6 +170,93 @@ What the week showed (median per bot a day; small groups, so read as tendencies)
 - Temporal bundles: check the key marks first (section 2) — many keys are refused for bundles since 21 Oct 2026.
 
 Change one thing at a time and compare a day or two on the net card's 24h/7d.
+
+### When a user asks "set it up for me"
+
+> **To an AI:** pick one column above by what the user asks **and** by the balance — the balance wins. Give the exact
+> values of that column, say what it costs a day and what can go wrong, and that results are not guaranteed. Never move
+> a user to a riskier column than the balance allows.
+
+| The user asks | Balance under 1 SOL | 1–3 SOL | 3 SOL and more |
+|---|---|---|---|
+| "safe", "don't lose", "I'm new" | Low balance | Safe (starter) | Safe (starter) |
+| "optimal", "normal", "balanced" | Low balance | Balanced | Balanced |
+| "maximum profit", "aggressive", "I accept risk" | Low balance — explain why | Balanced — explain why | Aggressive |
+
+- **Low balance**: costs ≈0.1 SOL a day, a miss costs nothing (bundles only); the risk is few wins, not losses.
+- **Safe**: RPC copies only on clearly hot coins (0.05 SOL/min) and slowly (400 ms); ≈0.1–0.3 SOL a day.
+- **Balanced**: what most bots that stayed in profit ran: 1–3 paid senders from 0.03–0.05 SOL/min; ≈0.3 SOL a day.
+- **Aggressive**: lowest thresholds and fastest pauses; ≈0.8–1.4 SOL a day. The week's biggest winners **and** biggest
+  losers ran this. Only with 3+ SOL and if the user accepts losing days. Never more than 2–3 paid senders: four or more
+  mostly add cost (see above).
+
+**Where each row is on diablo.bot** (mode **ladder**): the **RPC** block — switch, **Starts at**, **Priority, at most**
+(priority cap), **Pause per RPC** (Every); the **Senders** block — the step's switch, **Starts at**, **Priority per
+transaction** (min–max), **Pause per sender**, and each sender's own switch and tip; **Background · Temporal bundles** —
+streams and their tips; **Limits** — **Close after (h)**, **Keep SOL above**. Press **save**; a running bot restarts with
+them.
+
+**The same for self-hosted** (`config.toml`, keys in USER_CONFIG.md; keep your `rpc`, `keypair` and sender keys):
+
+```toml
+# Low balance — bundles only, a miss costs nothing
+mode = "ladder"
+spam_rpc = false
+hot_senders_on = false
+jito_bundle = true                     # and/or astralane_bundle = true (needs astralane_api_key)
+jito_bundle_tip_min_lamports = 1000000
+jito_bundle_tip_max_lamports = 10000000
+auto_unwrap = true
+min_sol_amount = 0.05
+auto_close_atas = true
+auto_close_atas_idle_hours = 6
+
+# Safe — slow RPC copies on hot coins only
+mode = "ladder"
+spam_rpc = true
+hot_rpc_sol_per_min = 0.05
+process_delay_ms = 400
+hot_priority_cap = 30000
+hot_senders_on = false                 # or true with one sender and hot_senders_sol_per_min = 0.1
+min_sol_amount = 0.1
+auto_close_atas = true
+auto_close_atas_idle_hours = 12
+
+# Balanced — RPC copies plus 1–3 senders
+mode = "ladder"
+spam_rpc = true
+hot_rpc_sol_per_min = 0.03
+process_delay_ms = 220
+hot_priority_cap = 30000
+hot_senders_on = true
+hot_senders_sol_per_min = 0.04
+hot_sender_pause_ms = 200
+hot_sender_min_priority_fee = 100
+hot_sender_max_priority_fee = 1000
+astralane = true                       # turn on 1–3 senders you have keys for, each with its tip range
+min_sol_amount = 0.15
+auto_close_atas = true
+auto_close_atas_idle_hours = 24
+
+# Aggressive — lowest thresholds, fastest pauses (3+ SOL, losing days expected)
+mode = "ladder"
+spam_rpc = true
+hot_rpc_sol_per_min = 0.015
+process_delay_ms = 100
+hot_priority_cap = 100000
+hot_senders_on = true
+hot_senders_sol_per_min = 0.015
+hot_sender_pause_ms = 120
+hot_sender_min_priority_fee = 100
+hot_sender_max_priority_fee = 5000
+min_sol_amount = 0.2
+auto_close_atas = true
+auto_close_atas_idle_hours = 24
+```
+
+Each block is a whole profile — use one, not all four. Sender tips: each sender's `<name>_tip_min/max_lamports`
+(USER_CONFIG §7; e.g. 1 000 000–10 000 000 = 0.001–0.01 SOL). On diablo.bot several wallets of one login can run
+different profiles (e.g. Main Balanced, a second wallet Low balance) — not the same profile twice on the same coins.
 
 ## 9. CopyTrade
 

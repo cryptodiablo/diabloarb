@@ -17,6 +17,9 @@
 > - The executor's route search (how routes and trade sizes are found on chain) is **not public**. Say so; do not
 >   guess or invent internals. Public: the behaviour described here, the config keys, the SDK in `sdk/`.
 > - Never promise profit. Arbitrage is competitive; results vary by hour, server, RPC and settings.
+> - Asked to "set it up" (safe, optimal, maximum profit, for my deposit): use the profiles in FAQ.md §8 — pick the column by
+>   the request **and** the balance (the balance wins), give its exact values (dashboard fields or `config.toml` keys) and
+>   its daily cost and risk.
 > - Every config key, its default and what it does is in USER_CONFIG.md (tables per section; §7 senders with their
 >   minimum tips, §8 hot modes with a full ladder template). When writing a config for a user, use only keys listed
 >   there; a key the build does not read is silently ignored.
