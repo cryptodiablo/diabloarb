@@ -66,9 +66,10 @@ sells at once.
 
 **Top traders, how they are ranked.** PnL of the period counts only coins the trader bought **and** sold in it, minus
 what the coins they still hold cost (held coins count as worth nothing — a copier would hold them too). All the
-trader's trades count, whichever terminal they used. Removed from the lists: bots (hundreds of trades a day), snipers
-who hold a coin under 10 seconds (a copy cannot follow them), wallets that launched 3+ coins in 30 days (deployers),
-results made by 1–3 lucky coins, and traders with under 30% of coins in profit. Each row shows **Win** (share of coins
+trader's trades count, whichever terminal they used. Removed from the lists: bots (over ~200 trades a day), snipers
+who hold a coin under 30 seconds (a copy cannot follow them), wallets that launched 3+ coins in 30 days (deployers),
+results made by 1–3 lucky coins, traders with under 30% of coins in profit, and over 90% in profit across 20+ coins
+(nobody wins that often but insiders, bundlers and bots). Each row shows **Win** (share of coins
 in profit), **Trades/day**, **Avg buy**, **Hold** (median time from buy to last sale); open a row for coins closed,
 median result per coin, last trade and links (GMGN, Solscan, FOMO profile). A copied list follows its changes by
 itself: traders who drop out stop being copied, new ones start. The 24 h lists change every hour.
@@ -251,11 +252,18 @@ The day runs from **00:00 Moscow time (MSK, UTC+3)**.
 | What | How much | Notes |
 |---|---|---|
 | **Service fee** | **1% of each buy** | sent in a separate small transaction after the buy (not inside it); several are batched (≥0.01 SOL or once a minute). Shown on each copy as **Fee 1%**. No fee on sales. |
-| **Network** | Solana fees, priority and tips of each buy and sale | shown on each copy as **Network**; fixed by the bot, not configurable; roughly 0.0001–0.00015 SOL per transaction |
+| **Network** | Solana fees, priority and tips of each buy and sale | shown on each copy as **Network**; our defaults (roughly 0.0001–0.00025 SOL per transaction) or your own in **Advanced → Fees** (see below) |
 | **Venue fees** | pump.fun / PumpSwap / the intermediate pool | inside the price |
 | **Preparation (one-time)** | ≈0.006 SOL for 4 nonce accounts + a few token accounts | **rent — refundable** when the accounts are closed |
 | **Lookup table (one-time)** | ≈0.002 SOL + ≈0.0002 SOL per address (usually 0.005–0.01 SOL) | rent, refundable; lets trades through other tokens fit a transaction |
 | **Coin token account** | ≈0.002 SOL per coin while held | returned when the position is sold out |
+
+**Your own priority fee and tip (Advanced → Fees).** By default the bot uses its fixed fees: a buy pays 0.0001 SOL priority
+and a 0.0001 SOL tip, a sale 0.00002 SOL priority and a 0.000005 SOL tip. You can set your own for buys and for sales (up
+to 0.01 SOL each). When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
+better price — but every trade costs that much more, win or lose. A buy's fees never exceed 3% of the buy: anything over
+is cut, the tip first. Example: with 0.05 SOL buys a 0.001 SOL tip is 2% of each buy; it pays off only if it often gets
+you in ahead of other copiers. Changes apply at once.
 
 **Net** on the page = what came back − what went in − 1% fee − network. Small buys pay relatively more network cost:
 at 0.01 SOL per copy the network is ~2–3% of the buy per round trip; at 0.1 SOL it is ~0.25%.
