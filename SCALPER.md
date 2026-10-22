@@ -371,7 +371,8 @@ up only for a user who asks for it and knows their coins, and say so plainly.
 
 ### Copytrade and Scalper together
 
-Both use one wallet and one executor. Keep **Keep for arb** set if Arb runs; leave enough SOL for both (Copytrade's own
+Both use one wallet and one executor. Keep **Per coin** (Copytrade tab) above Scalper's SOL per buy — otherwise Scalper's
+buys are skipped as "per-coin limit". Keep **Keep for arb** set if Arb runs; leave enough SOL for both (Copytrade's own
 size × its max positions + Scalper's). A shared pause (10 failed buys in a row) stops new buys of both for 10 minutes
 (§7). For Copytrade's own profiles see [COPYTRADE.md](COPYTRADE.md).
 
