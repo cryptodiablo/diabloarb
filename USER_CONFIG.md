@@ -254,8 +254,7 @@ file. The markets file is not used in these modes.
     least the lowest minimum tip of the other senders (within its own max);
   - tier 3 — temperature ≥ `hot_jito_x` × threshold: Jito with its own tier (`hot_jito_step`), every
     `hot_jito_pause_ms` (unset: the senders' pause).
-  Each tier shoots at its own pause; the shots come every shortest pause of a tier on (`process_delay_ms`,
-  `hot_sender_pause_ms`), 20 ms at least (`hot_interval_ms` is not read).
+  Each tier shoots at its own pause, on a timer of their common step (`hot_interval_ms`, `hot_fast_ms` are not read).
   The transaction carries the top coin's best route first, then other hot coins' routes that fit. When no coin is
   on, nothing is sent (no fees) — idle periods are normal.
 - **What a shot carries (`route_memory`, on by default).** The bot remembers every route the arbitrage bots won on, for
@@ -269,8 +268,7 @@ file. The markets file is not used in these modes.
   `jito_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
   own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
   `helius_bundle_…`, `astralane_bundle_…`, `jito_bundle_…`, lamports a transaction) when set, else the senders' `hot_sender_min/max_priority_fee`.
-- **Flow** — non-stop: one shot every `hot_sender_pause_ms` (unset: `process_delay_ms`; neither: 250 ms; 20 ms at
-  least) with the top 2 coins, or one and the
+- **Flow** — non-stop: one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins, or one and the
   next one's pools when two do not fit (every coin with any profit in the last 900 s competes; the place is the higher
   of its average rate over those 900 s and its temperature; `hot_interval_ms`, `hot_fast_ms`, `flow_top`, `flow_rank_s`
   are not read), by the senders' broadcast on durable nonces plus RPC copies when `spam_rpc = true` (on a recent
