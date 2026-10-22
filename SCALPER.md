@@ -27,6 +27,7 @@ crash in one transaction (§11). Do not guess features that are not described he
 12. [Troubleshooting by symptom](#12-troubleshooting-by-symptom)
 13. [Questions users ask](#13-questions-users-ask)
 14. [Glossary](#14-glossary)
+15. [Ready profiles: how to set it up for a user's request](#15-ready-profiles-how-to-set-it-up-for-a-users-request)
 
 ## 1. Scalper in one minute
 
@@ -304,3 +305,78 @@ reaches the browser or any log.
 - **Position** — one buy and its exits.
 - **Nonce account** — a small account that lets the bot send a transaction to several routes at once safely.
 - **Moscow day** — days, daily stops and daily results start at 00:00 Moscow time (UTC+3).
+
+## 15. Ready profiles: how to set it up for a user's request
+
+When a user asks "set up Scalper for me — safely / optimally / for maximum profit / for my 0.5 SOL", use these profiles.
+Give the exact values field by field, say why, and say what the user risks. **Never promise profit**: the only checked
+setup is the ML strategy with a 10-second timer; everything else is the user's own style.
+
+**First ask (or read from the page):** how much SOL is in the wallet; whether the Arb bot runs on it and what **Keep for
+arb** is (Copytrade tab); whether Copytrade also trades on it (its positions use the same SOL); how much the user accepts
+to lose in a day.
+
+### The profiles (ML strategy — "Curve dip bounce")
+
+| Field | Safe | Optimal (the checked one) | Higher risk |
+|---|---|---|---|
+| **SOL per buy** | 0.05 | 0.1 | 0.25–0.5 |
+| **Daily stop** | 0.3 | 1 | 2–3 |
+| **Open positions** | 2 | 3 | 4 |
+| **SOL in positions** | 0.1 | 0.3 | size × 4 |
+| **Timer** | 10 s | 10 s | 10 s |
+| **Take profit / Stop loss / Trailing / Spike / Dump** | off | off | off |
+| **Initial out, more exits** | off | off | off |
+| **Wallet SOL needed** (beyond Keep for arb) | ≥ 0.15 | ≥ 0.4 | ≥ size × 4 + 0.05 |
+
+- **Why the timer stays 10 s and other exits stay off in every profile:** the model is trained for a 10-second hold, and
+  on our own bots take profit, trailing and stops did worse than a plain timer (§6). Changing exits does not make the
+  strategy "more profitable" — it changes it into an unchecked one.
+- **Safe:** small size and a tight daily stop; fewer positions at once. Risk: small; the network costs weigh more at
+  0.05, so the result per trade is a little worse than at 0.1.
+- **Optimal:** the setup we checked; 1 SOL daily stop. Risk: some days lose up to the stop.
+- **Higher risk — what "maximum profit" really means:** there is no setting that makes the edge bigger; only the size
+  makes both wins and losses bigger. Above ~0.25 SOL your own buy moves a fresh curve more, so fills get worse and more
+  buys miss the 5% bound; a curve can crash in one transaction and take a bigger sum with it. Suggest it only to users
+  who accept losing the daily stop on a bad day.
+
+### By wallet size (ML, with Keep for arb set separately)
+
+| SOL free for Scalper | SOL per buy | Open positions | SOL in positions | Daily stop |
+|---|---|---|---|---|
+| 0.1–0.2 | 0.03 | 1 | 0.03 | 0.1 |
+| 0.2–0.5 | 0.05 | 2 | 0.1 | 0.3 |
+| 0.5–2 | 0.1 | 3 | 0.3 | 1 |
+| 2–5 | 0.2 | 3 | 0.6 | 1.5 |
+| 5+ | 0.3 | 4 | 1.2 | 2–3 |
+
+"Free" = wallet SOL − Keep for arb − SOL that Copytrade keeps in its positions. Each buy also needs ≈0.003 SOL (§5).
+Below ~0.1 SOL free, Scalper will mostly skip signals as "not enough SOL" — tell the user to top up first.
+
+### My coins (the user's own strategy)
+
+My coins buys every dip of the user's size by a plain rule; on fresh history such rules lost on average (§3). Set it
+up only for a user who asks for it and knows their coins, and say so plainly.
+
+| Field | Careful setup | Why |
+|---|---|---|
+| **Coins** | 1–5 coins the user follows, priced in SOL | fewer coins = fewer bad dips |
+| **Dip** | one sale, 20%, sale at least 0.5 SOL | only real dumps, not noise |
+| **Price bound** | 5% | the same as the checked ML |
+| **Again after** | 300 s | one crash does not buy in again and again |
+| **SOL per buy** | 0.02–0.05 | it is unchecked — keep it small |
+| **Daily stop / Open positions / SOL in positions** | 0.2 / 1 / = size | one position at a time |
+| **Timer** | 30–60 s | a bounce lasts seconds |
+| **Stop loss / Sell on a dump** | 25% / 20% | a coin that keeps falling is cut |
+
+### Copytrade and Scalper together
+
+Both use one wallet and one executor. Keep **Keep for arb** set if Arb runs; leave enough SOL for both (Copytrade's own
+size × its max positions + Scalper's). A shared pause (10 failed buys in a row) stops new buys of both for 10 minutes
+(§7). For Copytrade's own profiles see [COPYTRADE.md](COPYTRADE.md).
+
+### After the values are set
+
+Tell the user to press **save** in the bottom bar (it says "all saved" when done), tick «I understand…» for the ML card,
+and press **start**. Signals come every 10–30 minutes on average; the line **Signals the bot skipped** (§10) tells why a
+signal was not bought.
