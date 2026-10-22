@@ -3,7 +3,8 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 October 2026 (build `e96545b6fb69`).
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 22 October 2026 (build `e96545b6fb69`;
+> the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
 > Rules:
@@ -338,6 +339,34 @@ Open the signature on solscan.io / solana.fm.
 - Per-trade **Net, SOL** = what actually landed in the wallet (after fee and tip); **Fee + tip** shown next to it.
 - Health `no SOL for fees` = SOL too low (§4); `losing since start` = fees outrun profit over the run.
 - diablo.bot can also run bots for users (hosted): the same sender, settings in the cabinet; the same costs and keys apply.
+- **Export key ▾** (next to the wallet address): **JSON file** — for the bot and the Solana CLI; **Base58 key** — one line
+  to import the wallet into Phantom or Solflare. Only the wallet you have open; never share either.
+- **Wallets (sub-accounts).** The button right of arb / copytrade / scalper (e.g. «● Main 4KFR…uk1D ▾») lists the
+  wallets of your login. **+ new wallet** creates a wallet with a **copy of the settings of the wallet you have open**;
+  each wallet has its own bot, totals, key export and fee. Up to 5 wallets per login and up to 3 bots running at once.
+  **archive** removes an added wallet from the list — only an empty one (under 0.001 SOL) with its bot stopped; its key
+  stays stored. Example: one wallet in ladder on hot coins, another in markets with your own list. Several wallets with
+  the same ladder settings shoot at the same coins: they split the wins between them and each pays its own fees.
+- **New wallets are ground for low CU.** A wallet created on diablo.bot since 21 October 2026 is picked so that the
+  addresses the DEX programs derive from it (the PumpSwap and pump.fun volume accumulators, their WSOL/USDC/USDT
+  accounts and the wallet's own WSOL/USDC/USDT accounts) all have bump 255 — every lower bump costs ≈1 400 CU a trade.
+  Older wallets are not changed (create a new wallet to get one). Pools quoted in other coins (e.g. tokenized stocks
+  such as NVDAx, SPYx) can still take 1–2 extra bump tries there; the bot's CU limit has room for it.
+- **Your RPC** (under the senders): optional RPC addresses of your own (Helius, QuickNode, any; up to 5, `+` adds a field,
+  `×` removes it). Every RPC copy also goes to them, next to ours; they work while **RPC** is on. Local and private
+  addresses are refused. The line under them shows **our bot server's IP — `84.32.64.83`** with a copy button: add it to
+  your provider's IP allowlist if it has one. Your RPC addresses are shown only to you.
+- **Our send RPCs on diablo.bot** (nothing to set): Constant-K (Indianapolis, Frankfurt) and OrbitFlare Amsterdam,
+  Virginia, Salt Lake City and Los Angeles; new accounts get the same list.
+- **Temporal bundles**: each stream goes to **all** Temporal regions; the region picker was removed from the dashboard on
+  22 October 2026 (no account had picked regions). **one region in turn** stays: each bundle goes to one region by turn,
+  which saves the key's rate limit (each Temporal server allows ≈5 requests a second per key).
+- **Feed watchdog** (diablo.bot bots since 22 October 2026): the bot compares its Geyser stream with the network's
+  current slot read from another RPC. More than 100 slots behind for 10 s — no shots until it is back within 20; behind
+  for 3 minutes — it reconnects the stream. The log line `stream to the network: network slot N, X slots behind, …` shows
+  it; a pause is logged with 📡.
+- **Problems:** write to the Telegram bot **@diablo_support_bot** (what happened, when, your login, a screenshot or a
+  transaction link). It answers «Received»; the team reviews every report. Never send keys or seed phrases.
 - CopyTrade (Solana → Copytrade): see [COPYTRADE.md](COPYTRADE.md).
 - Scalper (Solana → scalper): see [SCALPER.md](SCALPER.md).
 
@@ -383,10 +412,10 @@ whole unless they remove keys first.
   `markets` mode only.
 - **How do I make Temporal bundles go to one region at a time?** `temporal_bundle_all_endpoints = false`, and for each
   extra stream `temporal_bundle_N_all_endpoints = false` (each stream has its own; default `true` = all 9 regions).
-- **How do I send Temporal bundles only to some regions?** `temporal_bundle_regions = ["ams", "fra"]`, and
+- **How do I send Temporal bundles only to some regions?** Self-hosted: `temporal_bundle_regions = ["ams", "fra"]`, and
   `temporal_bundle_N_regions` for each extra stream (codes `ams fra lon ewr pit ash lax tyo sgp`; unset or `[]` — all).
   With `_all_endpoints = true` each bundle goes to every region picked, with `false` to one of them by turn. On diablo.bot
-  the near regions are `ams`, `fra`, `lon` (≈8 ms); the dashboard has the same picker under "all regions". Build
+  there is no picker since 22 October 2026: every stream goes to all regions (one region in turn still saves the limit). Build
   `e96545b6fb69` and later.
 - **The bot sends Astralane (or Jito) bundles but I did not enable them.** They start only with `astralane_bundle = true`
   (`jito_bundle = true`); check the `… bundle enabled` line at start and the config for that key (copied sample, AI edit).
@@ -484,6 +513,10 @@ whole unless they remove keys first.
 - **20 Oct 2026** — sends to every region go once per server: Temporal's `pit` and `ewr` regions are one server, a bundle
   reached it twice and about every tenth request got `429`; now 8 copies a bundle and no `429` at up to 5 bundles a
   second per key (build `843a019f75f0`).
+- **21–22 Oct 2026 (diablo.bot dashboard)** — export key as JSON or Base58; new wallets ground for bump 255 (less CU);
+  wallets (sub-accounts) under one login; **Your RPC** with the bot server's IP for allowlists; OrbitFlare Virginia, Salt
+  Lake City and Los Angeles added to every bot's send RPCs; Temporal region picker removed (all regions); feed watchdog
+  (the bot pauses while its stream lags the network); problem reports via @diablo_support_bot (§11).
 
 ## 15. Glossary
 

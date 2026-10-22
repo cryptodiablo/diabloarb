@@ -76,12 +76,12 @@ itself: traders who drop out stop being copied, new ones start. The 24 h lists c
 
 **Bundles.** Many traders buy with several wallets at once (a "bundle"). Put them in one source: **+ wallet of the same
 trader** (paste a list). A buy by **any** of them is copied — once per coin, after the wallet that bought first. Sales:
-by default a sale by **any** wallet of the bundle is followed (**Follow sells: Bundle**); switch to **Designated** to
+by default a sale by **any** wallet of the bundle is followed (**Bundle sales: any**); switch to **designated** to
 follow only the wallet you bought after. Example: A, B and C are one trader; B buys first — you buy after B; then A
 sells half its coins — with Bundle you sell half too, with Designated you wait for B.
 
-**Market per source** (Advanced in the source card): **Both** (default), **Internal** — copy only this source's buys on the
-pump.fun bonding curve, or **External** — only its buys in PumpSwap pools (after the migration). Use Internal for early
+**Market per source** (the source's **market: both / curve / pool** row): **both** (default), **curve** ("internal market") — copy only this source's buys on the
+pump.fun bonding curve, or **pool** ("external") — only its buys in PumpSwap pools (after the migration). Use Internal for early
 curve snipers, External for traders who buy migrated coins. Skipped buys show *not curve* / *not pool*.
 
 - Next to each source the page shows **your copies and your net for 7 days** from that source.
@@ -103,12 +103,12 @@ curve snipers, External for traders who buy migrated coins. Skipped buys show *n
 | **Curve only** | copy only bonding-curve buys, not PumpSwap pools | off (both copied) |
 | **Coins quoted in other tokens** | copy coins priced in USDC and other tokens through that token | on |
 | **Their buy, at most** | larger buys of the source are not copied (with **at least**: a range) | off |
-| **Dump protection** | a copied wallet that sells a coin within N seconds of buying it is not copied for M minutes | on for new users: 10 s → 30 min |
-| *Advanced:* **Market cap** | copy only when the coin's market cap (USD) at your buy is in the range | off |
-| *Advanced:* **Slippage in SOL** | instead of %: at most X SOL of others' buys may land ahead of you | off (% is used) |
-| *Advanced:* **Buy tiers** | a different size and slippage by market cap and venue (curve / pool) | off |
+| **Pause quick flippers** (**Sold within** / **Pause it for**) | a copied wallet that sells a coin within N seconds of buying it is not copied for M minutes | on for new users: 10 s → 30 min |
+| *advanced:* **Market cap at our buy** | copy only when the coin's market cap (USD) at your buy is in the range | off |
+| *advanced:* **Slippage in** % / SOL | instead of %: at most X SOL of others' buys may land ahead of you | off (% is used) |
+| *advanced:* **Buy tiers** | a different size and slippage by market cap and venue (curve / pool) | off |
 
-**Dump protection, how it works.** Some wallets buy, let copiers buy after them, and sell into the copiers a few seconds
+**Pause quick flippers, how it works.** Some wallets buy, let copiers buy after them, and sell into the copiers a few seconds
 later. When a wallet you copy sells a coin within **N seconds** of buying it (default 10 s), the bot stops copying that
 wallet for **M minutes** (default 30). Copies already open still exit by their rules. Skipped buys show the reason
 **quick flip**. Example: the wallet buys at 12:00:00 and sells at 12:00:04 — it is paused till 12:30:04. Turn it off for
@@ -154,16 +154,16 @@ all rules off, positions sell only by hand.
 | **Crowd ahead → Others bought, at least** | if others bought at least X SOL between the copied wallet and you, sell Y seconds after your buy (you bought late, at a high price) | 2 SOL, 5 s |
 | **Sell slippage** | price tolerance on every sale; a failed sale is retried | 25%, 3 retries |
 | **Sell** / **Sell all** (manual) | sell a position or everything now | always available |
-| **Follow the wallet → sell all at** | once the copied wallet has sold X% of its coin in total, sell the whole position (no tails) | off (80% suggested) |
+| **Sell all once they sold** | once the copied wallet has sold X% of its coin in total, sell the whole position (no tails) | off (80% suggested) |
 | **Trailing** | after the price rose X% over your entry, sell Y% when it falls Z% from its high (up to 3 phases) | off |
-| *Advanced:* **Stop wick filter** | the stop waits N s below its line; if the price comes back it was a wick — no sale | 0 (at once) |
-| *Advanced:* **No stop for the first N s** | the stop starts N s after the buy | 0 |
-| *Advanced:* **Early stop** | another stop for the first N s, then the normal one | off |
-| *Advanced:* **Take-profit timeout** | the first take profit not reached within N s — sell all | off |
-| *Advanced:* **Clear the rest below** | after a partial sale, what is left is worth less than X SOL — sell it | off |
-| *Advanced:* **Moonbag** | X% of the position is never sold by the rules | off |
-| *Advanced:* **On migration** | the coin leaves the curve for its PumpSwap pool — sell X% | off |
-| *Advanced:* **Follow sells: Bundle / Designated** | for a bundle source: follow a sale by any of its wallets, or only by the one you bought after | Bundle |
+| *advanced:* **Wick filter** | the stop waits N s below its line; if the price comes back it was a wick — no sale | 0 (at once) |
+| *advanced:* **No stop for** N s | the stop starts N s after the buy | 0 |
+| *advanced:* **Stop at the start** | another stop for the first N s, then the normal one | off |
+| *advanced:* **Take profit timeout** | the first take profit not reached within N s — sell all | off |
+| *advanced:* **Sell the rest below** | after a partial sale, what is left is worth less than X SOL — sell it | off |
+| *advanced:* **Moonbag** | X% of the position is never sold by the rules | off |
+| *advanced:* **Moved to the pool — sell** | the coin leaves the curve for its PumpSwap pool — sell X% | off |
+| *advanced:* **Bundle sales** (any / designated) | for a bundle source: follow a sale by any of its wallets, or only by the one you bought after | Bundle |
 
 **Which rule sells first.** Rules are checked in this order, and the first that fires sells: your manual sell → the
 copied wallet's sale (Follow the wallet) → migration → stop loss → take-profit timeout → clear the rest → crowd ahead →
@@ -183,35 +183,37 @@ Trailing complements **Take profit** (fixed levels) — use both or either.
 - **Wick filter** (0–60 s): pump.fun dumps by the dev often recover in 2–3 seconds. With 3 s the stop sells only if
   the price is still below the line 3 seconds after it first broke it; if it came back, the wait starts over next
   time. 3–5 s is a good setting; 0 sells at once.
-- **No stop for the first N s**: the first seconds after a buy are the most volatile; with 5 s and a stop of −30% the
+- **No stop for** N s: the first seconds after a buy are the most volatile; with 5 s and a stop of −30% the
   stop is ignored for 5 seconds, then sells if the price is still 30% down.
-- **Early stop**: e.g. **−60% for the first 10 s, then −30%** — a wide stop while the copy settles, a tight one after.
-  Use either "No stop for the first N s" or "Early stop", not both.
+- **Stop at the start**: e.g. **−60% for the first 10 s, then −30%** — a wide stop while the copy settles, a tight one after.
+  Use either "No stop for" or "Stop at the start", not both.
 
-**Follow the wallet → sell all at.** Copying partial sales leaves small tails when the wallet sells in many pieces.
+**Sell all once they sold.** Copying partial sales leaves small tails when the wallet sells in many pieces.
 With 80%: they sell 50% — you sell 50%; they sell 60% of the rest (80% in total) — you sell everything.
 
-**Take-profit timeout.** With take profit +50% and a timeout of 60 s: if +50% is not reached within a minute of the
+**Take profit timeout.** With take profit +50% and a timeout of 60 s: if +50% is not reached within a minute of the
 buy, the position is sold — a trade that goes nowhere frees your SOL.
 
-**Clear the rest below.** After a take profit or a partial follow sale, a remainder worth e.g. under 0.01 SOL is sold
+**Sell the rest below.** After a take profit or a partial follow sale, a remainder worth e.g. under 0.01 SOL is sold
 at once instead of waiting.
 
 **Moonbag.** With 10%: every rule sells at most 90% of the bought tokens. When only the moonbag is left, the position
 closes on the page and the moonbag tokens stay in your wallet for a possible moon; **Sell** on the position before that
 sells everything. The moonbag's cost counts as spent in the position's result.
 
-**On migration.** When a coin fills its curve and moves to its PumpSwap pool, the price often jumps and then falls.
+**Moved to the pool — sell.** When a coin fills its curve and moves to its PumpSwap pool, the price often jumps and then falls.
 With 50% the bot sells half right after the migration; the rest follows the other rules (sales go to the pool).
 
 - A sale sells **exactly that position's tokens** — never more.
 - A coin that migrates from the curve to its PumpSwap pool keeps its position: the sale goes to the pool.
 - A coin priced in another token is sold back to SOL through that token in one transaction, also in shares.
 
-### Presets and Advanced
+### Presets and «advanced ▾»
 
-**Presets** set sensible values in one click; change anything afterwards. Everything not in a preset stays off and sits
-under **Advanced**.
+**Preset** (top of Settings): **Safe**, **Balanced** or **Aggressive** fills the draft with the values below; nothing
+changes until you press **Save**, and you can change any value first. There is no single Advanced switch: each block
+(Entry, Exit, Limits, a source) has its own **advanced ▾** right under its fields; it shows how many of its advanced
+settings are on, and everything inside is off until you turn it on.
 
 | | Safe | Balanced | Aggressive |
 |---|---|---|---|
@@ -224,10 +226,10 @@ under **Advanced**.
 | Timer | 300 s | 300 s | 900 s |
 | Follow the wallet | on, sell all at 80% | on, sell all at 80% | on, sell all at 80% |
 | Moonbag | — | — | 10% |
-| Dump protection | 10 s → 30 min | 10 s → 30 min | 5 s → 15 min |
+| Pause quick flippers | 10 s → 30 min | 10 s → 30 min | 5 s → 15 min |
 | Daily stop | 0.5 SOL | 1 SOL | 2 SOL |
 
-**When to open Advanced:** buy tiers and market cap — you copy traders who buy coins of very different sizes; SOL
+**When to open «advanced ▾»:** buy tiers and market cap — you copy traders who buy coins of very different sizes; SOL
 slippage — you copy into thin curves and pools alike; stop wick filter / early stop — your stops sell on dev dumps that
 recover; take-profit timeout — your copies sit flat for minutes; clear the rest — tails pile up after partial sales;
 moonbag — you want to keep a small piece of every coin; on migration — you trade curve coins that often fill.
@@ -252,13 +254,13 @@ The day runs from **00:00 Moscow time (MSK, UTC+3)**.
 | What | How much | Notes |
 |---|---|---|
 | **Service fee** | **1% of each buy** | sent in a separate small transaction after the buy (not inside it); several are batched (≥0.01 SOL or once a minute). Shown on each copy as **Fee 1%**. No fee on sales. |
-| **Network** | Solana fees, priority and tips of each buy and sale | shown on each copy as **Network**; our defaults (roughly 0.0001–0.00025 SOL per transaction) or your own in **Advanced → Fees** (see below) |
+| **Network** | Solana fees, priority and tips of each buy and sale | shown on each copy as **Network**; our defaults (roughly 0.0001–0.00025 SOL per transaction) or your own (**Own priority fee and tip**, see below) |
 | **Venue fees** | pump.fun / PumpSwap / the intermediate pool | inside the price |
 | **Preparation (one-time)** | ≈0.006 SOL for 4 nonce accounts + a few token accounts | **rent — refundable** when the accounts are closed |
 | **Lookup table (one-time)** | ≈0.002 SOL + ≈0.0002 SOL per address (usually 0.005–0.01 SOL) | rent, refundable; lets trades through other tokens fit a transaction |
 | **Coin token account** | ≈0.002 SOL per coin while held | returned when the position is sold out |
 
-**Your own priority fee and tip (Advanced → Fees).** By default the bot uses its fixed fees: a buy pays 0.0001 SOL priority
+**Your own priority fee and tip** (the **Limits** block, «advanced ▾» under **Sell slippage** → **Own priority fee and tip**). By default the bot uses its fixed fees: a buy pays 0.0001 SOL priority
 and a 0.0001 SOL tip, a sale 0.00002 SOL priority and a 0.000005 SOL tip. You can set your own for buys and for sales (up
 to 0.01 SOL each). When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
 better price — but every trade costs that much more, win or lose. A buy's fees never exceed 3% of the buy: anything over
@@ -331,8 +333,15 @@ the network.
 
 - **sources** — your sources: **On** (switch), **Source**, **Via** (terminal), **Copier 7d** (coming: what copying it
   would have made), **Net** for the period, **Copies**, **State** (copying / paused for the day and why).
-- **recommended** — ready lists: **FOMO top traders 7d** first (`@handle · pnl7d +X SOL · N trades`), FOMO influencers
-  and others; **copy** one account or **copy list** for all; **Your copies 7d / Your net 7d** — your own results from it.
+- **Top traders** — one table with three switches: **Platform** (FOMO, Pump App, Axiom, GMGN, Terminal, Photon, Jupiter,
+  Telegram bots), **Top period** (24h — refreshed hourly; 7d — default; 30d) and **Sort traders** (PnL, Win, Trades/day).
+  Columns: PnL of the period, **Win**, **Trades/day**, **Avg buy**, **Hold**; click a row for trades, coins closed, median
+  per coin, last trade and links (FOMO profile for an @username, GMGN, Solscan — they open in a new tab). **copy** on a
+  row adds that trader at once (no Save needed) and turns into **copying ✓**; press it again (**uncopy**) to stop.
+  **copy list** adds the whole list as one source that follows the list by itself — traders who drop out stop being
+  copied, new ones start (the 24h list changes every hour); press again to stop. Your own results from a source are in
+  **sources**, not here.
+- **More lists** — other ready lists (e.g. FOMO influencers).
 - Add a source: paste a wallet address or type a FOMO `@username`.
 
 ### Settings
@@ -367,13 +376,13 @@ sales or profit.
 **Why is the 1% a separate transaction?** So the buy stays as light and fast as possible. Fees are batched, so you see
 small transfers every minute or so, not one per buy.
 
-**Can I copy several wallets?** Yes, up to 20 sources, and a recommended list counts as one source.
+**Can I copy several wallets?** Yes, up to 20 sources, and a whole top list counts as one source.
 
 **Can I copy a FOMO user by username?** Yes, if they are in our FOMO directory (influencers and the daily top lists): type
 `@username`. If the page doesn't know the name, paste their wallet address.
 
-**Where do I find good traders to copy?** **recommended** in Who to copy: FOMO top traders of the last 7 days (refreshed
-daily) and other lists — copy one trader or the whole list in one click.
+**Where do I find good traders to copy?** **Top traders** in Who to copy: pick a platform and a period (24h, 7d, 30d),
+sort by PnL, win rate or activity, and copy one trader or the whole list in one click (§3, §10).
 
 **Can I copy an Axiom / GMGN / Photon / Pump App user?** Yes — add their wallet address. Trades through any terminal are
 seen on-chain.
@@ -399,24 +408,24 @@ slippage, or the coin is held by another mode.
 
 **Is profit guaranteed?** No. Copy trading meme coins is risky; use limits and judge sources by your own net.
 
-**Which settings should I start with?** Pick a preset (Safe, Balanced or Aggressive, §5) and leave Advanced alone until a
+**Which settings should I start with?** Pick a preset (Safe, Balanced or Aggressive, §5) and leave the «advanced ▾» blocks alone until a
 specific problem shows up in your copies.
 
-**My stop sells on a spike that comes right back.** Turn on the **stop wick filter** (3–5 s) or **No stop for the first
-N s** (§5).
+**My stop sells on a spike that comes right back.** Turn on the stop's **Wick filter** (3–5 s) or **No stop for**
+N s (§5).
 
-**A wallet I copy keeps dumping on me seconds after buying.** That is what **Dump protection** is for (§4): it pauses
+**A wallet I copy keeps dumping on me seconds after buying.** That is what **Pause quick flippers** is for (§4): it pauses
 such a wallet. Check it is on; lower N if they sell slower.
 
 **The trader uses several wallets.** Add them as one **bundle** source (§3): a buy by any is copied once, a sale by any is
 followed.
 
-**Can I buy more on early coins and less on later ones?** Yes — **Buy tiers** by market cap (§4, Advanced).
+**Can I buy more on early coins and less on later ones?** Yes — **Buy tiers** by market cap (§4, advanced).
 
 **Why did my position close while I still have some tokens?** Your **moonbag** is kept on purpose (§5); the tokens are in
 your wallet.
 
-**Why did the bot sell when the coin migrated?** **On migration** is on (§5, Advanced).
+**Why did the bot sell when the coin migrated?** **Moved to the pool — sell** is on (§5, advanced).
 
 **What do the skip and sale reasons mean?** Skips: *quick flip* — dump protection paused the wallet; *their buy big* —
 above your "at most"; *market cap* — outside your range. Sales: *trailing*, *tp timeout*, *dust* (the rest was below your
