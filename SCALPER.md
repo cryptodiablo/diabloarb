@@ -46,8 +46,10 @@ crash in one transaction (§11). Do not guess features that are not described he
 
 1. Log in to diablo.bot and open **Solana → scalper**.
 2. Look at the **Radar**: it shows every dip the model scores right now, and which ones it buys (green score).
-3. In **Strategy**, set **SOL per buy** and **Daily stop**, check the **Exits** (the defaults are the checked ones) and,
-   if you want, open **advanced** for the rest.
+3. In **Strategy**, pick a strategy card, then go through its three groups from top to bottom: **Entry** (My coins
+   only), **Size & limits** and **Exits** (§5–§7). The defaults are the checked ones. Rare exits are under
+   **▸ more exits**; a **?** next to a field explains it in full. Press **save** in the bar at the bottom (it lights up
+   when something is not saved yet).
 4. Read **How the ML signal trades** and tick **I understand how it trades…** — without it Scalper does not start.
 5. Press **start**. The first start connects your wallet: Scalper uses the **same wallet as your Arb bot** — no new
    wallet, no key to enter. For a few seconds the page says the wallet is being prepared; it needs about **0.016 SOL**
@@ -63,26 +65,34 @@ Scalper can be stopped at any time with **stop**; open positions still exit by t
 |---|---|---|---|
 | **Curve dip bounce (ML)** | live | a big sale knocks a pump.fun curve down 10%+; the model scores the dip; the best ones are bought with a 5% price bound | all of it 10 s after the buy (or by your exits); after a migration — in the pool with the brain |
 | **My coins** | live | your own list of coins or pools; buys when a sale drops one of them by your % (or it falls by your % from its recent high) | your exits (timer 60 s by default) |
-| **Fast scalp** | soon | coins you arm from the radar; bounces after a sale through a terminal | timer 60 s, sell into a big buy, crowd ahead |
-| **Runner** | soon | an armed runner bought on a pullback | take-profit ladder, trailing, stop |
+| **Fast scalp** | not yet | coins you arm; bounces after a sale through a terminal | timer 60 s, take profit +8%, crowd ahead |
+| **Runner** | not yet | an armed runner bought on a pullback from its peak | take-profit ladder, trailing, stop |
 
 Two strategies trade now: **Curve dip bounce (ML)** and **My coins**; each has its own switch, size, exits and limits, and
-both can run at the same time. Pick one by clicking its card; **start / stop** acts on the picked one. Fast scalp and
-Runner are shown as "soon" until they pass their check on fresh days.
+both can run at the same time. Pick one by clicking its card; **start / stop** acts on the picked one.
 
-### My coins
+**Why Fast scalp and Runner are "not yet".** We checked both on 7 fresh days (15–21 October 2026) with a user's real
+landing and every cost: 66 versions (dip sizes, coin activity, timers, take profit, ladders, trailing, stops). **None of
+them made money on any of the 7 days**: the best Fast scalp lost about 5% per trade, the best Runner about 8%. A round
+trip costs about 4% (the pump.fun fee both ways, our 1%, the network), and a dip picked by a plain rule more often keeps
+falling than bounces. Only the model (Curve dip bounce) picks dips that bounce often enough. They come back only as a
+version that is in plus on fresh history; until then the cards stay greyed out.
 
-| Setting | What | Default |
-|---|---|---|
-| **Coins or pools** | up to 20 addresses: a pump.fun coin's mint (its curve, or its pool after the migration) or a PumpSwap pool; coins priced in SOL | — |
-| **Dip: one sale** | one sale of at least **Sale at least** SOL drops the price by **Dip, %** or more (price just before vs just after it) | 15%, 0.2 SOL |
-| **Dip: from the peak** | the price is **Dip, %** or more below its highest of the last **Window** seconds | 15%, 60 s |
-| **Price bound** | at most this much worse than the price after the dip | 5% |
-| **Again after** | no new buy of the same coin sooner than this | 30 s |
-| **SOL per buy, exits, limits** | as for the ML preset (§5–§7), separate values | timer 60 s |
+### My coins — the Entry group
+
+| Setting | What it does | When to change it | Default / example |
+|---|---|---|---|
+| **Coins or pools** | up to 20 addresses, one per line: a pump.fun coin's mint (traded on its curve, and in its pool after the migration) or a PumpSwap pool; coins priced in SOL. The label shows "N / 20" | add coins you follow and know | — |
+| **Dip: one sale** | buys when one sale of at least **Sale at least** SOL drops the price by **Dip %** or more (price just before vs just after it) | a coin that gets single big dumps | 15%, 0.2 SOL |
+| **Dip: from peak** | buys when the price is **Dip %** or more below its high of the last **Window** seconds | a coin sliding down over several trades | 15%, 60 s |
+| **Price bound** | the buy pays at most this much more than the price right after the dip; past it the buy fails and costs only its network fee | raise it if many buys are missed on a fast coin; lower it to pay less | 5% |
+| **Again after** | no new buy of the same coin sooner than this after the last one | raise it so one crash does not buy you in again and again | 30 s |
+
+**Size & limits** and **Exits** of My coins work as in §5–§7, with their own values (timer 60 s by default).
 
 The bot sees every trade of your coins as it executes and buys right after the dip, at the price after it. My coins has
-no model: it buys every dip of your size, so pick coins you know and keep the limits tight.
+no model: it buys every dip of your size. Our check on fresh history (§3) shows that buying every dip by a plain rule
+loses on average — pick coins you know, keep the size small and the limits tight, and treat it as your own strategy.
 
 ## 4. How the ML signal works
 
@@ -100,39 +110,48 @@ no model: it buys every dip of your size, so pick coins you know and keep the li
 - **The same signal for everyone:** every user with Scalper on buys the same dip at the same moment. There is no queue:
   each buy goes out at once with its own price bound (§11).
 
-## 5. Entry: size and price bound
+## 5. Size: SOL per buy and price bound
 
-| Setting | What | Default |
-|---|---|---|
-| **SOL per buy** | the SOL spent on each buy | 0.1 SOL (0.01–1) |
-| **Price bound** | at most 5% fewer tokens than the price at the decision; a buy past it fails on chain and costs only its network fee | 5% (fixed for this preset) |
+| Setting | What it does | When to change it | Default |
+|---|---|---|---|
+| **SOL per buy** | the SOL spent on each buy | 0.1 is the checked size; smaller sizes pay relatively more network | 0.1 SOL (0.01–1) |
+| **Price bound** (ML) | at most 5% fewer tokens than at the decision; a buy past it fails on chain and costs only its network fee | fixed for the ML strategy | 5% |
 
-Priority fees and tips are set by the service, not by the user: bigger tips did not buy a better place on our own bots.
+By default priority fees and tips are the service's. Your own priority fee and tip, if you set them on the Copytrade tab
+(Limits → advanced → **Own priority fee and tip**, up to 0.01 SOL each, at most 3% of a buy), apply to Scalper's trades
+too — both modes send through the same executor. On our own bots bigger tips did not buy a better place.
+
+**How much SOL a buy needs.** The wallet must hold at least: SOL per buy + **Keep for arb** (Copytrade tab) + about
+0.003 SOL (the coin's token account and the network) + any unpaid 1% fee + buys still in flight. Example: size 0.05 and
+Keep for arb 0.05 → about 0.103 SOL. With less, signals are skipped as "not enough SOL" (§10, §12).
 
 ## 6. Exits
 
 Every buy is its own position with its own exits. The first rule that fires sells; rules that sell a part (ladder,
-steps) leave the rest to the other rules. Empty fields are off.
+steps, initial out) leave the rest to the other rules. An empty field is off. The Exits group is per strategy (ML and My
+coins have their own); **trailing, spike, dump and quiet are shared by both strategies**.
 
-**On the main screen:**
+**The two rows of the Exits group:**
 
-| Exit | What it does | Example |
-|---|---|---|
-| **Timer** | sells everything this long after the buy | 10 s — the checked one: the model is trained for it |
-| **Take profit** | sells everything at +X% | 30 → at +30% |
-| **Stop loss** | sells everything at −X%. A crash in one transaction can jump past it | 25 → at −25% |
-| **Trailing** | armed once the position is up X%, sells when it falls Y% from its best value | arms at 20%, drop 15% |
-| **Sell into a spike** | the value jumps X% within 3 s while you are up (someone's big buy): sells into it | 15 |
-| **Sell on a dump** | the value falls X% within 3 s (a big seller, a bundle dumping): sells | 20 |
-| **Take-profit ladder** | up to 4 steps "at +X% sell Y% of the position as bought" | +30% → 50%, +100% → 25% |
+| Exit | What it does | When to turn it on | Example |
+|---|---|---|---|
+| **Timer** | sells everything this long after the buy | always on; for ML keep 10 s — the model is trained for it | ML 10 s, My coins 60 s |
+| **Take profit** | sells everything at +X% | you want to lock a quick gain before the timer | 30 → all at +30% |
+| **Stop loss** | sells everything at −X%. A crash in one transaction can jump past it | with long timers, to cap a slow bleed | 25 → all at −25% |
+| **Sell on a dump** | the price falls X% within 3 s (a big seller, a bundle dumping): sells all | coins with dev or bundle dumps | 20 |
+| **Trailing arms at** | the trailing starts once the position is up X% | with long timers, to ride a runner | 20 → once +20%… |
+| **Trailing drop** | …then sells all when the price falls Y% from its best | together with "arms at" | 15 → 15% off the best |
+| **Sell into a spike** | while you are up, the price jumps X% within 3 s (someone's big buy): sells into it | to sell into big buyers instead of waiting | 15 |
+| **Initial out at ×N** | at N× the cost sells the part that returns your SOL; the rest rides the other rules | for holding a runner "for free" | 2 → at ×2 sell half |
 
-**In advanced:**
+**Under ▸ more exits:**
 
-| Exit | What it does | Example |
-|---|---|---|
-| **Take the initial out at ×N** | at N× the cost sells the part that returns your SOL; the rest rides | 2 → at ×2 sells half |
-| **Quiet** | nobody trades the coin for N seconds: the move is over, sells | 15 s |
-| **Timer in steps** | sells parts before the main timer: "after N s sell Y% of the position as bought"; the main timer sells the rest | 30% after 5 s |
+| Exit | What it does | When to turn it on | Example |
+|---|---|---|---|
+| **Quiet for** | nobody trades the coin for N seconds: the move is over, sells | long timers on thin coins | 15 s |
+| **Take-profit ladder** | up to 4 steps "at +X% sell Y% of the position as bought" | to sell a runner in parts | +30% → 50%, +100% → 25% |
+| **Timer in steps** | sells parts before the main timer: "after N s sell Y% of the position as bought"; the main timer sells the rest | to take part of the bounce early | 30% after 5 s |
+| **Sell with the brain** (ML, always on) | when the brain sells (its timer, a migration), your position of that coin sells too | — | — |
 
 **Always on:**
 
@@ -141,7 +160,7 @@ steps) leave the rest to the other rules. Empty fields are off.
 - **After a migration** the coin trades in its PumpSwap pool; the position is sold there with the brain.
 - **sell / sell all** buttons on the page.
 
-**What the history says:** on our own copy-trading bots, take profit, trailing and stop losses did worse than a plain
+**What the history says** (also behind the **?** next to the Exits heading): on our own copy-trading bots, take profit, trailing and stop losses did worse than a plain
 timer with "sell with the copied wallet" (9 953 entries: timer + following 182 SOL, stop −25% 170, take profit +30%
 139, trailing 133–144). The checked Scalper setup is the plain 10-second timer. The other exits are there for your own
 style — use them knowing that.
@@ -151,16 +170,21 @@ pool after a migration.
 
 ## 7. Limits and stops
 
-| Setting | What | Default |
-|---|---|---|
-| **Daily stop** | Scalper's own loss since 00:00 Moscow time; when reached, no new buys till midnight (exits work) | 1 SOL |
-| **Open positions, max** | Scalper positions at once (1–4: your wallet has 4 nonce accounts for sending) | 3 |
-| **SOL in positions, max** | SOL in Scalper positions at once | 0.3 SOL |
+These are in the **Size & limits** group, next to SOL per buy, for each strategy.
+
+| Setting | What it does | When to change it | Default |
+|---|---|---|---|
+| **Daily stop** | Scalper's own loss since 00:00 Moscow time; when reached, no new buys till midnight (exits work) | set it to what you accept to lose in a day | 1 SOL |
+| **Open positions** | Scalper positions at once (1–4: your wallet has 4 nonce accounts for sending) | lower it to spread less; at 3 a fourth dip at the same moment is skipped | 3 |
+| **SOL in positions** | SOL in Scalper positions at once | keep it ≥ SOL per buy × open positions | 0.3 SOL (= 3 × 0.1) |
 
 Each strategy's limits and day are counted on its own trades only (ML and My coins separately) — Copytrade's trades do not count in them, and Scalper's
 do not count in Copytrade's. Two things are shared with Copytrade, set on the Copytrade tab: **Keep for arb** (SOL never
 spent, so your Arb bot keeps its fees) and the **per-coin cap** (the most SOL in one coin across both). If the per-coin
 cap is below your Scalper buy size, Scalper's buys are skipped — raise it on the Copytrade tab.
+
+**The pause after failed buys is shared too:** 10 failed buys in a row in either mode pause new buys of both modes for
+10 minutes; then they resume by themselves.
 
 ## 8. Money: fee, network costs, rent
 
@@ -193,11 +217,30 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | **net · today, MSK** | Scalper's result since 00:00 Moscow time |
 | **net · period** | the result for 1h / 24h / 7d / 30d, trades and wins |
 | **signals** | buys made, buys missed by the price bound, open positions |
+| **Signals the bot skipped** | a line above the numbers when signals were skipped in the period, with the count per reason — see the table below |
 | **fees** | 1% fee and network costs |
 | **balance** | the wallet's SOL and SOL in Scalper positions |
 | **Open positions** | coin, strategy (ML / My coins), bought when, SOL in, value now, PnL, timer left, **sell** |
 | **Radar** | the last dips the brain scored: dip %, SOL sold, market cap, curve fill, buyers in the last minute, the seller's route (direct, terminal, router), score vs bar |
 | **Trades** | every closed trade: strategy, SOL in and out, costs, net, which exit sold it |
+
+**Skip reasons** (the line "Signals the bot skipped"):
+
+| Reason on the page | What it means | What to do |
+|---|---|---|
+| not enough SOL | the wallet has less than size + Keep for arb + ≈0.003 SOL (§5) | top up, lower the size or Keep for arb |
+| our market data feed was down for a while | the bot did not see the coin's market; nothing was bought | nothing; it is on our side |
+| your open positions limit was full | **Open positions** reached | wait, or raise the limit |
+| your "in positions" limit was full | **SOL in positions** reached | raise it to ≥ size × open positions |
+| your per-coin limit was full | the per-coin cap (Copytrade tab) is below the size | raise the cap on the Copytrade tab |
+| already holding this coin | a position of this coin is open | nothing |
+| your daily stop was hit | the day's loss reached **Daily stop** | wait for 00:00 MSK or raise it |
+| service fee unpaid | the 1% fee could not be paid (no SOL) | top up |
+| the bot was stopped / the strategy was off | Scalper or that strategy is stopped | press **start** |
+| paused after failed buys | several buys in a row failed | it resumes by itself |
+| Solana network pause | the network had a pause | nothing |
+| CopyTrade already holds this coin | Copytrade has an open position of the coin | nothing; modes do not mix |
+| the coin was migrating | the curve was completing | nothing |
 
 ## 11. What results to expect, and why they differ
 
@@ -217,11 +260,12 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | **start** says to tick «I understand» | the ML option is not acknowledged | read the card and tick it |
 | "Your wallet is not ready" / "being prepared" | the first connection creates accounts (~0.016 SOL) | top up the wallet with SOL; it retries by itself |
 | Status "daily stop" | Scalper lost the daily stop since 00:00 MSK | new buys resume at midnight Moscow time, or raise the stop |
-| No buys for a long time | the model buys only its best dips — sometimes none for an hour; or a limit is full | check the radar (any green scores?), open positions vs **Open positions, max**, SOL vs size + Keep for arb |
+| No buys for a long time | the model buys only its best dips — sometimes none for an hour; or a limit is full; or SOL is short | read the line **Signals the bot skipped** (§10); check the radar (any green scores?) |
+| "I changed settings, it does not start" | settings are saved only with **save** in the bottom bar; and a signal must come | press **save** (the bar says "all saved"), then **start**; signals come every 10–30 min on average |
 | Buys "missed" | someone was faster; the price moved past 5% | normal; costs only the network fee |
 | Buys skipped although the radar shows green | the per-coin cap (Copytrade tab) is below your size, or not enough SOL above Keep for arb | raise the cap or lower the size; top up |
 | A position held longer than the timer | the coin migrated to its pool; it sells there with the brain | wait, or press **sell** |
-| Status "paused after failed buys" | several buys in a row failed | it resumes by itself after a pause |
+| Status "paused after failed buys" | 10 buys in a row failed, in Scalper or in Copytrade (the pause is shared) | it resumes by itself after 10 minutes |
 
 ## 13. Questions users ask
 
