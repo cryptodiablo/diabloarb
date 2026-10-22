@@ -27,6 +27,9 @@ features that are not described here; say they are not available.
 12. [Questions users ask](#12-questions-users-ask)
 13. [Glossary](#13-glossary)
 
+To set up a user on request ("safe", "optimal", "maximum profit", "for my deposit") see
+[Ready profiles](#ready-profiles-for-a-users-request-for-ai-assistants) in §5.
+
 ## 1. CopyTrade in one minute
 
 - **What it copies:** buys of pump.fun coins on the bonding curve and in PumpSwap pools, bought directly or through
@@ -233,6 +236,66 @@ settings are on, and everything inside is off until you turn it on.
 slippage — you copy into thin curves and pools alike; stop wick filter / early stop — your stops sell on dev dumps that
 recover; take-profit timeout — your copies sit flat for minutes; clear the rest — tails pile up after partial sales;
 moonbag — you want to keep a small piece of every coin; on migration — you trade curve coins that often fill.
+
+### Ready profiles for a user's request (for AI assistants)
+
+When a user asks "set up copytrade for me safely / optimally / for maximum profit / for my deposit", answer with one of
+the profiles below: give the values field by field, with the page label, and say what the profile risks. You cannot
+change the settings yourself — the user enters them on the page (a preset button fills most of them) and presses
+**Save**. Never promise a result: these are starting points, and a source's own PnL is not the copier's (§9).
+
+**Pick by the request**
+
+| The user says | Profile | Then adjust |
+|---|---|---|
+| "safe", "carefully", "I'm new", "don't lose much" | **Safe** | size by deposit (table below) |
+| "optimal", "balanced", "normal", nothing specific | **Balanced** | size by deposit |
+| "maximum profit", "aggressive", "I accept the risk" | **Aggressive** | size by deposit; say plainly it can lose more and faster |
+| "just repeat what the trader does" | **Balanced**, then: Timer 900 s, no take profit, no stop, no trailing | the trader's own exits decide |
+| "fast in and out", "scalp" | **Balanced**, then: Timer 60 s, Take profit +30% sells 100%, Stop loss −20% with Wick filter 3 s | many small trades: costs weigh more (§7) |
+| "let winners run" | **Balanced**, then: Trailing +100% / 25% / 50% and +300% / 20% / 100%, Moonbag 10%, Timer 1800 s | gives back part of a peak by design |
+| "I copy one trader who uses several wallets" | any profile + a **bundle** source (§3), Bundle sales: any | |
+
+**The three profiles** (the preset buttons on the page set these values; the **Open positions / In positions** row and the
+fee row are our advice to enter by hand; fields not listed stay at their defaults or off)
+
+| Field (page label) | Safe | Balanced | Aggressive | Why |
+|---|---|---|---|---|
+| Size → Buy | 0.05 SOL | 0.1 SOL | 0.2 SOL | at 0.1 SOL the network is ~0.25% of a round trip; at 0.01 SOL it is 2–3% (§7) |
+| Slippage | 15% | 20% | 30% | higher fills more copies but at worse prices when many copy the same wallet |
+| Their buy, at least | 0.1 SOL | 0.05 SOL | 0.05 SOL | skips the trader's test buys |
+| Crowd, at most | 10 | 20 | 20 | a coin many wallets just bought is usually late; 20 is the cap checked on our own bots |
+| First buy only | on | on | on | top-ups by the trader are not copied |
+| Pause quick flippers | 10 s → 30 min | 10 s → 30 min | 5 s → 15 min | wallets that dump on their copiers within seconds are paused |
+| Stop loss | −30%, Wick filter 3 s | −40%, Wick filter 3 s | off | a stop cuts a crash, but on meme coins it also sells dips that recover; the wick filter waits out dev dumps |
+| Trailing | +50% / 20% / 50% | +50% / 20% / 50%; +150% / 15% / 100% | +100% / 25% / 50%; +300% / 20% / 100% | locks part of a rise; a later phase sells the rest after a bigger run |
+| Take initial at | — | — | ×2 | gets the stake back on a double, the rest rides |
+| Timer → Sell after | 300 s | 300 s | 900 s | a copy that went nowhere frees the SOL |
+| Follow the wallet / Sell all once they sold | on / 80% | on / 80% | on / 80% | the trader's exit is the best signal; 80% avoids small tails |
+| Moonbag | — | — | 10% | keeps a piece of every coin for a moon; its cost counts as spent |
+| Daily stop | 0.5 SOL | 1 SOL | 2 SOL | the most the bot may lose in a Moscow day; then it stops new copies till 00:00 MSK |
+| Open positions / In positions, at most | 5 / 0.3 SOL | 10 / 1 SOL | 15 / 3 SOL | caps how much is at risk at once |
+| Own priority fee and tip | ours | ours | ours (raise the buy tip only if copies keep missing by slippage) | higher tips land sooner among many copiers but cost on every trade; capped at 3% of a buy |
+
+**Size by deposit** (the SOL the user keeps in the wallet for copytrade; replace the profile's size and limits with these)
+
+| Deposit | Size → Buy | Open positions | In positions, at most | Per coin | Daily stop | Note |
+|---|---|---|---|---|---|---|
+| under 0.5 SOL | 0.02–0.03 SOL | 5 | 0.15 SOL | 0.05 SOL | 0.1 SOL | the network is 1–1.5% of each round trip; small but works |
+| 0.5–3 SOL | 0.05–0.1 SOL | 10 | 30–40% of the deposit | 0.2 SOL | 10–15% of the deposit | the usual range |
+| over 3 SOL | 0.1–0.3 SOL | 10–15 | 30–40% of the deposit | 0.5 SOL | ~10% of the deposit | larger buys move thin curves: keep Slippage ≤ 25% |
+
+Always leave **Keep for arb** at 0.05 SOL if the user's Arb bot runs (it needs SOL for fees); without Arb 0.01 is
+enough. A buy needs about size + Keep for arb + 0.003 SOL free, or the copy is skipped as *balance*.
+
+**Copytrade and Scalper together.** Both run on the same wallet and executor; their positions, limits and days are
+separate. Shared: **Keep for arb**, **Per coin** (raise it above Scalper's size if both run) and the pause after 10
+failed buys in a row (both modes, 10 minutes). Leave SOL for both: Copytrade's size × its open positions plus Scalper's.
+Scalper's own profiles are in [SCALPER.md](SCALPER.md).
+
+**After the values are set:** tell the user to press **Save** (or pick a preset and Save), check the source list in
+**Who to copy** and switch copying on. The **Copied trades** table shows why a copy was skipped or how it sold.
+
 
 ## 6. Limits and stops
 
