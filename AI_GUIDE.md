@@ -261,7 +261,8 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
 - Bundle lanes in ladder/flow: `temporal_bundle` (first stream), `helius_bundle`, `harmonic_bundle` go on the timer
   `hot_bundle_interval_ms` (100 ms = 10 a second) — their own `_cooldown_ms` acts in markets mode only. With a pace of
   their own in ladder/flow too: `temporal_bundle_N_cooldown_ms` (streams 2…100), `astralane_bundle_cooldown_ms`,
-  `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later).
+  `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later), `harmonic_bundle_cooldown_ms` (build
+  `f018db0dc27d`, 23 Oct 2026).
 - Regions: plain senders always send to all their regions. Bundle lanes: `<lane>_all_endpoints = false` — one region by
   turn (`temporal_bundle` and each `temporal_bundle_N` default to `true` = all regions, 8 requests a bundle — `pit` and `ewr`
   are one Temporal server and get one copy; set `false` on each stream to cut `429`); `helius_bundle`, `jito_bundle`, `astralane_bundle` default to `false`.
@@ -415,9 +416,9 @@ whole unless they remove keys first.
 - **I set a bundle lane's `_cooldown_ms` to 30 but it sends only ~10 bundles a second?** In `ladder`/`flow` the bundle
   lanes go on one timer, `hot_bundle_interval_ms` (default 100 ms = 10 a second) — lower it to send more often (every
   bundle lane then speeds up). Lanes with a pace of their own there: `astralane_bundle_cooldown_ms`,
-  `jito_bundle_cooldown_ms` (from build `961ae47e967c`, 13 Oct 2026) and `temporal_bundle_N_cooldown_ms` of the extra
-  Temporal streams; `temporal_bundle_cooldown_ms`, `helius_bundle_cooldown_ms` and `harmonic_bundle_cooldown_ms` act in
-  `markets` mode only.
+  `jito_bundle_cooldown_ms` (from build `961ae47e967c`, 13 Oct 2026), `harmonic_bundle_cooldown_ms` (from build
+  `f018db0dc27d`, 23 Oct 2026) and `temporal_bundle_N_cooldown_ms` of the extra Temporal streams;
+  `temporal_bundle_cooldown_ms` and `helius_bundle_cooldown_ms` act in `markets` mode only.
 - **How do I make Temporal bundles go to one region at a time?** `temporal_bundle_all_endpoints = false`, and for each
   extra stream `temporal_bundle_N_all_endpoints = false` (each stream has its own; default `true` = all 9 regions).
 - **How do I send Temporal bundles only to some regions?** Self-hosted: `temporal_bundle_regions = ["ams", "fra"]`, and
@@ -530,6 +531,9 @@ whole unless they remove keys first.
   your pause (200 ms at most), so a pause under 250 ms really shoots more often. Before, a 50 ms pause sent about as
   much as 200 ms. Measured on one bot in `flow` (blocks ≈0.21 s): 200 ms ≈ 1 transaction a block (90% of blocks),
   100 ms ≈ 2 (94%), 50 ms ≈ 4 (96%). A lower pause costs more fees; `markets` mode is unchanged (build `a1ab21235110`).
+- **23 Oct 2026** — Harmonic bundles take their own pause in `ladder`/`flow` too, as Astralane and Jito bundles:
+  `harmonic_bundle_cooldown_ms` (the dashboard's Cooldown in the Harmonic bundles row) — the lane sends that often, the
+  bundle timer ticks at the fastest lane; unset — the bundle timer's pace (build `f018db0dc27d`).
 
 ## 15. Glossary
 

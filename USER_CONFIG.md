@@ -265,7 +265,7 @@ file. The markets file is not used in these modes.
 - **Bundle lanes** (Temporal, Helius, Astralane and Jito bundles, Harmonic, `jito_classic`) get the hottest route every `hot_bundle_interval_ms`
   whenever any coin is tracked (in `ladder`/`flow` that timer, not the lane's `_cooldown_ms`, sets how often a bundle
   lane sends: 100 ms = 10 bundles a second; exceptions with a pace of their own — `astralane_bundle_cooldown_ms`,
-  `jito_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
+  `jito_bundle_cooldown_ms`, `harmonic_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
   own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
   `helius_bundle_…`, `astralane_bundle_…`, `jito_bundle_…`, lamports a transaction) when set, else the senders' `hot_sender_min/max_priority_fee`.
 - **Flow** — non-stop: one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins, or one and the
