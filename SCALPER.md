@@ -118,11 +118,14 @@ loses on average — pick coins you know, keep the size small and the limits tig
 | **SOL per buy** | the SOL spent on each buy | 0.1 is the checked size; smaller sizes pay relatively more network | 0.1 SOL (0.01–1) |
 | **Price bound** (ML) | at most 5% fewer tokens than at the decision; a buy past it fails on chain and costs only its network fee | fixed for the ML strategy | 5% |
 
-By default priority fees and tips are the service's. Your own priority fee and tip, if you set them on the Copytrade tab
-(Limits → advanced → **Own priority fee and tip**, up to 0.01 SOL each, at most 3% of a buy), apply to Scalper's trades
-too — both modes send through the same executor. On our own bots bigger tips did not buy a better place.
+**Own priority fee and tip** (Size & limits, per strategy): **ours** — the service's fees (buy 0.0001 priority + 0.0001
+tip, sale 0.00002 + 0.000005 SOL); **my own** — your values for buy and sale: route 1 (priority + tip, through the
+sending services) and route 2 (priority only, through plain RPCs; empty = twice the buy's priority / the sale's
+priority), up to 0.01 SOL each, at most 3% of a buy. Every transaction goes both ways; the first to land counts. They
+are this strategy's own — Copytrade's fees do not apply to Scalper. On our own bots bigger tips did not buy a better
+place, so "ours" is the recommended choice.
 
-**How much SOL a buy needs.** The wallet must hold at least: SOL per buy + **Keep for arb** (Copytrade tab) + about
+**How much SOL a buy needs.** The wallet must hold at least: SOL per buy + this strategy's **Keep for arb** + about
 0.003 SOL (the coin's token account and the network) + any unpaid 1% fee + buys still in flight. Example: size 0.05 and
 Keep for arb 0.05 → about 0.103 SOL. With less, signals are skipped as "not enough SOL" (§10, §12).
 
@@ -178,14 +181,15 @@ These are in the **Size & limits** group, next to SOL per buy, for each strategy
 | **Daily stop** | Scalper's own loss since 00:00 Moscow time; when reached, no new buys till midnight (exits work) | set it to what you accept to lose in a day | 1 SOL |
 | **Open positions** | Scalper positions at once (1–4: your wallet has 4 nonce accounts for sending) | lower it to spread less; at 3 a fourth dip at the same moment is skipped | 3 |
 | **SOL in positions** | SOL in Scalper positions at once | keep it ≥ SOL per buy × open positions | 0.3 SOL (= 3 × 0.1) |
+| **Keep for arb** | this strategy never spends the wallet's SOL below this, so your Arb bot keeps its fees; never touches WSOL | set it to what Arb needs | your Copytrade value at the split (23.10), else 0.05 SOL |
+| **Per coin, max** | the most SOL this strategy keeps in one coin; empty = no cap | keep it above SOL per buy, or every buy is skipped | your Copytrade value at the split (23.10) |
 
-Each strategy's limits and day are counted on its own trades only (ML and My coins separately) — Copytrade's trades do not count in them, and Scalper's
-do not count in Copytrade's. Two things are shared with Copytrade, set on the Copytrade tab: **Keep for arb** (SOL never
-spent, so your Arb bot keeps its fees) and the **per-coin cap** (the most SOL in one coin across both). If the per-coin
-cap is below your Scalper buy size, Scalper's buys are skipped — raise it on the Copytrade tab.
+Every setting of Scalper is its own — **nothing is shared with Copytrade any more** (since 23 October 2026): size,
+limits, Keep for arb, per-coin cap, fees, exits, the daily stop, start/stop. Each strategy's limits and day count only
+its own trades (ML and My coins separately).
 
-**The pause after failed buys is shared too:** 10 failed buys in a row in either mode pause new buys of both modes for
-10 minutes; then they resume by themselves.
+**The pause after failed buys is per mode:** 10 failed buys in a row pause new buys of that mode for 10 minutes; then
+they resume by themselves. Copytrade's failures do not pause Scalper, and Scalper's do not pause Copytrade.
 
 ## 8. Money: fee, network costs, rent
 
@@ -233,7 +237,7 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | our market data feed was down for a while | the bot did not see the coin's market; nothing was bought | nothing; it is on our side |
 | your open positions limit was full | **Open positions** reached | wait, or raise the limit |
 | your "in positions" limit was full | **SOL in positions** reached | raise it to ≥ size × open positions |
-| your per-coin limit was full | the per-coin cap (Copytrade tab) is below the size | raise the cap on the Copytrade tab |
+| your per-coin limit was full | **Per coin, max** is below the size | raise it in Size & limits |
 | already holding this coin | a position of this coin is open | nothing |
 | your daily stop was hit | the day's loss reached **Daily stop** | wait for 00:00 MSK or raise it |
 | service fee unpaid | the 1% fee could not be paid (no SOL) | top up |
@@ -264,9 +268,9 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | No buys for a long time | the model buys only its best dips — sometimes none for an hour; or a limit is full; or SOL is short | read the line **Signals the bot skipped** (§10); check the radar (any green scores?) |
 | "I changed settings, it does not start" | settings are saved only with **save** in the bottom bar; and a signal must come | press **save** (the bar says "all saved"), then **start**; signals come every 10–30 min on average |
 | Buys "missed" | someone was faster; the price moved past 5% | normal; costs only the network fee |
-| Buys skipped although the radar shows green | the per-coin cap (Copytrade tab) is below your size, or not enough SOL above Keep for arb | raise the cap or lower the size; top up |
+| Buys skipped although the radar shows green | **Per coin, max** is below your size, or not enough SOL above Keep for arb | raise it or lower the size; top up |
 | A position held longer than the timer | the coin migrated to its pool; it sells there with the brain | wait, or press **sell** |
-| Status "paused after failed buys" | 10 buys in a row failed, in Scalper or in Copytrade (the pause is shared) | it resumes by itself after 10 minutes |
+| Status "paused after failed buys" | 10 buys in a row of this mode failed | it resumes by itself after 10 minutes |
 
 ## 13. Questions users ask
 
@@ -313,7 +317,7 @@ Give the exact values field by field, say why, and say what the user risks. **Ne
 setup is the ML strategy with a 10-second timer; everything else is the user's own style.
 
 **First ask (or read from the page):** how much SOL is in the wallet; whether the Arb bot runs on it and what **Keep for
-arb** is (Copytrade tab); whether Copytrade also trades on it (its positions use the same SOL); how much the user accepts
+arb** is (Size & limits); whether Copytrade also trades on it (its positions use the same SOL); how much the user accepts
 to lose in a day.
 
 ### The profiles (ML strategy — "Curve dip bounce")
@@ -371,10 +375,10 @@ up only for a user who asks for it and knows their coins, and say so plainly.
 
 ### Copytrade and Scalper together
 
-Both use one wallet and one executor. Keep **Per coin** (Copytrade tab) above Scalper's SOL per buy — otherwise Scalper's
-buys are skipped as "per-coin limit". Keep **Keep for arb** set if Arb runs; leave enough SOL for both (Copytrade's own
-size × its max positions + Scalper's). A shared pause (10 failed buys in a row) stops new buys of both for 10 minutes
-(§7). For Copytrade's own profiles see [COPYTRADE.md](COPYTRADE.md).
+Both use one wallet, but every setting is separate: Scalper's **Keep for arb**, **Per coin, max** and fees are set in its
+Size & limits, Copytrade's on its own tab. Keep Scalper's Per coin above its SOL per buy, set Keep for arb in both if Arb
+runs, and leave enough SOL for both (Copytrade's size × its max positions + Scalper's). The pause after 10 failed buys
+is per mode (§7). For Copytrade's own profiles see [COPYTRADE.md](COPYTRADE.md).
 
 ### After the values are set
 
