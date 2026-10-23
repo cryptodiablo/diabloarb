@@ -128,6 +128,11 @@ last value). Keys and defaults: USER_CONFIG.md.
   hot_sender_min_priority_fee = 1000               # the ladder's senders
   hot_sender_max_priority_fee = 10000
   ```
+  On diablo.bot (from 22 October 2026) this is the **Harmonic bundles** row in Senders (in every mode; while off it is
+  under **+ N inactive senders**): turn it on and paste the keypair Harmonic whitelisted for you into **Harmonic key** —
+  the whole secret key (a JSON array of 64 bytes or its base58), not the address; the site stores it encrypted and shows
+  only the address back. Without your own key Harmonic bundles do not work on diablo.bot — Harmonic's public service is
+  not offered there (it would get the site's servers banned).
 - **Maximum presence (flow):** `mode = "flow"`, more senders, a short `hot_sender_pause_ms` (one shot this often, 250 ms
   when unset). Costs fees all the time.
 
@@ -424,7 +429,8 @@ whole unless they remove keys first.
   (`jito_bundle = true`); check the `… bundle enabled` line at start and the config for that key (copied sample, AI edit).
 - **I turned a bundle lane on and nothing lands — is it broken?** Usually not: a bundle lands only on a win, so the
   wallet history stays quiet for hours while «sent» grows. Check the bot's status in the cabinet and the lane's key.
-- **Harmonic without a whitelisted key?** Yes, from 9 Oct 2026: `harmonic_bundle = true` and
+- **Harmonic without a whitelisted key?** Only when you run the sender yourself, not on diablo.bot (there: your own
+  whitelisted key in the Harmonic bundles row, §3). Self-hosted, from 9 Oct 2026: `harmonic_bundle = true` and
   `harmonic_bundle_public = true`, no `harmonic_bundle_auth_keypair`, and `harmonic_bundle_all_endpoints = false`
   (Harmonic forwards between its regions itself). Harmonic's public service has lower rate limits and drops senders
   whose bundles keep reverting, so the bot sends there only when it sees a profit itself — far fewer bundles than

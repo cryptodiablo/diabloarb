@@ -114,7 +114,10 @@ problem reports: Telegram bot [@diablo_support_bot](https://t.me/diablo_support_
   your bot's server: it forwards your transaction to the nodes of its region and to the main gateway at once; reads go
   through the main gateway. Example for a bot in Frankfurt: `send_rpcs = ["http://fra.rpc.diablosender.com/?api-key=ds_…"]`.
   The list with copy buttons is in your diablosender.com dashboard under the main link. No rate limit is set on a key.
-- **Do I need a Harmonic searcher whitelist?** Not on diablo.bot — it works as is. Self-hosted: optional;
+- **Do I need a Harmonic searcher whitelist?** On diablo.bot — yes: turn on the **Harmonic bundles** row in Senders
+  (under **+ N inactive senders** while off) and paste the keypair Harmonic whitelisted for you into **Harmonic key**;
+  without it Harmonic is not available there. No tip: Harmonic's price is the priority, and a bundle without profit is
+  dropped, nothing paid. Self-hosted: optional;
   `harmonic_bundle_public = true` sends without a whitelisted key at lower limits (AI_GUIDE §13).
 - **Which lanes cost nothing on a miss?** Bundles: Temporal, Helius, Astralane, Jito bundles, Harmonic, and Jito with
   `jito_classic = true`. Plain senders cost fee + priority on a landed miss; RPC copies and SWQoS land every time.
