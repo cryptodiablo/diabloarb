@@ -293,9 +293,10 @@ fee row are our advice to enter by hand; fields not listed stay at their default
 Always leave **Keep for arb** at 0.05 SOL if the user's Arb bot runs (it needs SOL for fees); without Arb 0.01 is
 enough. A buy needs about size + Keep for arb + 0.003 SOL free, or the copy is skipped as *balance*.
 
-**Copytrade and Scalper together.** Both run on the same wallet and executor; their positions, limits and days are
-separate. Shared: **Keep for arb**, **Per coin** (raise it above Scalper's size if both run) and the pause after 10
-failed buys in a row (both modes, 10 minutes). Leave SOL for both: Copytrade's size × its open positions plus Scalper's.
+**Copytrade and Scalper together.** Both run on the same wallet, and nothing is shared: each mode has its own on/off,
+size, slippage, exits, limits, day, **Keep for arb**, per-coin cap, priority fee and tip, and its own pause after failed
+buys (since 23.10.2026). Settings on the Copytrade tab never change Scalper's. Leave SOL for both: Copytrade's size × its
+open positions plus Scalper's, plus each one's Keep for arb.
 Scalper's own profiles are in [SCALPER.md](SCALPER.md).
 
 **After the values are set:** tell the user to press **Save** (or pick a preset and Save), check the source list in
@@ -333,7 +334,7 @@ and a 0.0001 SOL tip, a sale 0.00002 SOL priority and a 0.000005 SOL tip. You ca
 to 0.01 SOL each). Every transaction goes out **two ways at once** and the first to land wins: **route 1** with the tip to
 tip-taking senders (Jito and others) at your priority, **route 2** without a tip to plain RPCs at its own priority (by
 default twice the buy's priority, the sale's priority) — the "high tip, low fee / low tip, high fee" pair of other
-bots. Set both in **Own priority fee and tip**. When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
+bots. Set both in **Own priority fee and tip**. These are Copytrade's; Scalper and "my coins" have their own on the Scalper tab. When many users copy the same wallet, a higher tip and priority land your transaction sooner — at a
 better price — but every trade costs that much more, win or lose. A buy's fees never exceed 3% of the buy: anything over
 is cut, the tip first. Example: with 0.05 SOL buys a 0.001 SOL tip is 2% of each buy; it pays off only if it often gets
 you in ahead of other copiers. Changes apply at once.
