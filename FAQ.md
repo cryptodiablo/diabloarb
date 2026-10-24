@@ -124,7 +124,8 @@ problem reports: Telegram bot [@diablo_support_bot](https://t.me/diablo_support_
 
 ## 7. Self-hosted setup
 
-- **What do I need?** A Linux x86_64 server (near Frankfurt/Amsterdam/New York is best), a read RPC (`rpc`), RPCs that
+- **What do I need?** A Linux x86_64 machine that stays on 24/7 — any VPS, a home PC or a laptop: location and ping
+  barely matter, the profit check is on chain ([AI_GUIDE §7, "Speed and server location"](AI_GUIDE.md#speed-and-server-location-why-they-barely-matter)), a read RPC (`rpc`), RPCs that
   accept transactions (`send_rpcs`), a Yellowstone gRPC / Geyser endpoint for ladder and flow (`geyser_endpoint`,
   `geyser_x_token`), and keys of the senders you want (Temporal UUID, Astralane, Jito UUID optional…). Install and run:
   [AI_GUIDE §2](AI_GUIDE.md#2-install-and-run). Dry run first: `DIABLO_SENDER_DRY=1 ./sender config.toml`.

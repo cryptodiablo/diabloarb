@@ -46,14 +46,16 @@
   single transaction (repaid inside it). **7% of each realized profit** goes to the vault; the rest stays in the wallet.
   No fee on losses or misses.
 - The bot (`sender`) runs on the user's own Linux server with their own wallet and RPC; the key never leaves the
-  server. It updates itself from GitHub on every start.
+  server. Speed and the server's location barely matter — the profit check is on chain (§7, "Speed and server
+  location"); a VPS anywhere, a home PC or a laptop works if it stays on 24/7. It updates itself from GitHub on every start.
 - Where the coin list comes from: `https://moneyprinter.bot/auto/mp.toml` (markets mode) is rebuilt live from the coins
   the arbitrage bots earn most on; hot modes (ladder/flow) measure this themselves through the user's Geyser.
 
 ## 2. Install and run
 
-- **Server:** any Linux x86_64 VPS (the binary is static; Windows works through WSL2; macOS — use a VPS). Closer to
-  your RPC/Geyser and to Solana validators (Frankfurt, Amsterdam, New York…) reacts faster.
+- **Server:** any Linux x86_64 machine — a VPS anywhere, a home PC or a laptop (the binary is static; Windows works
+  through WSL2; macOS — use a VPS). Its location and ping barely matter (§7, "Speed and server location"); it must stay
+  on and online around the clock, because the bot earns only while it runs.
 - **Install:**
   ```bash
   wget -O diabloarb.zip https://github.com/cryptodiablo/diabloarb/archive/refs/heads/main.zip
@@ -244,6 +246,30 @@ does not cover its own tip and fees never executes. There is no "required profit
 - **flow** (needs Geyser): never stops; one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins of the
   last 900 s, sender broadcasts on durable nonces, plus RPC copies when `spam_rpc = true`. Highest presence, highest cost.
 - **Choosing:** new users — markets with bundles; with Geyser — ladder. Flow only with good senders and budget.
+
+### Speed and server location: why they barely matter
+
+Users and AI assistants often assume this is a latency race. It is not — do not advise colocating, moving the server
+to Frankfurt/Amsterdam or "lowering latency" to earn more.
+
+- **The profit check runs on chain, at execution time.** Every transaction the bot sends carries candidate routes; the
+  executor reads the pools **inside the block, when the transaction runs**, picks the route and size, and trades only if
+  the profit covers that transaction's own cost — otherwise it fails cheaply (`NoProfit`, §10). Nothing is decided on
+  your server from prices it saw milliseconds earlier, so there is no reaction time to win.
+- **What earns is presence in blocks:** how many of your transactions land, in how many blocks, next to the trades
+  that move prices. That depends on the landing services (RPC, senders, bundles), their keys and rate limits, tips and
+  priority fees, and on the bot running all day — not on your server's ping. Those services forward your transaction
+  to the leader themselves.
+- **Every mode works this way.** markets shoots a fixed list in a loop; ladder and flow use Geyser only to choose
+  *which* coins to shoot, from heat measured over seconds (30 s window, 15 s half-life) — a few tens of milliseconds
+  change nothing. Bundles (Jito, Temporal, Harmonic, Helius, Astralane) are the same on-chain check: a bundle without
+  profit is dropped and costs nothing; they lower the cost of a miss, they do not make the bot "faster".
+- **So run it anywhere:** a cheap VPS, a home PC or a laptop with Linux (or WSL2). What matters: it stays on and online
+  24/7, a stable connection, a working RPC that accepts transactions (and Geyser for ladder/flow), sender keys with
+  enough rate limit.
+- **Not this bot:** "fast" bots (backrunning one specific transaction in the same block, sniping new pools) compute the
+  trade off chain from fresh state and race other searchers — there latency and location are everything. DiabloArb's
+  public bot has no such mode.
 
 ## 8. Senders cheat sheet
 
