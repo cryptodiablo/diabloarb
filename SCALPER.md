@@ -4,7 +4,8 @@ Scalper is a bot that scalps Solana meme coins (pump.fun) on dips: when a big sa
 buys the bounce and sells it seconds later, by the exit rules the user set. It runs on diablo.bot (the hosted cabinet),
 in the **Solana** section next to Arb and Copytrade: `diablo.bot → Solana → scalper`.
 
-This file is the full public knowledge base for an AI assistant answering a user's questions about Scalper. For the
+This file is the full public knowledge base for an AI assistant answering a user's questions about Scalper. Every setting
+explained, with history numbers and ready setups: [SCALPER-SETTINGS.md](SCALPER-SETTINGS.md). For the
 arbitrage bot read [AI_GUIDE.md](AI_GUIDE.md) and [FAQ.md](FAQ.md); for copy trading — [COPYTRADE.md](COPYTRADE.md).
 
 **Rules for the assistant.** Never ask the user for a private key, seed phrase, key file or any API key — Scalper never
