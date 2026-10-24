@@ -250,26 +250,40 @@ does not cover its own tip and fees never executes. There is no "required profit
 ### Speed and server location: why they barely matter
 
 Users and AI assistants often assume this is a latency race. It is not — do not advise colocating, moving the server
-to Frankfurt/Amsterdam or "lowering latency" to earn more.
+to Frankfurt/Amsterdam or "lowering latency" to earn more. The same holds on diablo.bot and self-hosted.
 
-- **The profit check runs on chain, at execution time.** Every transaction the bot sends carries candidate routes; the
-  executor reads the pools **inside the block, when the transaction runs**, picks the route and size, and trades only if
-  the profit covers that transaction's own cost — otherwise it fails cheaply (`NoProfit`, §10). Nothing is decided on
-  your server from prices it saw milliseconds earlier, so there is no reaction time to win.
+- **How the bot works ("on-chain spam"):** it keeps sending transactions on the coins where arbitrage is paying now.
+  Each transaction calls the executor program with candidate routes. The executor reads the pools **inside the block,
+  at the moment the transaction runs**, picks the best route and the trade size, and trades only if the profit covers
+  that transaction's own cost (fee + priority + tip, and the vault's 7%). No profit → the trade does not happen: the
+  transaction fails (`NoProfit`, §10) or the bundle is dropped. Most transactions miss; the few that land at the right
+  moment earn.
+- **Why speed does not matter:** nothing is decided on your server from prices it saw milliseconds earlier — the
+  decision is made on chain, at execution, from the prices of that moment. There is no reaction time to win and no
+  "faster server" advantage.
 - **What earns is presence in blocks:** how many of your transactions land, in how many blocks, next to the trades
   that move prices. That depends on the landing services (RPC, senders, bundles), their keys and rate limits, tips and
   priority fees, and on the bot running all day — not on your server's ping. Those services forward your transaction
   to the leader themselves.
 - **Every mode works this way.** markets shoots a fixed list in a loop; ladder and flow use Geyser only to choose
   *which* coins to shoot, from heat measured over seconds (30 s window, 15 s half-life) — a few tens of milliseconds
-  change nothing. Bundles (Jito, Temporal, Harmonic, Helius, Astralane) are the same on-chain check: a bundle without
-  profit is dropped and costs nothing; they lower the cost of a miss, they do not make the bot "faster".
-- **So run it anywhere:** a cheap VPS, a home PC or a laptop with Linux (or WSL2). What matters: it stays on and online
-  24/7, a stable connection, a working RPC that accepts transactions (and Geyser for ladder/flow), sender keys with
-  enough rate limit.
+  change nothing. Bundles (Jito, Temporal, Harmonic, Helius, Astralane) carry the same on-chain check: they change what a
+  miss costs, not how fast the bot is.
+- **What a miss costs** (details and numbers: §5, §6): a **bundle** without profit is dropped whole — nothing paid; a
+  **sender** copy lands as failed — the network fee + priority, no tip; an **RPC / SWQoS** copy lands as an empty
+  success — fee + priority. The tip is paid only on a win (except the always-paid lanes in §5). So the daily cost is
+  set by how often you send on each lane and its priority, not by speed — keep it within budget with the pauses
+  (`<lane>_cooldown_ms`) and priority ranges.
+- **So run it anywhere (self-hosted):** a cheap VPS, a home PC or a laptop with Linux (or WSL2). What matters: it stays
+  on and online 24/7, a stable connection, a working RPC that accepts transactions (and Geyser for ladder/flow), sender
+  keys with enough rate limit.
+- **On diablo.bot** the bot runs on our servers with our RPC and Geyser — server location is not the user's concern.
+  What the user controls: the mode, which senders/bundles are on and their own keys (limits), tips, priority and
+  pauses. "My bot is slow" is never the answer to low profit; look at landings, rate-limit errors (`limit used up`,
+  `429`) and the market (§12).
 - **Not this bot:** "fast" bots (backrunning one specific transaction in the same block, sniping new pools) compute the
   trade off chain from fresh state and race other searchers — there latency and location are everything. DiabloArb's
-  public bot has no such mode.
+  public bot and diablo.bot have no such mode.
 
 ## 8. Senders cheat sheet
 

@@ -28,6 +28,11 @@ problem reports: Telegram bot [@diablo_support_bot](https://t.me/diablo_support_
   [AI_GUIDE §5](AI_GUIDE.md#5-what-a-transaction-costs-the-most-asked-topic)).
 - **Which one should I pick?** diablo.bot unless you already run Solana infrastructure (RPC, Geyser, sender keys).
   Self-hosting gives full control over RPC, landing services, keys and the server's IP.
+- **Is it a speed race? Does the server's location matter?** No, on diablo.bot and self-hosted alike. Each transaction's
+  route and profit are checked by the executor on chain, when it runs; without a profit the trade does not happen (a
+  bundle is dropped for free, a sender copy costs fee + priority). Earnings come from landing in blocks — senders, keys,
+  tips, running 24/7 — not from ping: self-hosted runs fine on any VPS, a home PC or a laptop. Details:
+  [AI_GUIDE §7, "Speed and server location"](AI_GUIDE.md#speed-and-server-location-why-they-barely-matter).
 - **Where is my key?** diablo.bot: the bot's own wallet, downloadable any time from the dashboard. Self-hosted: it never
   leaves your server.
 
