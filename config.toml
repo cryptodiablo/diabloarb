@@ -189,6 +189,18 @@ astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region 
 # astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # astralane_bundle_max_priority_fee = 10000
 
+aura = false # enable AuraBoost sender (auraboost.io; from 25 Oct 2026)
+aura_api_key = "" # Aura API key
+aura_tip_min_lamports = 1000000 # min 1 000 000
+aura_tip_max_lamports = 3000000
+aura_cooldown_ms = 300 # Aura loop interval in ms (3 regions each time)
+
+aura_bundle = false # Aura bundles (atomic sendBundle): a miss is dropped and costs nothing
+aura_bundle_api_key = "" # optional separate Aura key for the bundles; empty = aura_api_key
+aura_bundle_tip_min_lamports = 1000000 # min 1 000 000
+aura_bundle_tip_max_lamports = 3000000
+aura_bundle_cooldown_ms = 100 # one region by turn; in ladder/flow this lane's own pace
+
 zeroslot = false # enable 0slot staked_conn sender
 zeroslot_api_key = "{zeroslot_api_key}" # 0slot API key
 zeroslot_tip_min_lamports = "{zeroslot_min_tip}" # 0slot min tip (>= 1_000_000)

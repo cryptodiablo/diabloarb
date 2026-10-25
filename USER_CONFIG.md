@@ -150,6 +150,8 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `hellomoon` | `hellomoon_api_key` (required here) | 1 000 000 | |
 | `astralane` | `astralane_api_key` | 10 000 | |
 | `astralane_bundle` | `astralane_bundle_api_key` if set (a separate key), else the same `astralane_api_key` | 10 000 | Astralane `sendBundle` with revert protection, a lane of its own next to `astralane` (from 12 Oct 2026). Keys `astralane_bundle_tip_min/max_lamports` (default 10 000), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (false: one region by turn; true: every region each time). In `ladder`/`flow` its `astralane_bundle_cooldown_ms`, when set, is the lane's own pace (unset: `hot_bundle_interval_ms`). A bundle without profit is always dropped — nothing paid. |
+| `aura` | `aura_api_key` | 1 000 000 | AuraBoost (from 25 Oct 2026): `sendTransaction` on `/aura` in fra, ams, nyc (every region each time). Key from auraboost.io; rate limit per key (a trial: 10 a second). |
+| `aura_bundle` | `aura_bundle_api_key` if set, else the same `aura_api_key` | 1 000 000 | Aura `sendBundle` (atomic: a bundle without profit is dropped — nothing paid), a lane of its own next to `aura`. Keys `aura_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms` (in `ladder`/`flow` its own pace; unset: `hot_bundle_interval_ms`), `_all_endpoints` (false: one of 3 regions by turn; true: every region each time). |
 | `zeroslot` | `zeroslot_api_key` | 1 000 000 | 0slot. |
 | `falcon` | `falcon_api_key` | 1 000 000 | |
 | `stellium` | `stellium_api_key` | 1 000 000 | `stellium_endpoints` = list of its URLs. |
@@ -194,6 +196,7 @@ replaces every plain sender's pause (unset: each sender's own pause from the tab
 | `helius_swqos` | `helius_api_key` (optional) | `helius_swqos_tip_min/max_lamports` (5 000) | `helius_swqos_min/max_priority_fee` (each unset end: the global one) | `helius_swqos_cooldown_ms` | Lands always; `helius_swqos_require_profit = true`: fails without profit, tip unpaid. |
 | `temporal` | `temporal_uuid` | `temporal_tip_min/max_lamports` (1 000 000) | `temporal_min/max_priority_fee` (none: global) | `temporal_cooldown_ms` | `temporal_tip_accounts` overrides the tip accounts. |
 | `astralane` | `astralane_api_key` | `astralane_tip_min/max_lamports` (10 000) | `astralane_min/max_priority_fee` (none: global) | `astralane_cooldown_ms` | |
+| `aura` | `aura_api_key` | `aura_tip_min/max_lamports` (1 000 000) | `aura_min/max_priority_fee` (none: global) | `aura_cooldown_ms` | AuraBoost; 3 regions each time. |
 | `zeroslot` | `zeroslot_api_key` | `zeroslot_tip_min/max_lamports` (1 000 000) | `zeroslot_min/max_priority_fee` | `zeroslot_cooldown_ms` | 0slot. |
 | `falcon` | `falcon_api_key` | `falcon_tip_min/max_lamports` (1 000 000) | `falcon_min/max_priority_fee` | `falcon_cooldown_ms` | |
 | `stellium` | `stellium_api_key` | `stellium_tip_min/max_lamports` (1 000 000) | `stellium_min/max_priority_fee` | `stellium_cooldown_ms` | `stellium_endpoints = ["…"]` — its hosts. |
@@ -221,6 +224,7 @@ senders' `hot_sender_min/max_priority_fee`).
 | `temporal_bundle_N` (N = 2…100) | `temporal_bundle_N_uuid` → `temporal_bundle_uuid` → `temporal_uuid` | `temporal_bundle_N_tip_min/max_lamports` → 1 000 000 | `temporal_bundle_N_min/max_priority_fee` | `temporal_bundle_N_cooldown_ms` → `temporal_bundle_cooldown_ms` | `temporal_bundle_N_cooldown_ms` → `hot_bundle_interval_ms` | `temporal_bundle_N_all_endpoints` (`true`; not taken from the first stream) |
 | `helius_bundle` | `helius_api_key` (optional) | `helius_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `helius_bundle_min/max_priority_fee` (at least 5 000) | `helius_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `helius_bundle_all_endpoints` (`false`) |
 | `astralane_bundle` | `astralane_bundle_api_key` → `astralane_api_key` (required) | `astralane_bundle_tip_min/max_lamports` → 10 000 (minimum 10 000) | `astralane_bundle_min/max_priority_fee` | `astralane_bundle_cooldown_ms` | `astralane_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `astralane_bundle_all_endpoints` (`false`) |
+| `aura_bundle` | `aura_bundle_api_key` → `aura_api_key` (required) | `aura_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `aura_bundle_min/max_priority_fee` | `aura_bundle_cooldown_ms` | `aura_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `aura_bundle_all_endpoints` (`false`) |
 | `jito_bundle` | `jito_bundle_uuid` → `jito_uuid` (optional) | `jito_bundle_tip_min/max_lamports` → 10 000 | `jito_bundle_min/max_priority_fee` (none: no priority) | `jito_bundle_cooldown_ms` | `jito_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `jito_bundle_all_endpoints` (`false`) |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file), or `harmonic_bundle_public = true` | no tip (the priority is the price) | `harmonic_bundle_min/max_priority_fee` (one end: copied) | `harmonic_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `harmonic_bundle_endpoints` (fra, lon, ams, ewr, tyo, sgp or URLs); `harmonic_bundle_all_endpoints` (`true`; `false` with public) |
 
@@ -384,6 +388,14 @@ helius_tip_max_lamports = 2000000
 # jito_bundle_uuid = "…"                # optional: a separate UUID; unset = jito_uuid
 # jito_bundle_tip_min_lamports = 10000
 # jito_bundle_tip_max_lamports = 1000000
+# aura = true                          # AuraBoost (auraboost.io)
+# aura_api_key = "…"
+# aura_tip_min_lamports = 1000000      # min 1 000 000
+# aura_tip_max_lamports = 3000000
+# aura_bundle = true                   # Aura bundles: a miss costs nothing
+# aura_bundle_api_key = "…"           # optional: a separate key; unset = aura_api_key
+# aura_bundle_tip_min_lamports = 1000000
+# aura_bundle_tip_max_lamports = 3000000
 # zeroslot = true
 # zeroslot_api_key = "…"
 # zeroslot_tip_min_lamports = 1000000   # 0slot; min 1 000 000
