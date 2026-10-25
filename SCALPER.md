@@ -140,7 +140,7 @@ coins have their own); **trailing, spike, dump and quiet are shared by both stra
 
 | Exit | What it does | When to turn it on | Example |
 |---|---|---|---|
-| **Timer** | sells everything this long after the buy | always on; for ML keep 10 s — the model is trained for it | ML 10 s, My coins 60 s |
+| **Timer** | sells everything this long after the buy | always on; for ML keep 10 s — the model is trained for it. Your own value (from 1 s) sells ML buys by your timer, not with the model; a Style button restores its 10 s / 30 s | ML 10 s, My coins 60 s |
 | **Take profit** | sells everything at +X% | you want to lock a quick gain before the timer | 30 → all at +30% |
 | **Stop loss** | sells everything at −X%. A crash in one transaction can jump past it | with long timers, to cap a slow bleed | 25 → all at −25% |
 | **Sell on a dump** | the price falls X% within 3 s (a big seller, a bundle dumping): sells all | coins with dev or bundle dumps | 20 |

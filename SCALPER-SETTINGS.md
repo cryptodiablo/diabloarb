@@ -125,7 +125,7 @@ timer, so the checked setup leaves them off.
 
 | Exit | What it does | When to turn it on | Example |
 |---|---|---|---|
-| **Timer** | sells everything this long after the buy | always; set by Style | 10 s / 30 s |
+| **Timer** | sells everything this long after the buy | always; set by Style. Type your own seconds (from 1) to sell by your timer instead of with the model — e.g. when two of your bots sell in the same block; pressing a Style button brings its 10 s / 30 s back | 10 s / 30 s, or yours |
 | **Take profit** | sells everything at +X% | to lock a quick gain | 30 |
 | **Stop loss** | sells everything at −X% (a crash in one transaction can jump past it) | with Bold or long timers | 25 |
 | **Sell on a dump** | the price falls X% within 3 s (a big seller): sells | coins with dev or bundle dumps | 20 |
