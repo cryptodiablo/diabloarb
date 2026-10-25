@@ -223,7 +223,7 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | **net · today, MSK** | Scalper's result since 00:00 Moscow time |
 | **net · period** | the result for 1h / 24h / 7d / 30d, trades and wins |
 | **signals** | buys made, buys missed by the price bound, open positions |
-| **Signals the bot skipped** | a line above the numbers when signals were skipped in the period, with the count per reason — see the table below |
+| **Signals the bot skipped** | a line above the numbers when signals were skipped in the period, with the count per reason — see the table below (signals missed while Scalper or the strategy was stopped are not counted there) |
 | **fees** | 1% fee and network costs |
 | **balance** | the wallet's SOL and SOL in Scalper positions |
 | **Open positions** | coin, strategy (ML / My coins), bought when, SOL in, value now, PnL, timer left, **sell** |
@@ -242,7 +242,6 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | already holding this coin | a position of this coin is open | nothing |
 | your daily stop was hit | the day's loss reached **Daily stop** | wait for 00:00 MSK or raise it |
 | service fee unpaid | the 1% fee could not be paid (no SOL) | top up |
-| the bot was stopped / the strategy was off | Scalper or that strategy is stopped | press **start** |
 | paused after failed buys | several buys in a row failed | it resumes by itself |
 | Solana network pause | the network had a pause | nothing |
 | CopyTrade already holds this coin | Copytrade has an open position of the coin | nothing; modes do not mix |
