@@ -244,7 +244,6 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | your daily stop was hit | the day's loss reached **Daily stop** | wait for 00:00 MSK or raise it |
 | service fee unpaid | the 1% fee could not be paid (no SOL) | top up |
 | paused after failed buys | several buys in a row failed | it resumes by itself |
-| your «only if it bounced» — the price did not rise in time | your own entry's bounce check skipped this dip | nothing; widen or clear «Only if it bounced» |
 | Solana network pause | the network had a pause | nothing |
 | CopyTrade already holds this coin | Copytrade has an open position of the coin | nothing; modes do not mix |
 | the coin was migrating | the curve was completing | nothing |
