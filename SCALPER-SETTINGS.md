@@ -218,9 +218,10 @@ switches filtered it out — that is expected and is how users spread over diffe
 ### Trying the new settings on a second wallet
 
 If your Scalper works well as it is, leave it: nothing changed for you. To try your own entry, create a second wallet
-(the wallet button next to arb / copytrade / scalper → **+ new wallet**): it gets a copy of your **arb** settings, while
-Scalper there starts at our defaults. Bring your Scalper setup over with **Export** on the first wallet and **Import**
-on the new one (§9), then turn the new options on there — the two wallets' results stay apart.
+(the wallet button next to arb / copytrade / scalper → **+ new wallet**). It gets a copy of **all** the open wallet's
+settings — arb, Copytrade and Scalper (with the extra exits) — but Copytrade and both Scalper strategies start
+**stopped** there. Top it up, turn the new options on, press **start**: the two wallets' results stay apart.
+(Wallets made before 26 October 2026 got the arb settings only; **Export** / **Import** (§9) moves a Scalper setup.)
 
 ## 9. Export and import settings
 
