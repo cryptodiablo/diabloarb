@@ -117,7 +117,8 @@ loses on average — pick coins you know, keep the size small and the limits tig
 | Setting | What it does | When to change it | Default |
 |---|---|---|---|
 | **SOL per buy** | the SOL spent on each buy | 0.1 is the checked size; smaller sizes pay relatively more network | 0.1 SOL (0.01–1) |
-| **Price bound** (ML) | at most 5% fewer tokens than at the decision; a buy past it fails on chain and costs only its network fee | fixed for the ML strategy | 5% |
+| **Buy price bound** (ML) | at most this many % fewer tokens than at the decision; a buy past it fails on chain (missed) and costs only its network fee | Size & limits; wider misses less when many buy the same dip, at a worse price | 5% |
+| **Sale price bound** | a sale takes at most this many % below the price seen; past it the sale fails and is tried again | Exits, both strategies | 25% |
 
 **Own priority fee and tip** (Size & limits, per strategy): **ours** — the service's fees (buy 0.0001 priority + 0.0001
 tip, sale 0.00002 + 0.000005 SOL); **my own** — your values for buy and sale: route 1 (priority + tip, through the

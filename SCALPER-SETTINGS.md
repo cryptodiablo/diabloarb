@@ -113,6 +113,7 @@ Each strategy (ML and My coins) has its own values; nothing is shared with Copyt
 | **Keep for arb** | SOL this strategy never spends, so your Arb bot keeps its fees | none | what Arb needs; 0.05 if unsure |
 | **Per coin, max** | the most SOL in one coin; empty = no cap | below SOL per buy every buy is skipped | empty, or ≥ SOL per buy |
 | **Own priority fee and tip** | **ours** = the service's fees; **my own** = your priority and tip for buys and sales | higher fees cost on every trade; on our bots they did not land buys more often | **ours** |
+| **Buy price bound** | the most a buy may pay above the price at the signal; past it the buy fails (missed) and costs only its network fee | wider: fewer missed when many buy the same dip, but a worse price | 5% (ours) |
 
 How much SOL the wallet needs: SOL per buy × Open positions + Keep for arb + about 0.003 SOL per buy (token account and
 network). Example: 0.1 × 3 + 0.05 + 0.01 ≈ 0.36 SOL.
@@ -131,6 +132,7 @@ timer, so the checked setup leaves them off.
 | **Sell on a dump** | the price falls X% within 3 s (a big seller): sells | coins with dev or bundle dumps | 20 |
 | **Trailing arms at / drop** | once up X%, sells when the price falls Y% from its best | to ride a runner with a long timer | 20 / 15 |
 | **Sell into a spike** | while up, the price jumps X% within 3 s (a big buy): sells into it | to sell into big buyers | 15 |
+| **Sale price bound** | the most a sale may take below the price seen; past it the sale fails and is tried again | tighter can leave a falling coin unsold longer | 25% (ours) |
 | **Initial out at ×N** | at N× the cost sells the part that returns your SOL | to hold a runner "for free" | 2 |
 | **More exits** | quiet (no trades for N s), take-profit ladder, timer in steps | your own style | — |
 
