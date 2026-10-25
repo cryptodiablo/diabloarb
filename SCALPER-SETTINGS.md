@@ -72,7 +72,7 @@ Deep dips bounced more on history; there are about half as many.
 
 ## 2a. Your own entry (advanced, optional)
 
-Under the three switches, **▸ your own entry** opens more choices. They are **off until you fill them**: an empty field
+Under the three switches, **▸ your own entry** opens more choices, in groups: **The model**, **The dip**, **The coin**, **Timing** and **Wallets**. They are **off until you fill them**: an empty field
 changes nothing, and a user who never opens the block trades exactly as before. Each filled field narrows the model's
 dips to your taste, so users with different choices buy **different coins** instead of crowding the same dip (when 15+
 users buy one dip at once, the first buys move the price and the rest are "missed").
@@ -86,6 +86,9 @@ users buy one dip at once, the first buys move the price and the rest are "misse
 | **Curve filled from / up to** (%) | how full the bonding curve is: 0% just launched, 100% about to move to a pool — a finer version of Which coins | both apply: a coin must pass Which coins and the range |
 | **Coin age from / up to** (min) | minutes since the coin launched | with everything |
 | **Coins to skip** | mint addresses the bot never buys (up to 200, one per line) | with everything |
+| **Enter later by** (ms) | your buy is decided this long after the signal, on the price then — not in the same block as everyone else (one block ≈ 400 ms) | with everything |
+| **Only if it bounced** (%) | with Enter later: buy only if by then the price rose at least this much from the signal; otherwise the signal is skipped ("the price did not rise in time") | needs Enter later |
+| **Only coins these wallets bought** + **Within** (min) | up to 50 wallets: buy a dip only if one of them bought that coin on its curve within the minutes set (60 if empty) | with everything |
 
 A signal the model sends without one of these figures passes that check (it never blocks a buy by itself).
 The figures of these ranges are **not checked on history yet** — try one change, compare a day or two on the Stats
@@ -101,6 +104,9 @@ card, and keep what works for you. Fewer dips means fewer trades: keep **SOL per
 | The model's surest dips | Strictness 2 |
 | First hour of a coin | Coin age up to 60 |
 | Older, steadier coins | Coin age from 30 · Curve filled from 50 |
+| Out of the crowd's block | Enter later by 400 |
+| Ride a started bounce | Enter later by 800 · Only if it bounced 3 |
+| Follow smart wallets | Only coins these wallets bought: your 5–10 wallets · Within 30 |
 
 ## 3. All combinations on history
 
