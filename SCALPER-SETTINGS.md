@@ -85,7 +85,6 @@ users buy one dip at once, the first buys move the price and the rest are "misse
 | **Sale at least** (SOL) | only dips made by a sale at least this big (a big holder dumping) | with everything |
 | **Curve filled from / up to** (%) | how full the bonding curve is: 0% just launched, 100% about to move to a pool — a finer version of Which coins | both apply: a coin must pass Which coins and the range |
 | **Coin age from / up to** (min) | minutes since the coin launched | with everything |
-| **Coins to skip** | mint addresses the bot never buys (up to 200, one per line) | with everything |
 | **Smart money** — only coins top traders just bought | off · top 24h · top week · top month: our lists of the most profitable traders of every terminal (Axiom, FOMO, GMGN, Jupiter, Photon, Pump App, Terminal, Telegram bots — about 240 wallets) by their realized profit of that period (24h refreshed hourly, week and month daily). On: a dip is bought only if one of them bought the coin on its curve within **Bought within** minutes (60 if empty) | with everything |
 
 A signal the model sends without one of these figures passes that check (it never blocks a buy by itself).
