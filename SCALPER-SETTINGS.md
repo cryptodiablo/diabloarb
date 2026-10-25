@@ -72,7 +72,7 @@ Deep dips bounced more on history; there are about half as many.
 
 ## 2a. Your own entry (advanced, optional)
 
-Under the three switches, **▸ your own entry** opens more choices, in groups: **The model**, **The dip** and **The coin**. They are **off until you fill them**: an empty field
+Under the three switches, **▸ your own entry** opens more choices, in groups: **The model**, **The dip**, **The coin** and **Smart money**. They are **off until you fill them**: an empty field
 changes nothing, and a user who never opens the block trades exactly as before. Each filled field narrows the model's
 dips to your taste, so users with different choices buy **different coins** instead of crowding the same dip (when 15+
 users buy one dip at once, the first buys move the price and the rest are "missed").
@@ -86,6 +86,7 @@ users buy one dip at once, the first buys move the price and the rest are "misse
 | **Curve filled from / up to** (%) | how full the bonding curve is: 0% just launched, 100% about to move to a pool — a finer version of Which coins | both apply: a coin must pass Which coins and the range |
 | **Coin age from / up to** (min) | minutes since the coin launched | with everything |
 | **Coins to skip** | mint addresses the bot never buys (up to 200, one per line) | with everything |
+| **Smart money** — only coins top traders just bought | off · top 24h · top week · top month: our lists of the most profitable traders of every terminal (Axiom, FOMO, GMGN, Jupiter, Photon, Pump App, Terminal, Telegram bots — about 240 wallets) by their realized profit of that period (24h refreshed hourly, week and month daily). On: a dip is bought only if one of them bought the coin on its curve within **Bought within** minutes (60 if empty) | with everything |
 
 A signal the model sends without one of these figures passes that check (it never blocks a buy by itself).
 There is no «enter later» choice on purpose: on history a buy one block after the dip earns about 0.25% less per
@@ -103,6 +104,8 @@ card, and keep what works for you. Fewer dips means fewer trades: keep **SOL per
 | The model's surest dips | Strictness 2 |
 | First hour of a coin | Coin age up to 60 |
 | Older, steadier coins | Coin age from 30 · Curve filled from 50 |
+| With today's best traders | Smart money: top 24h · Bought within 15 |
+| With steady earners | Smart money: top week · Bought within 60 |
 
 ## 3. All combinations on history
 
@@ -211,6 +214,13 @@ users picking different setups is good for everyone — they buy different coins
 The page shows how many of the model's signals you did not buy, and why. "not your kind of dip" means your entry
 switches filtered it out — that is expected and is how users spread over different coins. For the other reasons see
 [SCALPER.md §10](SCALPER.md#10-the-dashboard).
+
+### Trying the new settings on a second wallet
+
+If your Scalper works well as it is, leave it: nothing changed for you. To try your own entry, create a second wallet
+(the wallet button next to arb / copytrade / scalper → **+ new wallet**): it gets a copy of your **arb** settings, while
+Scalper there starts at our defaults. Bring your Scalper setup over with **Export** on the first wallet and **Import**
+on the new one (§9), then turn the new options on there — the two wallets' results stay apart.
 
 ## 9. Export and import settings
 
