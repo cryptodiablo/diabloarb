@@ -13,6 +13,7 @@ each other, not as a forecast.
 
 1. [Why the entry switches exist](#1-why-the-entry-switches-exist)
 2. [Entry switches (Curve dip bounce, ML)](#2-entry-switches-curve-dip-bounce-ml)
+   - [2a. Your own entry (advanced, optional)](#2a-your-own-entry-advanced-optional)
 3. [All combinations on history](#3-all-combinations-on-history)
 4. [Size & limits](#4-size--limits)
 5. [Exits](#5-exits)
@@ -69,6 +70,38 @@ history, and puts you on different coins than most users.
 
 Deep dips bounced more on history; there are about half as many.
 
+## 2a. Your own entry (advanced, optional)
+
+Under the three switches, **▸ your own entry** opens more choices. They are **off until you fill them**: an empty field
+changes nothing, and a user who never opens the block trades exactly as before. Each filled field narrows the model's
+dips to your taste, so users with different choices buy **different coins** instead of crowding the same dip (when 15+
+users buy one dip at once, the first buys move the price and the rest are "missed").
+
+| Setting | What it does | Works with the switches |
+|---|---|---|
+| **Strictness** (× bar) | buy only dips the model scores at least this many times its own bar: 1 = every dip it passes, 1.5 = Calm, 2–3 = only its surest dips | replaces Calm/Balanced while set; pressing a Style button clears it |
+| **Dip from** (%) | the sale took the price down at least this much | replaces Dip size while set; pressing a Dip size button clears it |
+| **Dip up to** (%) | at most this much — very deep dips are often a rug or a dead coin | with either Dip size |
+| **Sale at least** (SOL) | only dips made by a sale at least this big (a big holder dumping) | with everything |
+| **Curve filled from / up to** (%) | how full the bonding curve is: 0% just launched, 100% about to move to a pool — a finer version of Which coins | both apply: a coin must pass Which coins and the range |
+| **Coin age from / up to** (min) | minutes since the coin launched | with everything |
+| **Coins to skip** | mint addresses the bot never buys (up to 200, one per line) | with everything |
+
+A signal the model sends without one of these figures passes that check (it never blocks a buy by itself).
+The figures of these ranges are **not checked on history yet** — try one change, compare a day or two on the Stats
+card, and keep what works for you. Fewer dips means fewer trades: keep **SOL per buy** and the **Daily stop** as before.
+
+**Example setups** (fill only the fields named; the rest stay empty):
+
+| Idea | Fields |
+|---|---|
+| Young coins, real dumps | Curve filled up to 25 · Coin age up to 15 · Dip from 20 |
+| Whale exits only | Sale at least 5 · Dip from 15 |
+| Mid-curve, no crashes | Curve filled from 25 up to 60 · Dip from 12 up to 35 |
+| The model's surest dips | Strictness 2 |
+| First hour of a coin | Coin age up to 60 |
+| Older, steadier coins | Coin age from 30 · Curve filled from 50 |
+
 ## 3. All combinations on history
 
 1 user, 0.1 SOL per buy, every cost included (the pump.fun fee both ways, our 1%, the network), 21–23 Oct 2026.
@@ -102,6 +135,8 @@ the same bounce first (a missed buy costs only its network fee, ~0.0001 SOL). An
 
 ## 4. Size & limits
 
+The page groups them as **Size and risk**, **Wallet and price** and **Fees**.
+
 Each strategy (ML and My coins) has its own values; nothing is shared with Copytrade.
 
 | Setting | What it does | Risk / profit | Recommended |
@@ -119,6 +154,8 @@ How much SOL the wallet needs: SOL per buy × Open positions + Keep for arb + ab
 network). Example: 0.1 × 3 + 0.05 + 0.01 ≈ 0.36 SOL.
 
 ## 5. Exits
+
+The page groups them as **Main** (timer, take profit, stop loss, sale price bound) and **Fast moves** (dump, trailing, spike, initial out); **more exits** opens the rest.
 
 Every buy sells by the first exit rule that fires; an empty field is off. **Style** sets the main timer (10 s, or 30 s
 for Bold); the fields below are for your own style. On our bots take profit, trailing and stops did worse than a plain
