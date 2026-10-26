@@ -48,8 +48,8 @@ crash in one transaction (§11). Do not guess features that are not described he
 
 1. Log in to diablo.bot and open **Solana → scalper**.
 2. Look at the **Radar**: it shows every dip the model scores right now, and which ones it buys (green score).
-3. In **Strategy**, pick a strategy card, then go through its three groups from top to bottom: **Entry** (My coins
-   only), **Size & limits** and **Exits** (§5–§7). The defaults are the checked ones. Rare exits are under
+3. In **Strategy**, pick a strategy card, then go through its three groups from top to bottom: **Entry** (for the ML
+   strategy — a style card, §3; for My coins — your coins), **Size & limits** and **Exits** (§5–§7). The defaults are the checked ones. Rare exits are under
    **▸ more exits**; a **?** next to a field explains it in full. Press **save** in the bar at the bottom (it lights up
    when something is not saved yet).
 4. Read **How the ML signal trades** — it says how the strategy trades and what can be lost.
@@ -79,6 +79,30 @@ them made money on any of the 7 days**: the best Fast scalp lost about 5% per tr
 trip costs about 4% (the pump.fun fee both ways, our 1%, the network), and a dip picked by a plain rule more often keeps
 falling than bounces. Only the model (Curve dip bounce) picks dips that bounce often enough. They come back only as a
 version that is in plus on fresh history; until then the cards stay greyed out.
+
+### Curve dip bounce — the style cards
+
+The Entry group of the ML strategy is a set of style cards; each buys a different part of the model's dips. Full
+details, with history and ready setups: [SCALPER-SETTINGS.md §2](SCALPER-SETTINGS.md#2-style-cards-curve-dip-bounce-ml).
+
+| Card | Buys | Sells |
+|---|---|---|
+| **Standard** (default, the old Balanced) | every dip the model passes | 10 s, or with the brain |
+| **Calm** | only the model's strongest dips (1.5× its bar) | 10 s, or with the brain |
+| **Hold 30 s** (the old Bold) | every dip the model passes | 30 s, not with the brain |
+| **Deep dumps** | dips of 15%+ | 10 s, or with the brain |
+| **Mid curve, deep** | coins with the curve 25–75% full, dips of 15%+ | 10 s, or with the brain |
+| **New coins** | coins with the curve under 25% full | 10 s, or with the brain |
+| **Your own** | your own entry or exits — anything that differs from a card | by your exits |
+
+- **Numbers on a card:** the average per trade, trades a day and ≈SOL a day for one user of 0.1 SOL on our recorded
+  market of the last 7 days, after every cost; counted again once a day. The bars are its days.
+- **Crowd:** how many users are on the card now and what share of their buys missed in 24 h (every 5 minutes). Users on
+  one card buy the same dips; a less crowded card misses less.
+- **Grey card:** its last 2 days on history were in minus — it cannot be picked until it is in plus again. Users already
+  on it stay on it and see a warning.
+- Picking a card clears the take profit, stop loss, initial out, the ladder, timer steps and your own entry; the fast
+  exits (trailing, spike, dump, quiet) stay.
 
 ### My coins — the Entry group
 
@@ -141,7 +165,7 @@ coins have their own); **trailing, spike, dump and quiet are shared by both stra
 
 | Exit | What it does | When to turn it on | Example |
 |---|---|---|---|
-| **Timer** | sells everything this long after the buy | always on; for ML keep 10 s — the model is trained for it. Your own value (from 1 s) sells ML buys by your timer, not with the model; a Style button restores its 10 s / 30 s | ML 10 s, My coins 60 s |
+| **Timer** | sells everything this long after the buy | always on; for ML keep 10 s — the model is trained for it. Your own value (from 1 s) sells ML buys by your timer, not with the model; picking a style card restores its 10 s / 30 s | ML 10 s, My coins 60 s |
 | **Take profit** | sells everything at +X% | you want to lock a quick gain before the timer | 30 → all at +30% |
 | **Stop loss** | sells everything at −X%. A crash in one transaction can jump past it | with long timers, to cap a slow bleed | 25 → all at −25% |
 | **Sell on a dump** | the price falls X% within 3 s (a big seller, a bundle dumping): sells all | coins with dev or bundle dumps | 20 |
@@ -324,16 +348,19 @@ to lose in a day.
 
 | Field | Safe | Optimal (the checked one) | Higher risk |
 |---|---|---|---|
+| **Style card** (§3) | Calm | Standard, or Deep dumps if Standard is crowded | Hold 30 s |
 | **SOL per buy** | 0.05 | 0.1 | 0.25–0.5 |
 | **Daily stop** | 0.3 | 1 | 2–3 |
 | **Open positions** | 2 | 3 | 4 |
 | **SOL in positions** | 0.1 | 0.3 | size × 4 |
-| **Timer** | 10 s | 10 s | 10 s |
+| **Timer** | 10 s (by the card) | 10 s (by the card) | 30 s (by the card) |
 | **Take profit / Stop loss / Trailing / Spike / Dump** | off | off | off |
 | **Initial out, more exits** | off | off | off |
 | **Wallet SOL needed** (beyond Keep for arb) | ≥ 0.15 | ≥ 0.4 | ≥ size × 4 + 0.05 |
 
-- **Why the timer stays 10 s and other exits stay off in every profile:** the model is trained for a 10-second hold, and
+- **The card first:** if the suggested card is grey (paused), take another that fits and say why; when two fit,
+  prefer the one with fewer users on it (the card shows it).
+- **Why the timer stays by the card and other exits stay off in every profile:** the model is trained for a 10-second hold, and
   on our own bots take profit, trailing and stops did worse than a plain timer (§6). Changing exits does not make the
   strategy "more profitable" — it changes it into an unchecked one.
 - **Safe:** small size and a tight daily stop; fewer positions at once. Risk: small; the network costs weigh more at

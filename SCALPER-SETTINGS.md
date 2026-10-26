@@ -6,15 +6,15 @@ other assistant and ask it to set Scalper up for you — it has everything it ne
 
 **Rules for the assistant.** Never ask for a private key, seed phrase or API key — Scalper never needs them. Never
 promise profit: Scalper makes many small, fast trades and some days lose. The history numbers below are from a short
-period (21–23 October 2026, about 2.4 days) and are **higher than what to expect** — use them to compare settings with
-each other, not as a forecast.
+period (21–25 October 2026, 5 days) and are **higher than what to expect** — use them to compare settings with each
+other, not as a forecast. The page shows each style card's fresh numbers, counted again every day (§2).
 
 ## Contents
 
 1. [Why the entry switches exist](#1-why-the-entry-switches-exist)
-2. [Entry switches (Curve dip bounce, ML)](#2-entry-switches-curve-dip-bounce-ml)
+2. [Style cards (Curve dip bounce, ML)](#2-style-cards-curve-dip-bounce-ml)
    - [2a. Your own entry (advanced, optional)](#2a-your-own-entry-advanced-optional)
-3. [All combinations on history](#3-all-combinations-on-history)
+3. [The cards on history](#3-the-cards-on-history)
 4. [Size & limits](#4-size--limits)
 5. [Exits](#5-exits)
 6. [My coins (your own coins)](#6-my-coins-your-own-coins)
@@ -28,59 +28,59 @@ One model picks the dips for everyone. If everybody buys the same dip, each buy 
 later buyers get a worse price: on history one dip holds about **0.5 SOL of our users' buys** before the profit per
 trade starts to melt (10 users × 0.1 SOL → about +0.5% per trade, 20 users → a loss).
 
-So Scalper gives you **your own entry choices**: the three switches below pick *which* of the model's dips you buy.
-Users with different choices buy different coins and do not crowd each other — which keeps the edge for everyone.
+So Scalper gives you **a choice of style cards**, each buying a different part of the model's dips, plus **your own
+entry** for anything else. Users on different cards buy different coins and do not crowd each other — which keeps the
+edge for everyone. Every card shows how many users are on it now and how many of their buys missed in the last 24 hours:
+a card with fewer users is less crowded.
 
-## 2. Entry switches (Curve dip bounce, ML)
+## 2. Style cards (Curve dip bounce, ML)
 
-The model only proposes dips it expects to bounce. The switches narrow that list down to your taste. They never add
-dips the model rejected.
+The model only proposes dips it expects to bounce. A style card picks which of them you buy and how long you hold; it
+never adds dips the model rejected. Click a card to pick it, then **save**. The card you are on is lit and marked
+**yours**.
 
-### Style
-
-| Choice | What it does | Risk | On history (per trade, 0.1 SOL) |
+| Card | What it buys | Sells | Same as |
 |---|---|---|---|
-| **Calm** | only the model's strongest dips (score at least 1.5× its bar); sells 10 s after the buy | lowest: fewer trades, each better on average | ~72 dips/day, ≈ +3.8% |
-| **Balanced** (default) | every dip the model passes; sells 10 s after the buy — the checked setup | medium | ~141 dips/day, ≈ +2.7% |
-| **Bold** | every dip the model passes, but holds **30 s** instead of 10 (the bounce often runs longer) | higher: bigger swings both ways, a crash has more time to hit | ~141 dips/day, ≈ +5.2% |
+| **Standard** (default) | every dip the model passes | 10 s after the buy, or with the brain | the old *Balanced* |
+| **Calm** | only the model's strongest dips (score at least 1.5× its bar) | 10 s, or with the brain | the old *Calm* |
+| **Hold 30 s** | every dip the model passes | **30 s** after the buy, not with the brain (bigger swings both ways) | the old *Bold* |
+| **Deep dumps** | only dips where the sale took the price down **15%+** | 10 s, or with the brain | — |
+| **Mid curve, deep** | coins whose curve is **25–75% full**, dips **15%+** | 10 s, or with the brain | — |
+| **New coins** | coins whose curve is **under 25% full** | 10 s, or with the brain | — |
+| **Your own** | anything else: your own entry (§2a) or your own exits (a take profit, a stop, another timer…) | by your exits | — |
 
-When to pick: **Calm** for a small wallet or when you want fewer, safer trades; **Balanced** if unsure; **Bold** if you
-accept bigger swings for a bigger average — and keep a daily stop.
+Users who had picked Calm, Balanced or Bold stayed on the same setup: it is now shown as Calm, Standard or Hold 30 s.
 
-### Which coins
+**What a card shows.** Its result on our recorded market of the last 7 days (now 21–25 October 2026): the average per
+trade, about how many trades a day, and about how much SOL a day one user of 0.1 SOL would have made — for one user
+buying one block after the dip, after the pump.fun fee, our 1% and the network. The bars are its days (green — a day in
+plus, red — in minus). These numbers are counted again once a day. Under them: how many users are on the card now and
+what share of their buys missed in the last 24 hours (refreshed every 5 minutes) — many users on one card buy the same
+dips and miss more.
 
-A pump.fun coin trades on its *bonding curve* until the curve fills and the coin "graduates" (migrates) to a pool.
-How full the curve is says how grown the coin is. You can tick one or several:
+**Grey (paused) cards.** A card whose last 2 days on history are both in minus turns grey and cannot be picked until it
+is in plus again. Users already on it are not moved: the page warns them, and they can pick another card.
 
-| Choice | Coins | On history (Balanced, 10%+ dips) |
-|---|---|---|
-| **New** | curve less than 25% full: the youngest, wildest coins | ~15 dips/day, ≈ +10.7% |
-| **Growing** | curve 25–75% full: most of the dips are here | ~115 dips/day, ≈ +1.4% |
-| **Close to graduating** | curve 75%+ full: about to move to a pool | ~11 dips/day, ≈ +5.1% |
+**What picking a card resets.** A card sets its own entry, its timer and "sell with the brain"; it clears the take
+profit, the stop loss, initial out, the take-profit ladder, the timer steps and every field of your own entry (smart
+money too). The fast exits (trailing, spike, dump, quiet) stay as they were. Changing any of the cleared fields
+afterwards makes the setup **Your own**.
 
-All three ticked = every coin (default). Ticking only New or only Close to graduating gives fewer trades, each better on
-history, and puts you on different coins than most users.
-
-### Dip size
-
-| Choice | What | On history (Balanced, all coins) |
-|---|---|---|
-| **Any 10%+** (default) | every dip the model passes (one sale took the price down 10% or more) | ~141 dips/day, ≈ +2.7% |
-| **Only deep 15%+** | only dips where the sale took the price down 15% or more | ~65 dips/day, ≈ +7.8% |
-
-Deep dips bounced more on history; there are about half as many.
+How to choose: **Standard** if unsure; **Calm** for a small wallet or fewer trades; **Deep dumps** or **Mid curve,
+deep** for fewer but better dips on history; **New coins** for the youngest coins (few trades, wild days); **Hold 30 s**
+if you accept bigger swings for a bigger average — and keep a daily stop. Prefer a card that is not crowded.
 
 ## 2a. Your own entry (advanced, optional)
 
-Under the three switches, **▸ your own entry** opens more choices, in groups: **The model**, **The dip**, **The coin** and **Smart money**. They are **off until you fill them**: an empty field
+Under the cards, **▸ your own entry** opens more choices, in groups: **Coins and dip**, **The model**, **The dip**, **The coin** and **Smart money**. It opens by itself when your setup is **Your own**. They are **off until you fill them**: an empty field
 changes nothing, and a user who never opens the block trades exactly as before. Each filled field narrows the model's
 dips to your taste, so users with different choices buy **different coins** instead of crowding the same dip (when 15+
 users buy one dip at once, the first buys move the price and the rest are "missed").
 
 | Setting | What it does | Works with the switches |
 |---|---|---|
-| **Strictness** (× bar) | buy only dips the model scores at least this many times its own bar: 1 = every dip it passes, 1.5 = Calm, 2–3 = only its surest dips | replaces Calm/Balanced while set; pressing a Style button clears it |
-| **Dip from** (%) | the sale took the price down at least this much | replaces Dip size while set; pressing a Dip size button clears it |
+| **Strictness** (× bar) | buy only dips the model scores at least this many times its own bar: 1 = every dip it passes, 1.5 = Calm, 2–3 = only its surest dips | while set, the setup is Your own; picking a card clears it |
+| **Dip from** (%) | the sale took the price down at least this much | replaces Dip size while set; a Dip size button or a card clears it |
 | **Dip up to** (%) | at most this much — very deep dips are often a rug or a dead coin | with either Dip size |
 | **Sale at least** (SOL) | only dips made by a sale at least this big (a big holder dumping) | with everything |
 | **Curve filled from / up to** (%) | how full the bonding curve is: 0% just launched, 100% about to move to a pool — a finer version of Which coins | both apply: a coin must pass Which coins and the range |
@@ -92,6 +92,29 @@ There is no «enter later» choice on purpose: on history a buy one block after 
 trade — the edge is in being first after the dumping sale.
 The figures of these ranges are **not checked on history yet** — try one change, compare a day or two on the Stats
 card, and keep what works for you. Fewer dips means fewer trades: keep **SOL per buy** and the **Daily stop** as before.
+
+### Coins and dip: Which coins
+
+A pump.fun coin trades on its *bonding curve* until the curve fills and the coin "graduates" (migrates) to a pool.
+How full the curve is says how grown the coin is. You can tick one or several:
+
+| Choice | Coins | On history (Standard, 10%+ dips, 21–23 Oct) |
+|---|---|---|
+| **New** | curve less than 25% full: the youngest, wildest coins | ~15 dips/day, ≈ +10.7% |
+| **Growing** | curve 25–75% full: most of the dips are here | ~115 dips/day, ≈ +1.4% |
+| **Close to graduating** | curve 75%+ full: about to move to a pool | ~11 dips/day, ≈ +5.1% |
+
+All three ticked = every coin (default). Ticking only Growing with Only deep is the **Mid curve, deep** card, only New — the **New coins** card, Only deep alone — **Deep dumps**. Ticking only New or only Close to graduating gives fewer trades, each better on
+history, and puts you on different coins than most users.
+
+### Coins and dip: Dip size
+
+| Choice | What | On history (Standard, all coins, 21–23 Oct) |
+|---|---|---|
+| **Any 10%+** (default) | every dip the model passes (one sale took the price down 10% or more) | ~141 dips/day, ≈ +2.7% |
+| **Only deep 15%+** | only dips where the sale took the price down 15% or more | ~65 dips/day, ≈ +7.8% |
+
+Deep dips bounced more on history; there are about half as many.
 
 **Example setups** (fill only the fields named; the rest stay empty):
 
@@ -106,36 +129,25 @@ card, and keep what works for you. Fewer dips means fewer trades: keep **SOL per
 | With today's best traders | Smart money: top 24h · Bought within 15 |
 | With steady earners | Smart money: top week · Bought within 60 |
 
-## 3. All combinations on history
+## 3. The cards on history
 
-1 user, 0.1 SOL per buy, every cost included (the pump.fun fee both ways, our 1%, the network), 21–23 Oct 2026.
-"SOL/day" is what one user with that setup would have made per day — it grows with the number of trades, so a setup
-with a high % but few trades can still make less in total.
+1 user, 0.1 SOL per buy, buying one block after the dip, with a 5% price bound; every cost included (the pump.fun fee
+both ways, our 1%, the network), 21–25 October 2026. "SOL/day" is what one user on that card would have made per day —
+it grows with the number of trades, so a card with a high % but few trades can still make less in total. The page shows
+the same figures, counted again every day.
 
-| Style | Coins | Dip | Dips/day | Per trade | SOL/day |
+| Card | Trades/day | Per trade | SOL/day | Days in plus | Worst day |
 |---|---|---|---|---|---|
-| Calm | all | 10%+ | 72 | +3.8% | +0.27 |
-| Calm | all | 15%+ | 32 | +10.5% | +0.33 |
-| Calm | new | 10%+ | 4 | +11.9% | +0.05 |
-| Calm | growing | 10%+ | 63 | +3.2% | +0.20 |
-| Calm | growing | 15%+ | 27 | +9.6% | +0.25 |
-| Calm | close to graduating | 10%+ | 5 | +5.7% | +0.03 |
-| Balanced | all | 10%+ | 141 | +2.7% | +0.37 |
-| Balanced | all | 15%+ | 65 | +7.8% | +0.49 |
-| Balanced | new | 10%+ | 15 | +10.7% | +0.15 |
-| Balanced | new | 15%+ | 11 | +13.9% | +0.14 |
-| Balanced | growing | 10%+ | 115 | +1.4% | +0.15 |
-| Balanced | growing | 15%+ | 50 | +6.6% | +0.32 |
-| Balanced | close to graduating | 10%+ | 11 | +5.1% | +0.06 |
-| Bold | all | 10%+ | 141 | +5.2% | +0.72 |
-| Bold | all | 15%+ | 65 | +13.7% | +0.85 |
-| Bold | new | 10%+ | 15 | +13.7% | +0.20 |
-| Bold | growing | 10%+ | 115 | +3.7% | +0.42 |
-| Bold | growing | 15%+ | 50 | +11.7% | +0.57 |
-| Bold | close to graduating | 10%+ | 11 | +8.7% | +0.10 |
+| Standard | 103 | +1.2% | +0.12 | 3 of 5 | −7.1% |
+| Calm | 49 | +1.5% | +0.07 | 3 of 5 | −7.8% |
+| Hold 30 s | 103 | +3.3% | +0.34 | 3 of 5 | −7.4% |
+| Deep dumps | 48 | +5.5% | +0.26 | 4 of 5 | −1.0% |
+| Mid curve, deep | 37 | +4.6% | +0.17 | 4 of 5 | −0.1% |
+| New coins | 14 | +5.3% | +0.07 | 3 of 5 | −16.8% |
 
-Why real results are lower: on history every buy got in; live, about 15% of buys miss because other market bots buy
-the same bounce first (a missed buy costs only its network fee, ~0.0001 SOL). And 2.4 days is a short period.
+Why real results are lower: live, some buys miss because other users and market bots buy the same bounce first (a
+missed buy costs only its network fee, ~0.0001 SOL) — the more users on one card, the more misses; and 5 days is a
+short period. Earlier figures for 21–23 October only were higher; they are replaced by these.
 
 ## 4. Size & limits
 
@@ -161,15 +173,15 @@ network). Example: 0.1 × 3 + 0.05 + 0.01 ≈ 0.36 SOL.
 
 The page groups them as **Main** (timer, take profit, stop loss, sale price bound) and **Fast moves** (dump, trailing, spike, initial out); **more exits** opens the rest.
 
-Every buy sells by the first exit rule that fires; an empty field is off. **Style** sets the main timer (10 s, or 30 s
-for Bold); the fields below are for your own style. On our bots take profit, trailing and stops did worse than a plain
+Every buy sells by the first exit rule that fires; an empty field is off. The **style card** sets the main timer (10 s,
+or 30 s for Hold 30 s); the other fields make the setup **Your own**. On our bots take profit, trailing and stops did worse than a plain
 timer, so the checked setup leaves them off.
 
 | Exit | What it does | When to turn it on | Example |
 |---|---|---|---|
-| **Timer** | sells everything this long after the buy | always; set by Style. Type your own seconds (from 1) to sell by your timer instead of with the model — e.g. when two of your bots sell in the same block; pressing a Style button brings its 10 s / 30 s back | 10 s / 30 s, or yours |
+| **Timer** | sells everything this long after the buy | always; set by the card. Type your own seconds (from 1) to sell by your timer instead of with the model — e.g. when two of your bots sell in the same block; picking a card brings its 10 s / 30 s back | 10 s / 30 s, or yours |
 | **Take profit** | sells everything at +X% | to lock a quick gain | 30 |
-| **Stop loss** | sells everything at −X% (a crash in one transaction can jump past it) | with Bold or long timers | 25 |
+| **Stop loss** | sells everything at −X% (a crash in one transaction can jump past it) | with Hold 30 s or long timers | 25 |
 | **Sell on a dump** | the price falls X% within 3 s (a big seller): sells | coins with dev or bundle dumps | 20 |
 | **Trailing arms at / drop** | once up X%, sells when the price falls Y% from its best | to ride a runner with a long timer | 20 / 15 |
 | **Sell into a spike** | while up, the price jumps X% within 3 s (a big buy): sells into it | to sell into big buyers | 15 |
@@ -194,19 +206,22 @@ history buying every dip by a plain rule lost on average, so use it only for coi
 
 ## 7. Ready setups
 
-Pick one and tell the user exactly these values, then **save** and **start**.
+Pick one and tell the user exactly these values, then **save** and **start**. If the card is grey (paused), take the
+next one that fits and say why.
 
-| Setup | Style | Coins | Dip | SOL per buy | Daily stop | Open positions | SOL in positions |
-|---|---|---|---|---|---|---|---|
-| **Safe, small wallet (0.2–0.5 SOL)** | Calm | all | 10%+ | 0.05 | 0.3 | 2 | 0.1 |
-| **Standard (checked)** | Balanced | all | 10%+ | 0.1 | 1 | 3 | 0.3 |
-| **Picky, fewer but better** | Calm | all | 15%+ | 0.1 | 0.5 | 3 | 0.3 |
-| **Young coins hunter** | Balanced | new | 10%+ | 0.1 | 0.5 | 2 | 0.2 |
-| **Bold** | Bold | all | 15%+ | 0.1 | 1 | 3 | 0.3 |
-| **Bigger wallet (5+ SOL)** | Balanced | all | 10%+ | 0.25 | 2 | 4 | 1.0 |
+| Setup | Card | SOL per buy | Daily stop | Open positions | SOL in positions |
+|---|---|---|---|---|---|
+| **Safe, small wallet (0.2–0.5 SOL)** | Calm | 0.05 | 0.3 | 2 | 0.1 |
+| **Standard (checked)** | Standard | 0.1 | 1 | 3 | 0.3 |
+| **Picky, fewer but better** | Deep dumps | 0.1 | 0.5 | 3 | 0.3 |
+| **Mid-curve, steady** | Mid curve, deep | 0.1 | 0.5 | 3 | 0.3 |
+| **Young coins hunter** | New coins | 0.1 | 0.5 | 2 | 0.2 |
+| **Bold** | Hold 30 s | 0.1 | 1 | 3 | 0.3 |
+| **Bigger wallet (5+ SOL)** | Standard or Deep dumps | 0.25 | 2 | 4 | 1.0 |
 
 Keep **Own priority fee and tip** on **ours** and **Keep for arb** at what the user's Arb needs in every setup. Different
-users picking different setups is good for everyone — they buy different coins.
+users picking different cards is good for everyone — they buy different coins; when two cards fit, prefer the one with
+fewer users on it.
 
 ## 8. How to read "Signals the bot skipped"
 
@@ -233,6 +248,7 @@ At the bottom of the Scalper page, **Settings file**:
   the page** puts it into the form; nothing is saved until you press **save**. Copytrade's settings stay as they are.
 
 Use it to keep a setup, compare setups, move it to another account — or let an AI assistant write one for you: the
-file's `settings.scalper` is the ML strategy (its `entry_filter` holds the switches: `min_score_x100` 150 = Calm,
-`stages` = which coins, `min_drop_pct` 15 = only deep; Bold = `exits.follow_wallet: false` with a 30 s timer),
+file's `settings.scalper` is the ML strategy (its `entry_filter` holds the card: nothing = Standard, `min_score_x100` 150 = Calm,
+`min_drop_pct` 15 = Deep dumps, plus `stages: ["growing"]` = Mid curve, deep, `stages: ["new"]` = New coins; Hold 30 s =
+`exits.follow_wallet: false` with one 30 s timer step; anything else is Your own),
 `settings.watch` is My coins.
