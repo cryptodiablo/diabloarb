@@ -58,18 +58,11 @@ you want your own pool discovery, pricing or landing.
 1. You pass **bases** (up to 4: the tokens your routes start and end in — WSOL, USDC, USDT), **windows** (swap steps:
    a pool + direction + its accounts) and **routes** (up to 16; each a base and 1–5 window indexes in swap order).
    A window used by several routes is listed once.
-2. The program reads every window's pool state, computes each route's marginal rate and drops routes that cannot pay
-   (product of rates ≤ 1). Live routes are searched highest rate first.
-3. For each live route it searches the amount: starting at the base's `start`, growing, then narrowing by secant
-   bounds until the profit is within `best / 2^(8 + rounds)` of the bound. The amount is capped by `max_in` and by your
-   balance of the base plus the vault's.
-4. The best route by value (`profit × weight >> 32`, lamports) runs if its value reaches `min_profit`. The vault lends
-   first, the swaps run (each hop swaps exactly what the previous one delivered), the vault is repaid plus the fee,
-   and the realized profit after the fee is checked against `min_profit` again.
-5. With a **budget** (flag bit2) the search watches compute units: it stops early so that the best route found still
-   executes within your transaction's limit, and refuses amounts whose execution would not fit.
-
-The profit lands in your base token account (e.g. your WSOL ATA).
+2. The program quotes your routes on chain and picks the most profitable route and amount, within `max_in` and your
+   balance of the base plus the vault. It runs only if the profit reaches `min_profit`; otherwise nothing happens.
+3. The vault lends, the swaps run, the vault is repaid plus the fee, and the profit lands in your base token account
+   (e.g. your WSOL ATA).
+4. With a **budget** (flag bit2) the program keeps the best route within your transaction's compute limit.
 
 ## 3. Instruction data (tag 1, search)
 
