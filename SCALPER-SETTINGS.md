@@ -30,8 +30,8 @@ trade starts to melt (10 users × 0.1 SOL → about +0.5% per trade, 20 users �
 
 So Scalper gives you **a choice of style cards**, each buying a different part of the model's dips, plus **your own
 entry** for anything else. Users on different cards buy different coins and do not crowd each other — which keeps the
-edge for everyone. Every card shows how many users are on it now and how many of their buys missed in the last 24 hours:
-a card with fewer users is less crowded.
+edge for everyone. Every card shows how many users are on it now: a card with fewer users is less
+crowded.
 
 ## 2. Style cards (Curve dip bounce, ML)
 
@@ -55,9 +55,8 @@ Users who had picked Calm, Balanced or Bold stayed on the same setup: it is now 
 **What a card shows.** Its result on our recorded market of the last 7 days (now 21–25 October 2026): the average per
 trade, about how many trades a day, and about how much SOL a day one user of 0.1 SOL would have made — for one user
 buying one block after the dip, after the pump.fun fee, our 1% and the network. The bars are its days (green — a day in
-plus, red — in minus). These numbers are counted again once a day. Under them: how many users are on the card now and
-what share of their buys missed in the last 24 hours (refreshed every 5 minutes) — many users on one card buy the same
-dips and miss more.
+plus, red — in minus). These numbers are counted again once a day. Under them: how many users are on the card now
+(refreshed every 5 minutes; the dot turns yellow from 8 users) — many users on one card buy the same dips and miss more.
 
 **Grey (paused) cards.** A card whose last 2 days on history are both in minus turns grey and cannot be picked until it
 is in plus again. Users already on it are not moved: the page warns them, and they can pick another card.

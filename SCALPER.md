@@ -98,8 +98,8 @@ details, with history and ready setups: [SCALPER-SETTINGS.md §2](SCALPER-SETTIN
 
 - **Numbers on a card:** the average per trade, trades a day and ≈SOL a day for one user of 0.1 SOL on our recorded
   market of the last 7 days, after every cost; counted again once a day. The bars are its days.
-- **Crowd:** how many users are on the card now and what share of their buys missed in 24 h (every 5 minutes). Users on
-  one card buy the same dips; a less crowded card misses less.
+- **Crowd:** how many users are on the card now (every 5 minutes; a yellow dot from 8 users). Users on one card buy the
+  same dips; a less crowded card misses less.
 - **Grey card:** its last 2 days on history were in minus — it cannot be picked until it is in plus again. Users already
   on it stay on it and see a warning.
 - Picking a card clears the take profit, stop loss, initial out, the ladder, timer steps and your own entry; the fast
