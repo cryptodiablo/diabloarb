@@ -91,6 +91,7 @@ details, with history and ready setups: [SCALPER-SETTINGS.md §2](SCALPER-SETTIN
 | **Calm** | only the model's strongest dips (1.5× its bar) | 10 s, or with the brain |
 | **Hold 30 s** (the old Bold) | every dip the model passes | 30 s, not with the brain |
 | **Deep dumps** | dips of 15%+ | 10 s, or with the brain |
+| **Deep dumps, hold 30 s** | dips of 15%+ | 30 s, not with the brain |
 | **Mid curve, deep** | coins with the curve 25–75% full, dips of 15%+ | 10 s, or with the brain |
 | **New coins** | coins with the curve under 25% full | 10 s, or with the brain |
 | **Your own** | your own entry or exits — anything that differs from a card | by your exits |
@@ -348,7 +349,7 @@ to lose in a day.
 
 | Field | Safe | Optimal (the checked one) | Higher risk |
 |---|---|---|---|
-| **Style card** (§3) | Calm | Standard, or Deep dumps if Standard is crowded | Hold 30 s |
+| **Style card** (§3) | Calm | Standard, or Deep dumps if Standard is crowded | Hold 30 s or Deep dumps, hold 30 s |
 | **SOL per buy** | 0.05 | 0.1 | 0.25–0.5 |
 | **Daily stop** | 0.3 | 1 | 2–3 |
 | **Open positions** | 2 | 3 | 4 |

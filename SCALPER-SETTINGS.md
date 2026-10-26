@@ -45,6 +45,7 @@ never adds dips the model rejected. Click a card to pick it, then **save**. The 
 | **Calm** | only the model's strongest dips (score at least 1.5× its bar) | 10 s, or with the brain | the old *Calm* |
 | **Hold 30 s** | every dip the model passes | **30 s** after the buy, not with the brain (bigger swings both ways) | the old *Bold* |
 | **Deep dumps** | only dips where the sale took the price down **15%+** | 10 s, or with the brain | — |
+| **Deep dumps, hold 30 s** | only dips of **15%+** | **30 s** after the buy, not with the brain | — |
 | **Mid curve, deep** | coins whose curve is **25–75% full**, dips **15%+** | 10 s, or with the brain | — |
 | **New coins** | coins whose curve is **under 25% full** | 10 s, or with the brain | — |
 | **Your own** | anything else: your own entry (§2a) or your own exits (a take profit, a stop, another timer…) | by your exits | — |
@@ -67,7 +68,8 @@ money too). The fast exits (trailing, spike, dump, quiet) stay as they were. Cha
 afterwards makes the setup **Your own**.
 
 How to choose: **Standard** if unsure; **Calm** for a small wallet or fewer trades; **Deep dumps** or **Mid curve,
-deep** for fewer but better dips on history; **New coins** for the youngest coins (few trades, wild days); **Hold 30 s**
+deep** for fewer but better dips on history; **Deep dumps, hold 30 s** — the best on history so
+far (all 5 days in plus), with the bigger swings of a 30 s hold; **New coins** for the youngest coins (few trades, wild days); **Hold 30 s**
 if you accept bigger swings for a bigger average — and keep a daily stop. Prefer a card that is not crowded.
 
 ## 2a. Your own entry (advanced, optional)
@@ -142,6 +144,7 @@ the same figures, counted again every day.
 | Calm | 49 | +1.5% | +0.07 | 3 of 5 | −7.8% |
 | Hold 30 s | 103 | +3.3% | +0.34 | 3 of 5 | −7.4% |
 | Deep dumps | 48 | +5.5% | +0.26 | 4 of 5 | −1.0% |
+| Deep dumps, hold 30 s | 48 | +9.8% | +0.47 | 5 of 5 | — |
 | Mid curve, deep | 37 | +4.6% | +0.17 | 4 of 5 | −0.1% |
 | New coins | 14 | +5.3% | +0.07 | 3 of 5 | −16.8% |
 
@@ -216,7 +219,7 @@ next one that fits and say why.
 | **Picky, fewer but better** | Deep dumps | 0.1 | 0.5 | 3 | 0.3 |
 | **Mid-curve, steady** | Mid curve, deep | 0.1 | 0.5 | 3 | 0.3 |
 | **Young coins hunter** | New coins | 0.1 | 0.5 | 2 | 0.2 |
-| **Bold** | Hold 30 s | 0.1 | 1 | 3 | 0.3 |
+| **Bold** | Hold 30 s or Deep dumps, hold 30 s | 0.1 | 1 | 3 | 0.3 |
 | **Bigger wallet (5+ SOL)** | Standard or Deep dumps | 0.25 | 2 | 4 | 1.0 |
 
 Keep **Own priority fee and tip** on **ours** and **Keep for arb** at what the user's Arb needs in every setup. Different
@@ -250,5 +253,6 @@ At the bottom of the Scalper page, **Settings file**:
 Use it to keep a setup, compare setups, move it to another account — or let an AI assistant write one for you: the
 file's `settings.scalper` is the ML strategy (its `entry_filter` holds the card: nothing = Standard, `min_score_x100` 150 = Calm,
 `min_drop_pct` 15 = Deep dumps, plus `stages: ["growing"]` = Mid curve, deep, `stages: ["new"]` = New coins; Hold 30 s =
-`exits.follow_wallet: false` with one 30 s timer step; anything else is Your own),
+`exits.follow_wallet: false` with one 30 s timer step, with `min_drop_pct` 15 — Deep dumps, hold 30 s; anything else is
+Your own),
 `settings.watch` is My coins.
