@@ -73,7 +73,9 @@
       { "value": 11, "name": "Futarchy", "programs": ["FUTARELBfJfQ8RDGhg1wdhddq1odMAJUePHFuBYfUxKq"], "note": "MetaDAO spot market; A = base" },
       { "value": 12, "name": "Fusion", "programs": ["fUSioN9YKKSa3CUC2YUc4tPkHJ5Y6XW1yz8y6F7qWz9"], "note": "DefiTuna Fusion AMM" },
       { "value": 13, "name": "TokenSwap", "programs": ["SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8", "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP"], "note": "SPL Token Swap and Orca v2" },
-      { "value": 14, "name": "MeteoraDbc", "programs": ["dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN"], "note": "Dynamic Bonding Curve; A = base" }
+      { "value": 14, "name": "MeteoraDbc", "programs": ["dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN"], "note": "Dynamic Bonding Curve; A = base" },
+      { "value": 15, "name": "Tessera", "programs": ["TessVdML9pBGgG9yGks7o4HewRaXVAMuoVj4x83GLQH"], "note": "Tessera V, a market maker's pool; A/B as the pool names them; reachable only from a program (through the executor)" },
+      { "value": 16, "name": "JupiterPerps", "programs": ["PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu"], "note": "Jupiter Perpetuals pool (JLP), swap2 at oracle prices; direction = the custodies' order in the window" }
     ],
     "HopFlags": [
       { "bit": 0, "name": "A_TO_B", "description": "swap token A -> token B of the pool (A/B as the DEX names them; see README per DEX)" },
@@ -142,7 +144,7 @@
     { "code": 1, "name": "InvalidData", "description": "malformed data: counts out of range, lengths do not add up, unknown tag" },
     { "code": 2, "name": "AccountIndex", "description": "an index points past the account list" },
     { "code": 3, "name": "Unprofitable", "description": "the executed route did not realize the expected profit (state moved between search and execution, or after the fee below min_profit)" },
-    { "code": 4, "name": "UnknownDex", "description": "Hop.dex is not 0..=14" },
+    { "code": 4, "name": "UnknownDex", "description": "Hop.dex is not 0..=16, or the window's program is not one of that dex's" },
     { "code": 5, "name": "NotSigner", "description": "account 0 did not sign" },
     { "code": 6, "name": "NotTokenAccount", "description": "a base / out account is not a token account" },
     { "code": 7, "name": "NoProfit", "description": "no route reached min_profit and FAIL_WHEN_DRY is set (normal: the opportunity is gone)" },

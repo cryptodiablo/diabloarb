@@ -140,7 +140,7 @@ delivered (the balance change of its `out` account). The last hop's `out` must b
 
 Every window below is exactly the account list the deployed executor accepts. "Window index" = position after the DEX program (`accounts[first + 1 + index]`). Keep
 the order and the writable/signer marks: the executor forwards both to the DEX unchanged, and reads some accounts at
-**fixed window indexes** to quote on chain (section 6.16) — a window in another order may still swap but will be
+**fixed window indexes** to quote on chain (section 6.18) — a window in another order may still swap but will be
 quoted wrongly or dropped.
 
 ### 6.0 Common rules
@@ -164,8 +164,9 @@ program). The executor uses the same 0-based window indexes.
   order, and `is_writable` / `is_signer` copied from the outer transaction. So the writable/signer
   privileges you give an account in the outer executor instruction are exactly what the DEX receives. Mark every
   window account as listed below.
-- **Program**: CPI goes to `accounts[first]`. The executor does **not** check that this program matches
-  the `dex` byte; the `dex` byte selects the instruction data layout and the on-chain quote math.
+- **Program**: CPI goes to `accounts[first]`, which must be one of that `dex`'s programs (the IDL's `Dex` enum lists
+  them); any other program is refused with `UnknownDex` before the call. The `dex` byte also selects the instruction
+  data layout and the on-chain quote math.
 - **Instruction data**: `swap_data(dex, amount_in, min_out = 0, a_to_b, legacy)`. The executor
   always passes `min_out = 0` (Pump buy writes `max(min_out, 1)`); slippage protection is the
   executor's own profit check after the route, not a per-hop minimum.
@@ -176,7 +177,7 @@ program). The executor uses the same 0-based window indexes.
   `NotTokenAccount`). Point `out` at your token account of the hop's output mint.
 - **On-chain quoting** (tag 1 search, tag 2 quote): the executor reads pool state, vault balances, mints (for
   Token-2022 transfer fees), tick/bin arrays at **fixed window indexes** per DEX. These
-  offsets are listed per DEX below (subsection "Executor reads") and summarized in section 16. A window built in a
+  offsets are listed per DEX below (subsection "Executor reads") and summarized in section 6.18. A window built in a
   different order may still CPI correctly but will be quoted wrongly or not at all (a failed quote drops the
   route).
 
@@ -221,6 +222,8 @@ program). The executor uses the same 0-based window indexes.
 | `fUSioN9YKKSa3CUC2YUc4tPkHJ5Y6XW1yz8y6F7qWz9` | Fusion pool discriminator | fusion | 12 |
 | `SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8`, `9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP` (Orca v2) | len = 324, bytes[0]=1 (version), bytes[1]=1 (initialized) | tokenswap | 13 |
 | `dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN` | DBC pool discriminator and len = 424 | dbc | 14 |
+| `TessVdML9pBGgG9yGks7o4HewRaXVAMuoVj4x83GLQH` | len = 1264 | tessera | 15 |
+| `PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu` | disc `account:Custody` and len = 2000 (a custody; one pool) | perps | 16 |
 
 ---
 
@@ -801,17 +804,117 @@ fees (in = w[7] if a_to_b).
 
 ---
 
-### 6.15 Flags summary
+### 6.15 Dex 15: Tessera V
+
+- **Program**: `TessVdML9pBGgG9yGks7o4HewRaXVAMuoVj4x83GLQH`.
+- **Instruction**: tag 16 — `u8 16 | u8 side (1 = A in) | u64 amount_in | u64 min_out`. Tessera takes the swap only from
+  another program (it refuses it as a top-level instruction), so it is reachable through the executor only.
+- **Pool**: an account of the program, 1 264 bytes: mint A at offset 24, mint B at 56. A market maker writes a ladder
+  of price levels for each side into it; a swap walks the ladder of its side. `a_to_b` = A in (written into the data).
+- **Vaults**: one token account per mint owned by the program's state `8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF`,
+  shared by all pools of that mint (not associated token accounts — the state's funded account of the mint):
+
+| mint | vault |
+|---|---|
+| `So11111111111111111111111111111111111111112` (WSOL) | `5pVN5XZB8cYBjNLFrsBCPWkCQBan5K5Mq2dWGzwPgGJV` |
+| `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` (USDC) | `9t4P5wMwfFkyn92Z7hf463qYKEZf8ERVZsGBEPNp8uJx` |
+| `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` (USDT) | `Ci3HZCb6fr5YiYLG9R6XbxHcjm2mDb1R3ugQ3bPZ7oKZ` |
+| `JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN` | `772WVdWd7u7wFew2fR3sWXGMhDRCNm2geWT8ZvebsMw3` |
+| `DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263` | `Hd4cod5AVn54WYFfJuZ4inBSdCJcWRaAuxG83zyJDcwN` |
+| `27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4` | `5w7jCMkboWJz8sVRVgfUFWpdCnrjuB1w5ooJhbyuJHkp` |
+| `4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R` | `7QQsbmzDfXsgLeVaCYfm78iqLwrXHKi8Aowb65A3ocF1` |
+| `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs` | `GYaM9Coc9gG4vzqTLRzGAZS6HFaBrebDohMUMYkyADRm` |
+| `98sMhvDwXj1RQi5c5Mndm3vPe9cBqPrbLaufMXFNMh5g` | `7w5mXNYE4V4uhLDK7EsjoGdWhwtH1mdtKtCiAkTsz5XD` |
+| `Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk` | `68akEwyqPfMRV4ZrigHWSFSrZmT9GJ4WvvgFdiygsiFB` |
+| `cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij` | `37hggNyT4Ec8GEcxMLrWrZyrMSSFMSiFT6VBayRYceZH` |
+| `jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL` | `HWpU1EtsrD1wQ2moY699gg4jduYCK5cSFdPZXK9kV4GT` |
+| `orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE` | `GvaR9FyF92HBFYy9i5c4DSA8tSz92i85DzJyCQVhcj8w` |
+| `pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn` | `FhdiaEWUX8ZrW5TT2iNjWivMCzuBZhUJutrpfw6CvsxU` |
+
+| idx | account | W/R | S |
+|---|---|---|---|
+| 0 | state `8ekCy2jHHUbW2yeNGFWYJT9Hm9FW7SvZcZK66dSZCDiF` | R | |
+| 1 | pool | W | |
+| 2 | user (payer) | W | S |
+| 3 | vault of mint A | W | |
+| 4 | vault of mint B | W | |
+| 5 | `user_a` | W | |
+| 6 | `user_b` | W | |
+| 7 | mint A | R | |
+| 8 | mint B | R | |
+| 9 | token program of mint A | R | |
+| 10 | token program of mint B | R | |
+| 11 | instructions sysvar `Sysvar1nstructions1111111111111111111111111` | R | |
+| 12 | `BAT1Ndpu5gbLTp2AZkSXP79LJBZfCH4B3zGhi6LtvdhK` | R | |
+| 13 | `4cG31VNF9TzFinNc7BmnjhFvGjxkY3sCETVMtMgbrhPs` | R | |
+
+Fixed length 14. Flags: bit0 only.
+
+**Executor reads**: pool = w[1]; mints w[7] (A) / w[8] (B) for T22 fees (in = w[7] if a_to_b). The executor quotes
+the ladder with the larger fee Tessera charges (25 millionths), so the program pays the quote or up to 25 millionths
+more, and quotes a pool only while its prices were written in the current slot or the one before.
+
+### 6.16 Dex 16: Jupiter Perpetuals pool (JLP)
+
+- **Program**: `PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu`; pool `5BUwFW4nRbftYTDMbgxykoFWqWHPzahFSNAaaaJtVKsq`.
+- **Instruction**: Anchor `swap2` — `u64 amount_in | u64 min_amount_out`. No curve: the pool trades one custody's token
+  for another's at the prices of their Doves oracles, less a fee.
+- **Direction**: the order of the custodies in the window — the *receiving* custody takes your input, the *dispensing*
+  one pays out. The data carries no side and the executor's quote follows the window, not bit0. A = the token, B = USDC
+  is the convention for `user_a` / `user_b` below; keep bit0 consistent with it.
+- **Custodies** (custody, its Doves price, its token account, mint):
+
+| token | custody | Doves price | custody token account | mint |
+|---|---|---|---|---|
+| USDC | `G18jKKXQwBbrHeiK3C9MRXhkHsLHf7XgCSisykV46EZa` | `6Jp2xZUTWdDD2ZyUPRzeMdc6AFQ5K3pFgZxk2EijfjnM` | `WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS` | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| SOL | `7xS2gz2bTp3fwCC7knJvUWTEU9Tycczu6VhJYKgi1wdz` | `FYq2BWQ1V5P1WFBqr3qB2Kb5yHVvSv7upzKodgQE5zXh` | `BUvduFTd2sWFagCunBPLupG8fBTJqweLw9DuhruNFSCm` | `So11111111111111111111111111111111111111112` |
+| ETH | `AQCGyheWPLeo6Qp9WpYS9m3Qj479t7R636N9ey1rEjEn` | `AFZnHPzy4mvVCffrVwhewHbFc93uTHvDSFrVH7GtfXF1` | `Bgarxg65CEjN3kosjCW5Du3wEqvV3dpCGDR3a2HRQsYJ` | `7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs` |
+| BTC | `5Pv3gM9JrFFH883SWAhvJC9RPYmo8UNxuFtv5bMMALkm` | `hUqAT1KQ7eW1i6Csp9CXYtpPfSAvi835V7wKi5fRfmC` | `FgpXg2J3TzSs7w3WGYYE7aWePdrxBVLCXSxmAKnCZNtZ` | `3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh` |
+
+| idx | account | W/R | S |
+|---|---|---|---|
+| 0 | user (owner) | R | S |
+| 1 | user input token account (funding) | W | |
+| 2 | user output token account (receiving) | W | |
+| 3 | transfer authority `AVzP2GeRmqGphJsMxWoqjpUifPpCret7LqWhD8NWQK49` | R | |
+| 4 | perpetuals `H4ND9aYttUVLFmNypZqLjZ52FYiGvdEB45GmwNoKEjTj` | R | |
+| 5 | pool `5BUwFW4nRbftYTDMbgxykoFWqWHPzahFSNAaaaJtVKsq` | W | |
+| 6 | receiving custody (of the input token) | W | |
+| 7 | its Doves price | R | |
+| 8 | its Pythnet price — pass the Doves price again | R | |
+| 9 | receiving custody token account | W | |
+| 10 | dispensing custody (of the output token) | W | |
+| 11 | its Doves price | R | |
+| 12 | its Pythnet price — pass the Doves price again | R | |
+| 13 | dispensing custody token account | W | |
+| 14 | SPL Token program | R | |
+| 15 | event authority `37hJBDnntwqhGbK7L6M1bLyvccj4u55CCUiLPdYkiqBN` | R | |
+| 16 | Perpetuals program | R | |
+
+Fixed length 17.
+
+**Executor reads**: pool = w[5]; receiving custody w[6] and its price w[7]; dispensing custody w[10] and its price
+w[11]. What the program refuses, and the executor's quote with it:
+- a custody with swaps off, or a price older than the custody's limit (5 s for SOL, ETH, BTC; 180 s for a stable);
+- a trade after which the receiving custody's share of the pool's value would exceed its target plus the pool's
+  buffer, or the dispensing one's fall under its target less the buffer (`Exceed Token Weightage`, error 6043);
+- the fee is the pool's swap fee rule (base fee, a rebate towards the custody's target share, a tax away from it) times
+  one plus the larger custody fee multiplier over 10 000 — e.g. a 12 bps rule with a multiplier of 20 000 charges 36 bps.
+  A stable's price counts at most 1 on the input side and at least 1 on the output side.
+
+---
+
+### 6.17 Flags summary
 
 | bit | value | meaning | DEXes |
 |---|---|---|---|
-| 0 | 1 | `a_to_b`: mint A in (A as defined per DEX). For Whirlpool, Fusion, Futarchy, Manifest it is also written into the instruction data; Pump encodes direction in the Dex id (1 sell / 2 buy) **and** bit0. For all others the DEX infers direction from the token accounts, but the executor's quote still uses bit0, so it must match the window. | all |
+| 0 | 1 | `a_to_b`: mint A in (A as defined per DEX). For Whirlpool, Fusion, Futarchy, Manifest, Tessera it is also written into the instruction data; Jupiter Perps does not read it (its direction is the custodies' order in the window); Pump encodes direction in the Dex id (1 sell / 2 buy) **and** bit0. For all others the DEX infers direction from the token accounts, but the executor's quote still uses bit0, so it must match the window. | all |
 | 1 | 2 | Pump canonical pool (pool creator = `pool-authority` PDA of the base mint under `6EF8rr…`): fee-tier schedule in the on-chain quote | 1, 2 |
 | 2 | 4 | legacy `swap` + legacy window; only for SPL-Token-only pairs | 4, 5, 6, 8 |
 
 ---
 
-### 6.16 Executor offset requirements (external builders must respect these)
+### 6.18 Executor offset requirements (external builders must respect these)
 
 The executor's on-chain quoting reads accounts by window index. For each
 DEX, the following positions are load-bearing; everything else is only forwarded in the CPI.
@@ -831,6 +934,8 @@ DEX, the following positions are load-bearing; everything else is only forwarded
 | 12 Fusion | w[4] pool, w[5]/w[6] mints, w[11..14] tick arrays | |
 | 13 TokenSwap | w[0] pool, w[4] input reserve, w[5] output reserve | |
 | 14 DBC | w[1] config, w[2] pool, w[7]/w[8] mints | |
+| 15 Tessera V | w[1] pool, w[7]/w[8] mints A/B | quoted only while written this slot or the one before |
+| 16 Jupiter Perps | w[5] pool, w[6] receiving custody, w[7] its Doves price, w[10] dispensing custody, w[11] its Doves price | direction = custody order |
 
 Other executor-side requirements:
 
@@ -875,7 +980,7 @@ number of on-chain quotes the search made. With `simulateTransaction` it tells y
 | 1 (0x1) | InvalidData | malformed data: counts out of range, sizes do not add up, unknown tag |
 | 2 (0x2) | AccountIndex | an index (`first`, `out`, base, vault) points past the account list |
 | 3 (0x3) | Unprofitable | the route executed but realized less than expected (state moved) or, after the fee, below `min_profit` |
-| 4 (0x4) | UnknownDex | `dex` not in 0..=14 |
+| 4 (0x4) | UnknownDex | `dex` not in 0..=16, or a window's program is not one of that DEX's |
 | 5 (0x5) | NotSigner | account 0 did not sign |
 | 6 (0x6) | NotTokenAccount | a base or `out` account is not a token account |
 | 7 (0x7) | NoProfit | no route reached `min_profit` with `FAIL_WHEN_DRY` — **normal**: the opportunity was gone |
