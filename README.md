@@ -51,7 +51,8 @@ unchanged**, and the old binary updates itself to the new one on its next restar
 - **SOL, USDC and USDT routes.** Cycles start and end in any of the three, including 3-hop routes through another coin.
 - **Live hot markets.** `https://moneyprinter.bot/auto/mp.toml` is rebuilt continuously from the routes the on-chain
   arbitrage bots are winning right now — whole routes, never fragments, ordered by their profit, recent wins weighing
-  more (each win counts half as much every 2.5 minutes). The bot shoots them in that order.
+  more (each win counts half as much every 2.5 minutes). The bot shoots them in that order. The list is available only
+  to our sender (it signs its requests with your wallet); other clients get 403.
 - **Hot modes (new, need Geyser).** `mode = "ladder"` watches the arbitrage bots live and only shoots while they are
   earning, escalating from cheap RPC copies to paid senders as a coin heats up; `mode = "flow"` shoots the top coins
   non-stop. These are the modes we run ourselves. See [`USER_CONFIG.md`](USER_CONFIG.md#8-hot-modes-mode--ladder-and-mode--flow).
@@ -173,7 +174,8 @@ Config paths are examples — adjust for your server.
 - No Geyser needed for the default mode: without it the bot reads the pools over `rpc` (every second) and works out of the box.
 - Your own Yellowstone gRPC makes it faster: add `geyser_endpoint = "..."` and `geyser_x_token = "***"` to `config.toml`.
 - `markets_file` and `luts` point to https://moneyprinter.bot/auto/mp.toml and https://moneyprinter.bot/auto/mplutall.txt —
-  the routes the arbitrage bots win most on right now and their lookup tables, refreshed live.
+  the routes the arbitrage bots win most on right now and their lookup tables, refreshed live. Only our sender can
+  fetch them (signed requests); a sender built before 27 October 2026 updates itself on restart.
 - `jito_uuid`: your own Jito UUID; the `"uuid"` placeholder is ignored (Jito without one).
 
 **Updates**
@@ -238,7 +240,8 @@ senders once you see wins.
 - **Маршруты в SOL, USDC и USDT**, включая трёхшаговые через другую монету.
 - **Живой список рынков.** `https://moneyprinter.bot/auto/mp.toml` постоянно пересобирается из маршрутов, на которых
   арбитражные боты в сети выигрывают прямо сейчас: целые маршруты, по порядку их прибыли (свежие выигрыши весят больше:
-  каждый вдвое легче за 2,5 минуты).
+  каждый вдвое легче за 2,5 минуты). Список доступен только нашему сендеру (он подписывает запросы вашим кошельком);
+  другим клиентам — 403.
   Бот стреляет в этом порядке.
 - **Горячие режимы (нужен Geyser).** `mode = "ladder"` (лестница) следит за ботами в сети и стреляет только пока они
   зарабатывают, поднимая расходы по мере «нагрева» монеты: сначала дешёвые RPC-копии, потом платные отправители.

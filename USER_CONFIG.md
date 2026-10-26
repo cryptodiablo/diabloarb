@@ -37,7 +37,8 @@
 Markets file format (TOML): `markets = ["poolAddr", …]` and/or groups `[[group]]` with `markets = [...]` and optional
 `enabled = false`. In `mp.toml` each group is one complete arbitrage route of a coin; groups come in priority order
 (first = hottest), and the bot follows that order. `moneyprinter.bot/auto/mp.toml` is rebuilt live from the coins the
-on-chain arbitrage bots earn most on right now.
+on-chain arbitrage bots earn most on right now. Both URLs answer only our sender (it signs each request with your
+wallet); other clients get 403, so restart a bot built before 27 October 2026 to let it update itself.
 
 ## 3. Commands and environment
 
