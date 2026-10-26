@@ -9,7 +9,7 @@ This folder lets you write your own sender against it:
 
 | File | What |
 |---|---|
-| `README.md` | this guide: instruction format, accounts, every DEX's swap window, errors, budgets, a decoded real transaction |
+| `README.md` | this guide: instruction format, accounts, every DEX's swap window, errors, budgets, a decoded example |
 | [`diabloarb-executor.idl.json`](diabloarb-executor.idl.json) | machine-readable description of the instruction (byte layout, enums, accounts, errors) |
 | [`AGENTS.md`](AGENTS.md) / [`CLAUDE.md`](CLAUDE.md) | instructions for AI coding agents (Codex, Claude Code…) building a sender from this folder |
 
@@ -29,13 +29,13 @@ you want your own pool discovery, pricing or landing.
 6. [Supported DEXs and their windows](#6-supported-dexs-and-their-windows)
 7. [Transaction layout, compute budget, lookup tables](#7-transaction-layout-compute-budget-lookup-tables)
 8. [Return data and errors](#8-return-data-and-errors)
-9. [A real transaction, decoded](#9-a-real-transaction-decoded)
+9. [An example, decoded](#9-an-example-decoded)
 10. [Checklist](#10-checklist)
 
 ## 1. Terms and fees
 
-- **Program:** `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z` (upgradeable; deployed 2026-10-03, ELF SHA-256
-  `a6d03e003bd69a78c310afa8aa8d11d68764bd89e79b8231fc8b3b60a6a0d6c0`).
+- **Program:** `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z` (upgradeable; the ELF in the network since 2026-10-26,
+  SHA-256 `e925e50fdf5f99b64a9df1a6610807ff1637beef34d5ee133d9f2b5ba27a3eb3`).
 - **Vault (flash loan):** PDA `Bank4kzA4xv6zsLfXXx4YrMK7io8fWTvCEHsbQZoh2Jc` (seeds `"bank"`, `3310317` as u64 LE,
   bump 255). Its token accounts lend to any signer, up to their whole balance, free, repaid in the same instruction:
 
@@ -72,8 +72,8 @@ Little-endian, no padding.
 offset  size  field
 0       1     tag = 1
 1       1     flags: bit0 FAIL_WHEN_DRY, bit1 VAULT (required), bit2 BUDGET
-2       1     rounds: precision (0 is fine); bit7 0x80 = HINT (bases' `start` is an estimate of the optimum)
-3       8     min_profit: i64, lamports of value the best route must reach (checked before and after the fee)
+2       1     rounds: set 0; bit7 0x80 = HINT (bases' `start` is your estimate of the best amount)
+3       8     min_profit: i64, lamports of value — the least profit after the 7% fee worth executing
 11      1     n_bases   (1..=4)
 12      1     n_windows (>=1)
 13      1     n_routes  (1..=16)
@@ -86,14 +86,15 @@ offset  size  field
 - **weight** — value of one base unit in lamports, Q32: WSOL `1 << 32` = `4294967296`; USDC/USDT `round(2^32 × 1e9 /
   (SOL price in USD × 1e6))` (at 150 USD/SOL ≈ 28 633 115 306). Only used to compare profits of different bases and to
   check `min_profit`.
-- **start** — opening amount of the search, base units. A small amount (0.001–0.01 SOL) is safe; with `HINT` give your
-  best estimate of the optimum (the search then starts there, cheaper in CU).
+- **start** — the amount to try first, base units. 0.001–0.01 SOL is safe; set `HINT` when it is your estimate of the
+  best amount (saves compute).
 - **max_in** — your cap. Use `u64::MAX / 4` (`0x3fffffffffffffff`) for "no cap of mine": the program caps by your balance
   plus the vault anyway.
 - **FAIL_WHEN_DRY** — set it on paid landing services (Jito, Temporal, Helius sender…): a transaction without profit
-  then fails, so the tip inside it is not paid. Leave it off when you want a successful no-op (e.g. plain RPC spam).
-- **min_profit** — the minimum value (lamports) worth executing: at least your tip + priority for that copy.
-- **budget** — the transaction's compute-unit limit minus what runs before the executor (we reserve 30 000 CU per
+  then fails, so the tip inside it is not paid. Leave it off when you want a successful no-op (e.g. on plain RPC).
+- **min_profit** — the least profit after the fee (lamports of value) worth executing: at least your tip + priority for
+  that copy.
+- **budget** — the transaction's compute-unit limit minus what runs before the executor (reserve about 30 000 CU per
   `CreateIdempotent` ATA instruction in the same transaction). Recommended.
 
 ## 4. Accounts
@@ -137,8 +138,7 @@ delivered (the balance change of its `out` account). The last hop's `out` must b
 
 ## 6. Supported DEXs and their windows
 
-Every window below is exactly the account list our router builds and the deployed executor accepts (checked against
-the code on 5 October 2026). "Window index" = position after the DEX program (`accounts[first + 1 + index]`). Keep
+Every window below is exactly the account list the deployed executor accepts. "Window index" = position after the DEX program (`accounts[first + 1 + index]`). Keep
 the order and the writable/signer marks: the executor forwards both to the DEX unchanged, and reads some accounts at
 **fixed window indexes** to quote on chain (section 6.16) — a window in another order may still swap but will be
 quoted wrongly or dropped.
@@ -170,34 +170,33 @@ program). The executor uses the same 0-based window indexes.
   always passes `min_out = 0` (Pump buy writes `max(min_out, 1)`); slippage protection is the
   executor's own profit check after the route, not a per-hop minimum.
 - **Limits**: at most 48 accounts per window (`MAX_CPI_ACCOUNTS`, checked); hop indexes are
-  `u8`, so the whole instruction must stay within 256 accounts (the sender refuses more).
+  `u8`, so the whole instruction must stay within 256 accounts.
 - **Hop output**: after the CPI, the executor reads the SPL token amount (bytes 64..72) of `accounts[out]` and
   takes the balance delta as the next hop's input. `out` must be a token account (else
-  `NotTokenAccount`). The sender sets `out` to the first position in the account list holding the
-  user's token account of the hop's output mint.
+  `NotTokenAccount`). Point `out` at your token account of the hop's output mint.
 - **On-chain quoting** (tag 1 search, tag 2 quote): the executor reads pool state, vault balances, mints (for
   Token-2022 transfer fees), tick/bin arrays at **fixed window indexes** per DEX. These
   offsets are listed per DEX below (subsection "Executor reads") and summarized in section 16. A window built in a
   different order may still CPI correctly but will be quoted wrongly or not at all (a failed quote drops the
   route).
 
-#### Conventions used by the router
+#### Conventions
 
 - `user` = the transaction signer (also `accounts[0]` of the executor instruction). Every window's signer slot
   is the same `user`.
 - `user_a` / `user_b` = the user's token accounts for the venue's mint A / mint B, which the
-  sender derives as ATA(user, mint, the mint's owner program: SPL Token or Token-2022) (associated token address:
+  are ATA(user, mint, the mint's owner program: SPL Token or Token-2022) (associated token address:
   seeds `[owner, token_program, mint]`, program `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL`).
 - `a_to_b = true` swaps mint A for mint B. "A" is defined per DEX below.
 - Programs used in windows:
   - SPL Token `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`, Token-2022 `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
   - Memo `MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr`, System `11111111111111111111111111111111`
   - Associated Token `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL`
-- **Transfer hooks**: Our router skips any pool where either mint has an active Token-2022 transfer hook
-  (non-zero hook program id): no window passes the hook's extra accounts, so the swap would fail.
+- **Transfer hooks**: pools where either mint has an active Token-2022 transfer hook (non-zero hook program id) are
+  not supported: no window passes the hook's extra accounts, so the swap would fail.
 - **Legacy flag** (`FLAG_LEGACY = 4`): only Whirlpool (4), Raydium CLMM family (5, 8) and
-  Meteora DLMM (6) have a legacy variant. The router sets it **whenever both mints are owned by classic SPL
-  Token** and never otherwise. Legacy is only valid for SPL-Token-only pairs (no Token-2022
+  Meteora DLMM (6) have a legacy variant. Set it only when **both mints are owned by classic SPL Token**
+  (fewer accounts, less compute). Legacy is only valid for SPL-Token-only pairs (no Token-2022
   handling in the older instruction). The executor reads the bit for these three DEXes only (instruction data and window offsets); other DEXes ignore it.
 - **Labels**: `W` = writable, `R` = read-only, `S` = signer.
 - **Account letters for the "Executor reads" lines**: `amount(x)` = token account amount (bytes 64..72),
@@ -376,10 +375,9 @@ Tick array selection: with
 - a_to_b: starts `base, base - T, base - 2T`;
 - b_to_a: `base + T, base + 2T, base + 3T` if `tick_current_index + tick_spacing >= base + T`, else `base, base + T, base + 2T`;
 - starts outside the valid tick range are dropped (so fewer than 3 near the price limits).
-The router always passes **3** tick-array accounts: missing ones are filled by repeating the last valid one
-(or the pool address if none). Tick-array accounts that do not exist on chain are passed anyway
-(the load step only requires them to have been fetched, "absent on chain is fine"); the executor
-treats an empty account as a zeroed array at its start.
+Pass **3** tick-array accounts: fill missing ones by repeating the last valid one (or the pool address if none).
+Tick-array accounts that do not exist on chain may be passed; the executor treats an empty account as a zeroed array
+at its start.
 
 **v2 window** (non-legacy; any pair with a Token-2022 mint):
 
@@ -420,7 +418,7 @@ treats an empty account as a zeroed array at its start.
 User and vault accounts are always in A/B order (not input/output); direction is only in the data.
 Fixed length: 15 (v2) / 11 (legacy).
 
-**Flags**: bit0 = a_to_b (A in); bit2 = legacy, set by the router iff both mints are SPL Token.
+**Flags**: bit0 = a_to_b (A in); bit2 = legacy, only when both mints are SPL Token.
 
 **Executor reads**: pool = w[4] (legacy w[2]); the executor recomputes
 `tick_array_starts(a_to_b)` from the pool on chain and reads the first `n` arrays from w[11..] (legacy w[7..]);
@@ -455,9 +453,8 @@ PDAs (under the pool's own program):
 
 Tick array selection:
 list the first array the swap uses (the current one if initialized in the bitmap, else the next initialized one in
-the direction) and the following initialized ones. The router then keeps only arrays whose accounts **exist**, and
-of those **1 or 2**: the second only when the first is not the current tick's array, or the current tick lies in
-the half of its array toward the swap direction. Array span = 60 * tick_spacing.
+the direction) and the following initialized ones, in swap order, only arrays whose accounts **exist** (up to 10 are
+read). Array span = 60 * tick_spacing.
 The extension is passed **only when the account exists** ("the program stops at the first account it does not
 know").
 
@@ -479,7 +476,7 @@ know").
 | 11 | input mint | R | |
 | 12 | output mint | R | |
 | 13 | [bitmap extension, if it exists] | W | |
-| 13/14.. | tick arrays (1–2 by the router), in swap order | W | |
+| 13/14.. | tick arrays, in swap order | W | |
 
 **Legacy window** (`swap`; both mints SPL Token):
 
@@ -515,9 +512,7 @@ PDAs:
 
 Bin array selection: list the bin arrays
 **with liquidity** starting at the active bin's array (`bin_array_index(active_id)`, 70 bins per array) in the
-swap direction (X->Y: decreasing index). The router keeps **1 or 2**: the second only when the first is not the
-active array or the active bin is in the half of its array toward the swap direction; then only those whose
-account exists.
+swap direction (X->Y: decreasing index), in swap order, only those whose account exists (up to 10 are read).
 
 Host fee account (`host_fee_in`, idx 9): when the pair pays a host share
 (`protocol_share > 0`) and the fee token has no Token-2022 transfer fee:
@@ -544,7 +539,7 @@ Host fee account (`host_fee_in`, idx 9): when the pair pays a host share
 | 13 | Memo program — **omitted in the legacy window** | R | |
 | 14 (13) | event authority PDA | R | |
 | 15 (14) | DLMM program | R | |
-| 16.. (15..) | bin arrays (1–2 by the router), swap order | W | |
+| 16.. (15..) | bin arrays, swap order | W | |
 
 (Numbers in parentheses = legacy window.) Length: 16 + n_arrays (legacy 15 + n_arrays). The executor's
 comment sizes the longest window as DLMM with 10 bin arrays = 26 accounts.
@@ -839,8 +834,8 @@ DEX, the following positions are load-bearing; everything else is only forwarded
 
 Other executor-side requirements:
 
-- **Signer**: the window's signer account is forwarded with the signer flag from the outer instruction; the router
-  always uses `accounts[0]` (the executor's signer) there.
+- **Signer**: the window's signer account is forwarded with the signer flag from the outer instruction; use
+  `accounts[0]` (the executor's signer) there.
 - **Fee shares** (DLMM w[9], DAMM v2 w[11]): the executor classifies them by address equality with the window's
   user input/output accounts. Pass the DEX program id to mean "none". Any other account is treated as no share in
   the quote, but the budget estimate still charges the transfer.
@@ -851,13 +846,13 @@ Other executor-side requirements:
 
 ## 7. Transaction layout, compute budget, lookup tables
 
-A typical transaction (the real one in §9 is exactly this):
+A typical transaction:
 
 1. *(paid landing services)* the tip — a System transfer to the service's tip account. It is inside the transaction,
    so with `FAIL_WHEN_DRY` a miss fails and the tip is not paid. *(durable nonce)* `AdvanceNonceAccount` goes first
    instead when you sign over a nonce.
 2. `SetComputeUnitLimit` — enough for the search and the best route. Winning searches use ~150–380 thousand CU;
-   misses ~40 thousand. We use 350–550 thousand depending on the number of routes.
+   misses ~40 thousand.
 3. `SetComputeUnitPrice` — your priority (µlamports per CU; priority in lamports = price × limit / 10⁶).
 4. `SetLoadedAccountsDataSizeLimit` — the sum of the data sizes of all accounts the transaction loads (programs
    included), rounded up. Optional, but a tight limit lowers the transaction's cost for the scheduler.
@@ -867,11 +862,7 @@ A typical transaction (the real one in §9 is exactly this):
 
 **Lookup tables.** A two-route transaction touches 40–70 unique accounts; Solana allows at most 64 locked accounts
 and 1232 bytes. Put pools, their vaults, bin/tick arrays, programs, mints and your token accounts in address lookup
-tables. The live list `https://moneyprinter.bot/auto/mplutall.txt` contains public tables covering the hot pools of
-`https://moneyprinter.bot/auto/mp.toml` — you can use them.
-
-**Pool discovery.** `https://moneyprinter.bot/auto/mp.toml` lists, live, whole routes the on-chain arbitrage bots are
-winning right now, hottest first (`[[group]] markets = [...]`, one route per group). It is a good source of windows.
+tables.
 
 ## 8. Return data and errors
 
@@ -894,43 +885,32 @@ number of on-chain quotes the search made. With `simulateTransaction` it tells y
 Errors from inside a swap are the DEX's own (e.g. Anchor `3007` = an account it expected is missing or wrong — check
 the window against §6).
 
-## 9. A real transaction, decoded
+## 9. An example, decoded
 
-[`4d5cFudo…LQ9TQL`](https://solscan.io/tx/4d5cFudoRgTjximvywcyRSdSGtzq4Z9uG3ZLak8ZeGVzx4Uo8vcpDfM98G4yXF2YU13zFtX8RtzHFLXYVsLQ9TQL)
-(slot 453 465 563): a Temporal bundle — tip transfer, compute limit 426 612, price 2 033 µlamports/CU, loaded data
-limit 21 102 592 bytes, then the executor with 243 account references (through lookup tables).
+An illustrative search (not a real transaction): one base (WSOL), two windows — Raydium CPMM WSOL→coin and Meteora
+DAMM v2 coin→WSOL — and one route over them; `FAIL_WHEN_DRY | VAULT | BUDGET`, compute budget 300 000.
+Accounts 0–5: user, user's WSOL account, vault PDA, SPL Token program, vault WSOL account, user's coin account; then
+the CPMM program at 6 with its 13 window accounts, the DAMM v2 program at 20 with its 14.
 
 ```text
 01                                  tag 1 (search)
 07                                  flags: FAIL_WHEN_DRY | VAULT | BUDGET
-80                                  rounds: HINT, precision 0
-96 45 50 00 00 00 00 00             min_profit 5 260 694 lamports (covers the tip)
-01 0c 0c                            1 base, 12 windows, 12 routes
+00                                  rounds: 0
+40 42 0f 00 00 00 00 00             min_profit 1 000 000 lamports
+01 02 01                            1 base, 2 windows, 1 route
 00 00 00 00 01 00 00 00             base 0 weight 2^32 (WSOL)
-b6 56 cb 05 00 00 00 00                    start 97 212 086 (estimate, HINT)
+80 96 98 00 00 00 00 00                    start 10 000 000 (0.01 SOL)
 ff ff ff ff ff ff ff 3f                    max_in u64::MAX/4 (no cap)
-06 00 05 11 0b                      window 0: DLMM, B->A, program at 5, 17 accounts, out 11 (coin 1 account)
-01 03 17 18 01                      window 1: Pump sell, A_TO_B|PUMP_CANONICAL, at 23, 24 accounts, out 1 (WSOL)
-06 00 30 11 36                      window 2: DLMM, at 48, out 54 (coin 2 account)
-01 03 42 18 01                      window 3: Pump sell, at 66, out 1
-02 02 5b 1a 0b                      window 4: Pump buy, PUMP_CANONICAL, at 91, 26 accounts, out 11
-06 01 76 12 01                      window 5: DLMM, A_TO_B, at 118, 18 accounts, out 1
-02 02 89 1a 36                      window 6: Pump buy, at 137, out 54
-06 01 a4 12 01                      window 7: DLMM, A_TO_B, at 164, out 1
-07 01 b7 0e 01                      window 8: DAMM v2, A_TO_B, at 183, 14 accounts, out 1
-07 00 c6 0e 0b                      window 9: DAMM v2, at 198, out 11
-07 00 d5 0e 36                      window 10: DAMM v2, at 213, out 54
-07 01 e4 0e 01                      window 11: DAMM v2, A_TO_B, at 228, out 1
-00 02 00 01   00 02 02 03   ...     12 routes, each base 0 with two windows: [0,1] [2,3] [4,5] [6,7] [4,8] [9,1]
-                                    [0,8] [9,5] [10,3] [2,11] [6,11] [10,7]
-74 82 06 00                         budget 426 612 CU
+00 01 06 0d 05                      window 0: CPMM, A_TO_B, program at 6, 13 accounts, out 5 (coin account)
+07 00 14 0e 01                      window 1: DAMM v2, B->A, program at 20, 14 accounts, out 1 (WSOL)
+00 02 00 01                         route: base 0, two windows [0, 1]
+e0 93 04 00                         budget 300 000 CU
 ```
 
-Accounts 0–4: user, user's WSOL account, vault PDA, SPL Token program, vault WSOL account. Return data
-`AcCB1S0AAAAAKzuYAAAAAAATAA==` = route 1 executed, 768 967 104 lamports in, profit 9 976 619 lamports, 19 quotes;
-257 155 CU used of 426 012.
+A return data of `AABlzR0AAAAAAAk9AAAAAAAFAA==` would mean: route 0 executed, 500 000 000 lamports in, profit 4 000 000 lamports before the
+fee, 5 quotes.
 
-[`encode_search.py`](encode_search.py) is a reference encoder; run it — it rebuilds these 150 bytes exactly.
+[`encode_search.py`](encode_search.py) is a reference encoder; run it — it rebuilds these bytes exactly.
 
 ## 10. Checklist
 

@@ -44,7 +44,7 @@
       "description": "A token routes start and end in (SOL as WSOL, USDC, USDT). Base b is the user's token account at account index 1+b.",
       "fields": [
         { "name": "weight", "type": "u64", "description": "value of one base unit in lamports, Q32 (WSOL: 1<<32; USDC at 150 USD/SOL: ~6.667 lamports per micro-USDC => 6.667*2^32). Profits of different bases compare by profit*weight>>32" },
-        { "name": "start", "type": "u64", "description": "opening trade size of the on-chain search, base units (small, e.g. 0.001 SOL); with HINT in rounds: an estimate of the optimum" },
+        { "name": "start", "type": "u64", "description": "the amount to try first, base units (0.001–0.01 SOL is safe); with HINT in rounds: your estimate of the best amount" },
         { "name": "max_in", "type": "u64", "description": "cap on the trade size, base units; the program also caps by user balance (+ vault balance with the vault section). Use u64::MAX/4 for no cap of yours" }
       ]
     },
@@ -94,7 +94,7 @@
       "data": [
         { "name": "tag", "type": "u8", "value": 1 },
         { "name": "flags", "type": "u8", "bits": "SearchFlags" },
-        { "name": "rounds", "type": "u8", "description": "search precision: stop within best/2^(8+rounds) of the bound; bit7 (0x80) = HINT: Base.start is an estimate of the optimum. 0 is a good default" },
+        { "name": "rounds", "type": "u8", "description": "set 0; bit7 (0x80) = HINT: Base.start is your estimate of the best amount" },
         { "name": "min_profit", "type": "i64", "description": "lamports of value (profit*weight>>32) the best route must reach, after the 7% fee; else NoProfit / no-op" },
         { "name": "n_bases", "type": "u8", "description": "1..=4" },
         { "name": "n_windows", "type": "u8", "description": ">= 1" },

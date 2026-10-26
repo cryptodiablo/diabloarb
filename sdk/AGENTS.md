@@ -6,13 +6,13 @@ DiabloArb executor `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z`. Answer the pe
 ## Read first
 
 1. [`README.md`](README.md) — the specification. §3 data layout, §4 accounts, §5 windows, §6 every DEX's swap
-   account list, §7 transaction layout, §8 errors, §9 a real transaction decoded byte by byte.
+   account list, §7 transaction layout, §8 errors, §9 an example decoded byte by byte.
 2. [`diabloarb-executor.idl.json`](diabloarb-executor.idl.json) — the same layout as data: enums (`Dex`, flags),
    types (`Hop`, `Base`, `Route`), the `search` and `quote` instructions with accounts, return data, error codes. Use it
    to generate encoders/decoders in any language. It is **not** an Anchor IDL — do not feed it to Anchor's client
    generator; there are no Borsh vectors and no 8-byte discriminators (the tag is one byte).
 3. [`encode_search.py`](encode_search.py) — reference encoder. Port it to the person's language and keep its
-   self-test: your encoder must reproduce the real transaction's 150 bytes from §9 exactly.
+   self-test: your encoder must reproduce the example's bytes from §9 exactly.
 
 ## Facts you must not get wrong
 
@@ -35,7 +35,7 @@ DiabloArb executor `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z`. Answer the pe
 ## How to build it, step by step
 
 1. **Encoder + decoder.** Port `encode_search` and `decode_return`; unit-test against §9.
-2. **One window, read-only.** Pick a pool from `https://moneyprinter.bot/auto/mp.toml`, read its accounts over RPC,
+2. **One window, read-only.** Pick a pool of a supported DEX, read its accounts over RPC,
    build its window per §6, and call `tag 2` (quote) with `simulateTransaction` (`sigVerify: false`,
    `replaceRecentBlockhash: true`). A sensible output amount in the return data means the window is right. Repeat for
    every DEX the person needs.
@@ -45,8 +45,8 @@ DiabloArb executor `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z`. Answer the pe
 4. **Pool state.** Keep pool accounts fresh (Geyser or RPC polling) only to choose windows; the executor quotes on
    chain itself, so the sender does not need exact off-chain math to be correct — only to be selective.
 5. **Landing.** Send to the person's RPCs / landing services. Paid services: put the tip inside the transaction and set
-   `FAIL_WHEN_DRY`, so a miss costs no tip. Several services at once: sign every copy over one durable nonce so at most
-   one lands.
+   `FAIL_WHEN_DRY`, so a miss costs no tip. Sending one transaction to several services: make sure at most one copy
+   can land.
 6. **Measure.** Log every send and its outcome (landed / failed with code / not found) and the realized profit; compare
    spend (fees, priority, tips) against profit per hour before scaling up.
 

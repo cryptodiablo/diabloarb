@@ -32,12 +32,11 @@ def decode_return(data: bytes):
     return (None if route == 255 else route, amount_in, profit, quotes)
 
 if __name__ == "__main__":
-    # the real transaction decoded in README §9 — the encoder reproduces its data byte for byte
-    windows = [(6,0,5,17,11),(1,3,23,24,1),(6,0,48,17,54),(1,3,66,24,1),(2,2,91,26,11),(6,1,118,18,1),(2,2,137,26,54),
-               (6,1,164,18,1),(7,1,183,14,1),(7,0,198,14,11),(7,0,213,14,54),(7,1,228,14,1)]
-    routes = [(0,[0,1]),(0,[2,3]),(0,[4,5]),(0,[6,7]),(0,[4,8]),(0,[9,1]),(0,[0,8]),(0,[9,5]),(0,[10,3]),(0,[2,11]),(0,[6,11]),(0,[10,7])]
-    data = encode_search([(Q32, 97212086, NO_CAP)], windows, routes, rounds=HINT, min_profit=5260694, budget=426612)
-    real = bytes.fromhex("0107809645500000000000010c0c0000000001000000b656cb0500000000ffffffffffffff3f060005110b01031718010600301136010342180102025b1a0b06017612010202891a360601a412010701b70e010700c60e0b0700d50e360701e40e01000200010002020300020405000206070002040800020901000200080002090500020a030002020b0002060b00020a0774820600")
-    assert data == real, "mismatch"
+    # the example decoded in README §9 — the encoder reproduces its bytes exactly
+    windows = [(0, A_TO_B, 6, 13, 5), (7, 0, 20, 14, 1)]
+    routes = [(0, [0, 1])]
+    data = encode_search([(Q32, 10_000_000, NO_CAP)], windows, routes, min_profit=1_000_000, budget=300_000)
+    example = bytes.fromhex("01070040420f000000000001020100000000010000008096980000000000ffffffffffffff3f0001060d0507001" "40e01000200 01e0930400".replace(" ", ""))
+    assert data == example, data.hex()
     import base64
-    print("ok:", len(data), "bytes, identical to the real transaction;", decode_return(base64.b64decode("AcCB1S0AAAAAKzuYAAAAAAATAA==")))
+    print("ok:", len(data), "bytes, identical to the README example;", decode_return(base64.b64decode("AABlzR0AAAAAAAk9AAAAAAAFAA==")))
