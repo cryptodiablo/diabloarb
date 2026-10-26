@@ -52,7 +52,7 @@ crash in one transaction (§11). Do not guess features that are not described he
    only), **Size & limits** and **Exits** (§5–§7). The defaults are the checked ones. Rare exits are under
    **▸ more exits**; a **?** next to a field explains it in full. Press **save** in the bar at the bottom (it lights up
    when something is not saved yet).
-4. Read **How the ML signal trades** and tick **I understand how it trades…** — without it Scalper does not start.
+4. Read **How the ML signal trades** — it says how the strategy trades and what can be lost.
 5. Press **start**. The first start connects your wallet: Scalper uses the **same wallet as your Arb bot** — no new
    wallet, no key to enter. For a few seconds the page says the wallet is being prepared; it needs about **0.016 SOL**
    once (refundable rent, §8). If your wallet is already connected for Copytrade, nothing is paid again.
@@ -263,7 +263,6 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 
 | Symptom | Why | What to do |
 |---|---|---|
-| **start** says to tick «I understand» | the ML option is not acknowledged | read the card and tick it |
 | "Your wallet is not ready" / "being prepared" | the first connection creates accounts (~0.016 SOL) | top up the wallet with SOL; it retries by itself |
 | Status "daily stop" | Scalper lost the daily stop since 00:00 MSK | new buys resume at midnight Moscow time, or raise the stop |
 | No buys for a long time | the model buys only its best dips — sometimes none for an hour; or a limit is full; or SOL is short | read the line **Signals the bot skipped** (§10); check the radar (any green scores?) |
@@ -383,6 +382,6 @@ is per mode (§7). For Copytrade's own profiles see [COPYTRADE.md](COPYTRADE.md)
 
 ### After the values are set
 
-Tell the user to press **save** in the bottom bar (it says "all saved" when done), tick «I understand…» for the ML card,
+Tell the user to press **save** in the bottom bar (it says "all saved" when done),
 and press **start**. Signals come every 10–30 minutes on average; the line **Signals the bot skipped** (§10) tells why a
 signal was not bought.

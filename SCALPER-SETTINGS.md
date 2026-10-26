@@ -227,8 +227,8 @@ settings — arb, Copytrade and Scalper (with the extra exits) — but Copytrade
 At the bottom of the Scalper page, **Settings file**:
 
 - **Export scalper settings** downloads `diablo-scalper-settings-<date>.json`: both strategies' entry switches, size,
-  limits, fees and exits, and the extra exits (trailing, spike, dump, quiet). Not in it: the on/off switches, the
-  «I understand» tick — and no keys (the settings never hold one). It exports the **saved** settings.
+  limits, fees and exits, and the extra exits (trailing, spike, dump, quiet). Not in it: the on/off switches
+  and no keys (the settings never hold one). It exports the **saved** settings.
 - **Import scalper settings** reads such a file and lists every change "was → becomes" (SOL and % in words). **Apply to
   the page** puts it into the form; nothing is saved until you press **save**. Copytrade's settings stay as they are.
 
