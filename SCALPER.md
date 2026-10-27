@@ -272,6 +272,7 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | Solana network pause | the network had a pause | nothing |
 | CopyTrade already holds this coin | Copytrade has an open position of the coin | nothing; modes do not mix |
 | the coin was migrating | the curve was completing | nothing |
+| the dip was already bought up (by others and by Scalper users ahead of you) — no buy, no fee | by the time of your buy the price was already past your **Buy price bound** — counting the Scalper buys sent just before yours; the buy is not sent, so it costs nothing | nothing; a wider bound buys more of these, at a worse price |
 
 ## 11. What results to expect, and why they differ
 
