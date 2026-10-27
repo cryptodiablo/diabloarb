@@ -58,6 +58,11 @@ buying one block after the dip, after the pump.fun fee, our 1% and the network. 
 plus, red — in minus). These numbers are counted again once a day. Under them: how many users are on the card now
 (refreshed every 5 minutes; the dot turns yellow from 8 users) — many users on one card buy the same dips and miss more.
 
+**More contested cards.** New coins, Deep dumps and Deep dumps, hold 30 s are the best per trade on history, but live
+they are the most contested: fast outside bots often buy these dips first, so more of your buys miss (no loss — a missed
+buy costs only its network fee, ≈0.0001 SOL). Their cards say so. From 21 to 27 October about 55% of buys on new coins
+and 54% on dips of 20–30% missed, against 36% overall.
+
 **Grey (paused) cards.** A card whose last 2 days on history are both in minus turns grey and cannot be picked until it
 is in plus again. Users already on it are not moved: the page warns them, and they can pick another card.
 

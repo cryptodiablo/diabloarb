@@ -100,6 +100,8 @@ details, with history and ready setups: [SCALPER-SETTINGS.md §2](SCALPER-SETTIN
   market of the last 7 days, after every cost; counted again once a day. The bars are its days.
 - **Crowd:** how many users are on the card now (every 5 minutes; a yellow dot from 8 users). Users on one card buy the
   same dips; a less crowded card misses less.
+- **More contested:** New coins, Deep dumps and Deep dumps, hold 30 s — best per trade on history, but fast outside bots
+  often buy these dips first, so more buys miss (only the network fee). The cards say so.
 - **Grey card:** its last 2 days on history were in minus — it cannot be picked until it is in plus again. Users already
   on it stay on it and see a warning.
 - Picking a card clears the take profit, stop loss, initial out, the ladder, timer steps and your own entry; the fast
