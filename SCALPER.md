@@ -274,7 +274,6 @@ twice (≈2.5%) plus the network: the bounce must be bigger than that to win.
 | Solana network pause | the network had a pause | nothing |
 | CopyTrade already holds this coin | Copytrade has an open position of the coin | nothing; modes do not mix |
 | the coin was migrating | the curve was completing | nothing |
-| the dip was already bought up by Scalper users ahead of you (a higher own priority + tip goes first) — no buy, no fee | the Scalper buys sent just before yours on this dip would push the price past your **Buy price bound**; the buy is not sent, so it costs nothing. On one dip the buys queue by **Own priority fee and tip** (priority + tip of the buy, higher first; ours counts as 0.0002 SOL), then by who bought least recently. Outside bots buying first in the same block are not seen in advance: such a buy is still sent and shows as **missed** (only its network fee, ≈0.0001 SOL) | nothing; a wider bound buys more of these, at a worse price |
 
 ## 11. What results to expect, and why they differ
 
