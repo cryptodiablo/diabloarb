@@ -109,6 +109,7 @@ last value). Keys and defaults: USER_CONFIG.md.
   ```toml
   geyser_endpoint = "https://your-yellowstone-endpoint"
   geyser_x_token = "your-token"     # keep secret
+  # geyser_accounts_per_filter = 200  # Chainstack: at most 200 accounts a filter (default 500)
   mode = "ladder"
   hot_sol_per_min = 0.03            # lower = more active, higher = pickier
   helius = true                     # step-2 senders: add the ones you have keys for

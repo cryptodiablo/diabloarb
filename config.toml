@@ -25,6 +25,7 @@ gas_file = "gas.json" # runtime vars JSON file (for {var} placeholders)
 # Required for mode = "ladder" / "flow".
 # geyser_endpoint = "https://your-geyser:443"
 # geyser_x_token = "your-token"
+# geyser_accounts_per_filter = 200   # Chainstack takes at most 200 accounts a filter (default 500)
 
 spam_rpc = true # enable main RPC send loop
 
