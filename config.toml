@@ -80,6 +80,7 @@ hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bund
 #             # "markets" mode uses none unless markets_nonces = true (below).
 # markets_nonces = true # markets mode: every copy of a shot (senders, bundles, all send_rpcs) over one durable nonce —
 #                       # at most one lands; the nonces are created on start. Default false: the recent blockhash.
+# nonce_accounts = ["…", "…"] # your own durable nonce accounts (authority = this wallet), used instead of creating new ones
 
 
 # --- Jito: three ways to send -------------------------------------------------------------------------------------
