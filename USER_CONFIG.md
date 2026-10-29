@@ -117,6 +117,7 @@ wallet); other clients get 403, so restart a bot built before 27 October 2026 to
 | `auto_close_atas_idle_hours` | `24` | With `auto_close_atas = true`: after how many hours without a shot a coin's empty token account counts as idle and is closed — `1` on a small balance gets the rent back the same hour (from 1; less is read as 1; fractions allowed, `2.5`). The check stays hourly. From build `66352cb6b2d0`, 20 Oct 2026. |
 | — | — | **Close them all now:** `./sender atas list` counts the wallet's empty token accounts and their rent; `./sender atas close` closes all of them at once (10 a transaction, each waited for), whatever their age. Accounts holding a coin and WSOL/USDC/USDT stay; with a bot running, the accounts of coins it shot in the last 15 minutes stay too, and the bot learns the closed ones by itself. A config path may be added: `./sender atas close config.toml`. |
 | `nonces` | 32 in hot modes | Number of durable nonce accounts for the hot modes' sender broadcast (max 100). |
+| `markets_nonces` | `false` | `markets` mode only: `true` — every copy of a shot (the senders, the bundles and every RPC of `send_rpcs`) is signed over one durable nonce, so at most one copy lands; the `nonces` accounts (32 by default) are created on start as in the hot modes, and a shot waits when none is free. `false` — copies on the recent blockhash, as before. From build `eacd26e2ae0e`, 29 Oct 2026. |
 | `interval_ms`, `copy_fees`, `copy_cu`, `attempt_journal` | — | Advanced, leave unset: the markets mode's tick, tips/priority/CU copied from the watched bots as a percent, an attempts journal file. |
 | `mode` | `"markets"` | `"markets"` (pools from the markets file), `"ladder"` or `"flow"` (§8). |
 
@@ -320,6 +321,7 @@ file. The markets file is not used in these modes.
 | `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the same transaction as a shot — hottest coin first, then more hot coins as fit (up to 64 accounts) — this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program\|wallet\|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
+| `markets_nonces` | `false` | `markets` mode over durable nonces too (see §2). |
 
 Minimal ladder setup (without `mode`, `geyser_endpoint` and `geyser_x_token` the bot falls back to markets):
 
@@ -484,6 +486,7 @@ helius_bundle_cooldown_ms = 100
 
 # other
 # nonces = 32                   # created on start, ~0.00145 SOL rent each
+# markets_nonces = true         # markets mode: one durable nonce for all copies of a shot, at most one lands
 # arb_sources_file = "my-bots.txt"
 ```
 

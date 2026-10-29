@@ -578,6 +578,7 @@ whole unless they remove keys first.
 - **23 Oct 2026** — Harmonic bundles take their own pause in `ladder`/`flow` too, as Astralane and Jito bundles:
   `harmonic_bundle_cooldown_ms` (the dashboard's Cooldown in the Harmonic bundles row) — the lane sends that often, the
   bundle timer ticks at the fastest lane; unset — the bundle timer's pace (build `f018db0dc27d`).
+- **29 Oct 2026** — `markets_nonces = true`: the `markets` mode signs every copy of a shot (senders, bundles, all `send_rpcs`) over one durable nonce, at most one lands; off by default (build `eacd26e2ae0e`).
 - **29 Oct 2026** — new senders BlockSprint (`blocksprint`, `blocksprint_bundle`) and BlockRazor (`blockrazor`, `blockrazor_bundle`), the bundles with a pause of their own in `ladder`/`flow` as Astralane and Aura bundles; Aura's «Jito mainnet failed (429)» — Aura's own upstream busy — no longer reads as «limit used up».
 
 ## 15. Glossary

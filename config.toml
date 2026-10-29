@@ -77,7 +77,9 @@ hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bund
 # (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start
 #             # (~0.00145 SOL rent each; ./sender nonces close returns it). Uncomment only to change the number:
-#             # set here, it is used in "markets" mode too, where nobody creates them.
+#             # "markets" mode uses none unless markets_nonces = true (below).
+# markets_nonces = true # markets mode: every copy of a shot (senders, bundles, all send_rpcs) over one durable nonce —
+#                       # at most one lands; the nonces are created on start. Default false: the recent blockhash.
 
 
 # --- Jito: three ways to send -------------------------------------------------------------------------------------
