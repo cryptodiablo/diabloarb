@@ -72,7 +72,7 @@ hot_lanes_off = [] # senders not used in the mode, e.g. ["nextblock"]
 route_memory = true # remember the routes the arb bots won on for hours (route-memory.txt next to the config); every shot is the
 max_hops = 4 # the longest route of a shot in every mode (markets too), 2-5 pools; 4 covers loops through a second base (3: as before)
 #                   # best single transaction by them, routes of any coin; false = the selection as before
-hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bundles, Harmonic) get the hottest route this often
+hot_bundle_interval_ms = 100 # bundle lanes (Temporal/Helius/Astralane/Jito bundles, Harmonic) send the shot's transaction (hottest coin first, more hot coins as fit) this often
 # arb_sources_file = "my-bots.txt" # own list of arb bots to watch (default: built in)
 # (their priority: their own <name>_min/max_priority_fee, e.g. harmonic_bundle_min_priority_fee, when set; else hot_sender_*)
 # nonces = 32 # durable nonces for the senders' broadcast — the hot modes use 32 by default and create them on start

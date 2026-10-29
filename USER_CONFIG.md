@@ -268,8 +268,9 @@ file. The markets file is not used in these modes.
   the best route first, then the routes with the most score per account they add, of any coin — a second coin goes in
   when it fits, otherwise the room goes to more routes of the first. The set changes only when the scores do. A copy
   sent less than 200 ms after another gives its room to the next routes on the list.
-- **Bundle lanes** (Temporal, Helius, Astralane and Jito bundles, Harmonic, `jito_classic`) get the hottest route every `hot_bundle_interval_ms`
-  whenever any coin is tracked (in `ladder`/`flow` that timer, not the lane's `_cooldown_ms`, sets how often a bundle
+- **Bundle lanes** (Temporal, Helius, Astralane and Jito bundles, Harmonic, `jito_classic`) get the same full transaction as a shot every `hot_bundle_interval_ms`
+  (the hottest coin's best route first, then other hot coins' routes, as many as fit in one transaction — up to 64
+  accounts; the program checks them all on chain and runs the best) whenever any coin is tracked (in `ladder`/`flow` that timer, not the lane's `_cooldown_ms`, sets how often a bundle
   lane sends: 100 ms = 10 bundles a second; exceptions with a pace of their own — `astralane_bundle_cooldown_ms`,
   `jito_bundle_cooldown_ms`, `harmonic_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
   own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
@@ -308,7 +309,7 @@ file. The markets file is not used in these modes.
 | `route_memory` | `true` | Both modes: the routes the arbitrage bots won on are remembered for hours (file `route-memory.txt` next to the config, kept over restarts) and every shot is the best single transaction by them — routes of any coin, by their profit (last 15 s, 150 s, 30 min) per account they take; the room left is filled as before. `false`: the selection as before (the top coins of the last minutes only). |
 | `max_hops` | `4` | Every mode, markets too: the longest route a shot lists, 2 to 5 pools (the program runs 5). Four covers the loops through a second base — SOL → USDC → coin A → coin B → SOL; in markets mode a group of four pools gives its four-pool loop; in ladder and flow a remembered route is recognised whichever base it starts from. A longer route asks more compute units of a transaction: set `3` to keep the shots as before. |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
-| `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the hottest route this often. 0 = with the shots. |
+| `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the same transaction as a shot — hottest coin first, then more hot coins as fit (up to 64 accounts) — this often. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program\|wallet\|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 

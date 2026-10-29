@@ -232,8 +232,8 @@ does not cover its own tip and fees never executes. There is no "required profit
   mode; `arb_sources_file` replaces the built-in list of watched bots. Tips: each step-2 sender uses its own
   `<name>_tip_min/max_lamports` (paid only on a win), priority `hot_sender_min/max_priority_fee` for all of them; the
   RPC step has no tip, its priority goes from 1 000 lamports up to what the winners pay, at most `hot_priority_cap`. Bundle lanes (Harmonic, Temporal/Helius bundles, `jito_classic`) run in the background every
-  `hot_bundle_interval_ms` (100), also while no coin is on: the top coin's best route first, then the next coins' that
-  fit; their priority is their own `<name>_min/max_priority_fee` when set, else `hot_sender_min/max_priority_fee`.
+  `hot_bundle_interval_ms` (100), also while no coin is on: the same transaction as a shot — the top coin's best route first, then
+  other hot coins' routes as fit (up to 64 accounts a transaction; the program checks them on chain and runs the best); their priority is their own `<name>_min/max_priority_fee` when set, else `hot_sender_min/max_priority_fee`.
   Hot-mode keys are read at start — restart after changing them.
   **What a shot carries (`route_memory`, on by default, both hot modes):** the bot remembers every route the arbitrage
   bots won on for hours (file `route-memory.txt` next to the config, kept over restarts) and scores it by what it paid
@@ -484,7 +484,7 @@ whole unless they remove keys first.
 - **Same key for Temporal and Temporal bundles?** Yes; `temporal_bundle_uuid` empty = `temporal_uuid` is used.
 - **In ladder, Harmonic (or Temporal/Helius) bundles at their own fees, the rest at the ladder's?** Yes: set
   `harmonic_bundle_min/max_priority_fee` (or `temporal_bundle_…`, `helius_bundle_…`); unset, bundles take
-  `hot_sender_min/max_priority_fee`. They go non-stop every `hot_bundle_interval_ms`, top route first (§3, §7).
+  `hot_sender_min/max_priority_fee`. They go non-stop every `hot_bundle_interval_ms`, the same transaction as a shot, hottest coin first (§3, §7).
 - **`hot_bundle_interval_ms` vs `harmonic_bundle_cooldown_ms`?** The first is the timer that builds a bundle for all
   bundle lanes; the second is how often Harmonic itself may send. A lane sends on a tick only if its cooldown has
   passed, so Harmonic goes at the slower of the two.
