@@ -154,6 +154,10 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `astralane_bundle` | `astralane_bundle_api_key` if set (a separate key), else the same `astralane_api_key` | 10 000 | Astralane `sendBundle` with revert protection, a lane of its own next to `astralane` (from 12 Oct 2026). Keys `astralane_bundle_tip_min/max_lamports` (default 10 000), `_min/max_priority_fee`, `_cooldown_ms`, `_all_endpoints` (false: one region by turn; true: every region each time). In `ladder`/`flow` its `astralane_bundle_cooldown_ms`, when set, is the lane's own pace (unset: `hot_bundle_interval_ms`). A bundle without profit is always dropped — nothing paid. |
 | `aura` | `aura_api_key` | 1 000 000 | AuraBoost (from 25 Oct 2026): `sendTransaction` on `/aura` in fra, ams, nyc (every region each time). Key from auraboost.io; rate limit per key (a trial: 10 a second). |
 | `aura_bundle` | `aura_bundle_api_key` if set, else the same `aura_api_key` | 1 000 000 | Aura `sendBundle` (atomic: a bundle without profit is dropped — nothing paid), a lane of its own next to `aura`. Keys `aura_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms` (in `ladder`/`flow` its own pace; unset: `hot_bundle_interval_ms`), `_all_endpoints` (false: one of 3 regions by turn; true: every region each time). |
+| `blocksprint` | `blocksprint_api_key` | 1 000 000 | BlockSprint (from 29 Oct 2026): `sendTransaction` in fra, ams, lon, nyc, sgp, tyo (every region each time). Key from blocksprint.io; 0.001 SOL tip in every transaction; 50 transactions a second a key. |
+| `blocksprint_bundle` | `blocksprint_bundle_api_key` if set, else the same `blocksprint_api_key` | 1 000 000 | BlockSprint `sendBundle` to Jito with revert protection (a bundle without profit is dropped — nothing paid), a lane of its own next to `blocksprint`; 10 bundles a second a key. Keys `blocksprint_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms` (in `ladder`/`flow` its own pace; unset: `hot_bundle_interval_ms`), `_all_endpoints` (false: one of 6 regions by turn). |
+| `blockrazor` | `blockrazor_api_key` | 100 000 | BlockRazor (from 29 Oct 2026): `sendTransaction` in fra, ams, lon, ny, tyo, sgp (every region each time). Key from blockrazor.io; tip from 0.0001 SOL; the free plan takes 3 sends a second — with 6 regions a send is 6 requests, so keep `blockrazor_cooldown_ms` ≥ 2000 on it (or ask BlockRazor for more). |
+| `blockrazor_bundle` | `blockrazor_bundle_api_key` if set, else the same `blockrazor_api_key` | 100 000 | BlockRazor `sendBundle` (all or nothing: a miss costs nothing). **BlockRazor switches bundles on for a key on request** — without that every bundle is refused (shown in the cabinet, nothing paid). Keys as `blocksprint_bundle_*`. |
 | `zeroslot` | `zeroslot_api_key` | 1 000 000 | 0slot. |
 | `falcon` | `falcon_api_key` | 1 000 000 | |
 | `stellium` | `stellium_api_key` | 1 000 000 | `stellium_endpoints` = list of its URLs. |
@@ -199,6 +203,8 @@ replaces every plain sender's pause (unset: each sender's own pause from the tab
 | `temporal` | `temporal_uuid` | `temporal_tip_min/max_lamports` (1 000 000) | `temporal_min/max_priority_fee` (none: global) | `temporal_cooldown_ms` | `temporal_tip_accounts` overrides the tip accounts. |
 | `astralane` | `astralane_api_key` | `astralane_tip_min/max_lamports` (10 000) | `astralane_min/max_priority_fee` (none: global) | `astralane_cooldown_ms` | |
 | `aura` | `aura_api_key` | `aura_tip_min/max_lamports` (1 000 000) | `aura_min/max_priority_fee` (none: global) | `aura_cooldown_ms` | AuraBoost; 3 regions each time. |
+| `blocksprint` | `blocksprint_api_key` | `blocksprint_tip_min/max_lamports` (1 000 000) | `blocksprint_min/max_priority_fee` (none: global) | `blocksprint_cooldown_ms` | BlockSprint; 6 regions each time. |
+| `blockrazor` | `blockrazor_api_key` | `blockrazor_tip_min/max_lamports` (100 000) | `blockrazor_min/max_priority_fee` (none: global) | `blockrazor_cooldown_ms` | BlockRazor; 6 regions each time (free plan: 3 requests a second). |
 | `zeroslot` | `zeroslot_api_key` | `zeroslot_tip_min/max_lamports` (1 000 000) | `zeroslot_min/max_priority_fee` | `zeroslot_cooldown_ms` | 0slot. |
 | `falcon` | `falcon_api_key` | `falcon_tip_min/max_lamports` (1 000 000) | `falcon_min/max_priority_fee` | `falcon_cooldown_ms` | |
 | `stellium` | `stellium_api_key` | `stellium_tip_min/max_lamports` (1 000 000) | `stellium_min/max_priority_fee` | `stellium_cooldown_ms` | `stellium_endpoints = ["…"]` — its hosts. |
@@ -227,6 +233,8 @@ senders' `hot_sender_min/max_priority_fee`).
 | `helius_bundle` | `helius_api_key` (optional) | `helius_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `helius_bundle_min/max_priority_fee` (at least 5 000) | `helius_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `helius_bundle_all_endpoints` (`false`) |
 | `astralane_bundle` | `astralane_bundle_api_key` → `astralane_api_key` (required) | `astralane_bundle_tip_min/max_lamports` → 10 000 (minimum 10 000) | `astralane_bundle_min/max_priority_fee` | `astralane_bundle_cooldown_ms` | `astralane_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `astralane_bundle_all_endpoints` (`false`) |
 | `aura_bundle` | `aura_bundle_api_key` → `aura_api_key` (required) | `aura_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `aura_bundle_min/max_priority_fee` | `aura_bundle_cooldown_ms` | `aura_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `aura_bundle_all_endpoints` (`false`) |
+| `blocksprint_bundle` | `blocksprint_bundle_api_key` → `blocksprint_api_key` (required) | `blocksprint_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `blocksprint_bundle_min/max_priority_fee` | `blocksprint_bundle_cooldown_ms` | `blocksprint_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `blocksprint_bundle_all_endpoints` (`false`) |
+| `blockrazor_bundle` | `blockrazor_bundle_api_key` → `blockrazor_api_key` (required) | `blockrazor_bundle_tip_min/max_lamports` → 100 000 (minimum 100 000) | `blockrazor_bundle_min/max_priority_fee` | `blockrazor_bundle_cooldown_ms` | `blockrazor_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `blockrazor_bundle_all_endpoints` (`false`) |
 | `jito_bundle` | `jito_bundle_uuid` → `jito_uuid` (optional) | `jito_bundle_tip_min/max_lamports` → 10 000 | `jito_bundle_min/max_priority_fee` (none: no priority) | `jito_bundle_cooldown_ms` | `jito_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `jito_bundle_all_endpoints` (`false`) |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file), or `harmonic_bundle_public = true` | no tip (the priority is the price) | `harmonic_bundle_min/max_priority_fee` (one end: copied) | `harmonic_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `harmonic_bundle_endpoints` (fra, lon, ams, ewr, tyo, sgp or URLs); `harmonic_bundle_all_endpoints` (`true`; `false` with public) |
 
@@ -399,6 +407,15 @@ helius_tip_max_lamports = 2000000
 # aura_bundle_api_key = "…"           # optional: a separate key; unset = aura_api_key
 # aura_bundle_tip_min_lamports = 1000000
 # aura_bundle_tip_max_lamports = 3000000
+# blocksprint = true                   # BlockSprint (blocksprint.io)
+# blocksprint_api_key = "…"
+# blocksprint_tip_min_lamports = 1000000  # min 1 000 000
+# blocksprint_bundle = true            # BlockSprint bundles: a miss costs nothing
+# blockrazor = true                    # BlockRazor (blockrazor.io); free plan: 3 a second
+# blockrazor_api_key = "…"
+# blockrazor_tip_min_lamports = 100000 # min 100 000
+# blockrazor_cooldown_ms = 2000
+# blockrazor_bundle = true             # BlockRazor bundles: only on a key BlockRazor switched them on for
 # zeroslot = true
 # zeroslot_api_key = "…"
 # zeroslot_tip_min_lamports = 1000000   # 0slot; min 1 000 000

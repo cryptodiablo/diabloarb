@@ -325,9 +325,11 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
 | Temporal bundles | same key (or `temporal_bundle_uuid`) | nothing | Tip ≥ 0.001 SOL. |
 | Astralane bundles (`astralane_bundle`) | `astralane_bundle_api_key` (its own), else `astralane_api_key` | nothing | From 12 Oct 2026. Tip ≥ 10 000 lamports (`astralane_bundle_tip_min/max_lamports`), pause `astralane_bundle_cooldown_ms`; works next to `astralane`. |
 | Aura bundles (`aura_bundle`) | `aura_bundle_api_key` (its own), else `aura_api_key` (auraboost.io) | nothing | From 25 Oct 2026. Tip ≥ 0.001 SOL, one of 3 regions (fra, ams, nyc) by turn, pause `aura_bundle_cooldown_ms`. |
+| BlockSprint bundles (`blocksprint_bundle`) | `blocksprint_bundle_api_key` (its own), else `blocksprint_api_key` (blocksprint.io) | nothing | From 29 Oct 2026. To Jito with revert protection; tip ≥ 0.001 SOL, one of 6 regions by turn, pause `blocksprint_bundle_cooldown_ms`. |
+| BlockRazor bundles (`blockrazor_bundle`) | `blockrazor_bundle_api_key` (its own), else `blockrazor_api_key` (blockrazor.io) | nothing | From 29 Oct 2026. Tip ≥ 0.0001 SOL, pause `blockrazor_bundle_cooldown_ms`. BlockRazor switches bundles on for a key on request — off by default: every bundle refused until then. |
 | Harmonic bundles | whitelisted keypair file, or nothing with `harmonic_bundle_public = true` | nothing | Price = priority. Public: lower rate limits, a bundle only when a profit is seen now. |
 | OrbitFlare Apex | `apex_api_key` | fee + priority if it lands as failed; nothing if rejected | Tip ≥ 0.001 SOL. Pick 1–2 nearest `apex_regions`. |
-| Astralane, 0slot, Falcon, Aura, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. Aura (`aura`, from 25 Oct 2026): `aura_api_key` from auraboost.io, tip ≥ 0.001 SOL, 3 regions each time — a trial key's 10 requests a second allow `aura_cooldown_ms` ≥ 300. |
+| Astralane, 0slot, Falcon, Aura, BlockSprint, BlockRazor, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. Aura (`aura`, from 25 Oct 2026): `aura_api_key` from auraboost.io, tip ≥ 0.001 SOL, 3 regions each time — a trial key's 10 requests a second allow `aura_cooldown_ms` ≥ 300. BlockSprint (`blocksprint`, from 29 Oct 2026): `blocksprint_api_key` from blocksprint.io, tip ≥ 0.001 SOL in every transaction, 6 regions each time, 50 a second a key. BlockRazor (`blockrazor`): `blockrazor_api_key` from blockrazor.io, tip ≥ 0.0001 SOL, 6 regions each time — the free plan's 3 requests a second allow `blockrazor_cooldown_ms` ≥ 2000. |
 | Helius SWQoS, Fast SWQoS | optional `helius_api_key` / Fast key | fee + priority + small tip (always lands) | Cheap presence, but every copy costs. `helius_swqos_require_profit = true` makes the Helius SWQoS copy fail without profit: a miss then costs fee + priority only. |
 
 - Keys come from each provider's own dashboard/sign-up. A sender switched on without its key is skipped with `⚠️`.
@@ -576,6 +578,7 @@ whole unless they remove keys first.
 - **23 Oct 2026** — Harmonic bundles take their own pause in `ladder`/`flow` too, as Astralane and Jito bundles:
   `harmonic_bundle_cooldown_ms` (the dashboard's Cooldown in the Harmonic bundles row) — the lane sends that often, the
   bundle timer ticks at the fastest lane; unset — the bundle timer's pace (build `f018db0dc27d`).
+- **29 Oct 2026** — new senders BlockSprint (`blocksprint`, `blocksprint_bundle`) and BlockRazor (`blockrazor`, `blockrazor_bundle`), the bundles with a pause of their own in `ladder`/`flow` as Astralane and Aura bundles; Aura's «Jito mainnet failed (429)» — Aura's own upstream busy — no longer reads as «limit used up».
 
 ## 15. Glossary
 

@@ -202,6 +202,30 @@ aura_bundle_tip_min_lamports = 1000000 # min 1 000 000
 aura_bundle_tip_max_lamports = 3000000
 aura_bundle_cooldown_ms = 100 # one region by turn; in ladder/flow this lane's own pace
 
+blocksprint = false # enable BlockSprint sender (blocksprint.io; from 29 Oct 2026)
+blocksprint_api_key = "" # BlockSprint API key
+blocksprint_tip_min_lamports = 1000000 # min 1 000 000, in every transaction
+blocksprint_tip_max_lamports = 3000000
+blocksprint_cooldown_ms = 300 # loop interval in ms (6 regions each time; 50 a second a key)
+
+blocksprint_bundle = false # BlockSprint bundles (to Jito, revert-protected): a miss is dropped and costs nothing
+blocksprint_bundle_api_key = "" # optional separate key for the bundles; empty = blocksprint_api_key
+blocksprint_bundle_tip_min_lamports = 1000000 # min 1 000 000
+blocksprint_bundle_tip_max_lamports = 3000000
+blocksprint_bundle_cooldown_ms = 200 # one region by turn; in ladder/flow this lane's own pace (10 bundles a second a key)
+
+blockrazor = false # enable BlockRazor sender (blockrazor.io; from 29 Oct 2026)
+blockrazor_api_key = "" # BlockRazor API key
+blockrazor_tip_min_lamports = 100000 # min 100 000
+blockrazor_tip_max_lamports = 1000000
+blockrazor_cooldown_ms = 2000 # 6 regions each time; the free plan takes 3 a second
+
+blockrazor_bundle = false # BlockRazor bundles: only on a key BlockRazor switched bundles on for (on request)
+blockrazor_bundle_api_key = "" # optional separate key for the bundles; empty = blockrazor_api_key
+blockrazor_bundle_tip_min_lamports = 100000 # min 100 000
+blockrazor_bundle_tip_max_lamports = 1000000
+blockrazor_bundle_cooldown_ms = 1000 # one region by turn; in ladder/flow this lane's own pace
+
 zeroslot = false # enable 0slot staked_conn sender
 zeroslot_api_key = "{zeroslot_api_key}" # 0slot API key
 zeroslot_tip_min_lamports = "{zeroslot_min_tip}" # 0slot min tip (>= 1_000_000)
