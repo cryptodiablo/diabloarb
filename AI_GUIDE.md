@@ -508,6 +508,9 @@ whole unless they remove keys first.
 - **Several Temporal bundle streams?** Yes: `temporal_bundle_2 = true` … `temporal_bundle_100 = true`, each with its own
   `_uuid`, tip range, priority range and `_cooldown_ms` (its own pace); each works by its own switch (`temporal_bundle = false` turns off the first stream only; builds before 11 October 2026 turned the whole block off)
   (USER_CONFIG §5).
+- **Can the bot use my markets groups as written, without making new combinations by coin?** Yes, from build
+  `efbc0c4bba1f`: `markets_file_groups = true` — each `[[group]]` of the markets file is its own transaction and its routes come
+  only from its own pools; default `false` regroups the pools by coin and packs up to two more groups in a transaction.
 - **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
   runs up to 5). In `markets` mode a group of four pools in the markets file gives its four-pool loop; in ladder and flow
   the bot builds them from the routes it remembers. `max_hops = 3` keeps the routes as before.

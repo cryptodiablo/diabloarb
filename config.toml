@@ -15,6 +15,8 @@ luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path 
 luts_update_ms = 1000 # LUT file refresh interval in ms (markets mode)
 
 markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
+# markets_file_groups = true # markets mode: use the file's [[group]] tables as written — each group its own transaction,
+#                             # routes only from its pools (default false: pools regrouped by coin; build efbc0c4bba1f+)
 files_updates_ms = 200 # local files refresh interval (gas + markets) in ms
 remote_files_update_ms = 10000 # remote URL refresh interval (markets/luts) in ms
 
