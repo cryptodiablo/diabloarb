@@ -429,7 +429,7 @@ Open the signature on solscan.io / solana.fm.
 |---|---|
 | Sends, then stops | Minute summary: `PAUSED` → SOL at the reserve (§4); `0 groups` / `N pools still loading over RPC: <reason>` → markets still loading or the RPC fails (reason shown: better RPC or Geyser); hot modes `coins: none yet` / tier 0 → nothing hot, by design. |
 | Nothing sent at all | Dry run on? (`DIABLO_SENDER_DRY`); `⚠️` lines; no senders enabled; `spam_rpc = false` with no other lane; ladder with nothing hot. |
-| `RPC reads failed: N (last: …)` | The read RPC rejects or rate-limits. Use a paid RPC; public RPC works, slowly. |
+| `RPC reads failed: N (last: …)` | The read RPC rejects or rate-limits. Use a paid RPC; public RPC works, slowly. `last: pool <address>: parse …` (from build `fbe876472a2a`) is a pool the sender cannot or does not trade, not the RPC: e.g. `parse pump: mayhem mode (not supported)` — PumpSwap Mayhem-mode pools are skipped on purpose. |
 | `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender without `helius_api_key`: 1 request a second per IP per region — set the key (50 a second). |
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
 | `❌ … 401/403` | Wrong or missing API key for that sender. Temporal bundles `403 Forbidden`: the key is not permitted to send bundles — a new key or Temporal's support; after 20 in a row the lane stops until a restart. |
@@ -462,7 +462,10 @@ whole unless they remove keys first.
   bundle lane then speeds up). Lanes with a pace of their own there: `astralane_bundle_cooldown_ms`,
   `jito_bundle_cooldown_ms` (from build `961ae47e967c`, 13 Oct 2026), `harmonic_bundle_cooldown_ms` (from build
   `f018db0dc27d`, 23 Oct 2026) and `temporal_bundle_N_cooldown_ms` of the extra Temporal streams;
-  `temporal_bundle_cooldown_ms` and `helius_bundle_cooldown_ms` act in `markets` mode only.
+  `temporal_bundle_cooldown_ms` and `helius_bundle_cooldown_ms` set no pace there: those lanes go on the timer, and the
+  cooldown only caps their rate (unset: `process_delay_ms`, 400 ms = 2.5 bundles a second; ticks over the cap are
+  skipped silently) — e.g. `hot_bundle_interval_ms = 10` with Helius bundles needs `helius_bundle_cooldown_ms = 20` to
+  really send 50 a second.
 - **How do I make Temporal bundles go to one region at a time?** `temporal_bundle_all_endpoints = false`, and for each
   extra stream `temporal_bundle_N_all_endpoints = false` (each stream has its own; default `true` = all 9 regions).
 - **How do I send Temporal bundles only to some regions?** Self-hosted: `temporal_bundle_regions = ["ams", "fra"]`, and
@@ -488,8 +491,10 @@ whole unless they remove keys first.
   `harmonic_bundle_min/max_priority_fee` (or `temporal_bundle_…`, `helius_bundle_…`); unset, bundles take
   `hot_sender_min/max_priority_fee`. They go non-stop every `hot_bundle_interval_ms`, the same transaction as a shot, hottest coin first (§3, §7).
 - **`hot_bundle_interval_ms` vs `harmonic_bundle_cooldown_ms`?** The first is the timer that builds a bundle for all
-  bundle lanes; the second is how often Harmonic itself may send. A lane sends on a tick only if its cooldown has
-  passed, so Harmonic goes at the slower of the two.
+  bundle lanes; the second, when set (> 0, with the whitelisted keypair or `harmonic_bundle_public = true`), is
+  Harmonic's own pace — one bundle every `harmonic_bundle_cooldown_ms`, the timer ticking at the fastest of the two.
+  Unset or 0, Harmonic follows `hot_bundle_interval_ms`. Requests a second: 1000 / cooldown × regions with
+  `harmonic_bundle_all_endpoints = true` (every region each time), 1000 / cooldown with `false` (one region in turn).
 - **Helius rate-limits me (429)?** Without a key Helius Sender allows 1 request a second per server IP per region. Set
   `helius_api_key = "<your Helius project key>"` (used by `helius`, `helius_swqos`, `helius_bundle`): 50 a second per region.
 - **Helius SWQoS without paying tips on misses?** `helius_swqos_require_profit = true`: the copy fails without profit
