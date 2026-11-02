@@ -304,7 +304,9 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
   their own in ladder/flow too: `temporal_bundle_N_cooldown_ms` (streams 2…100), `astralane_bundle_cooldown_ms`,
   `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later), `harmonic_bundle_cooldown_ms` (build
   `f018db0dc27d`, 23 Oct 2026).
-- Regions: plain senders always send to all their regions. Bundle lanes: `<lane>_all_endpoints = false` — one region by
+- Regions: plain senders always send to all their regions — except Astralane (from build `033b82fd9869`): its sends and
+  bundles go to one region, `astralane_region` (`auto` = the nearest, measured at start; a region code; `rotate` = all
+  by turn); every region each time only with `astralane_all_endpoints = true` / `astralane_bundle_all_endpoints = true`. Bundle lanes: `<lane>_all_endpoints = false` — one region by
   turn (`temporal_bundle` and each `temporal_bundle_N` default to `true` = all regions, 8 requests a bundle — `pit` and `ewr`
   are one Temporal server and get one copy; set `false` on each stream to cut `429`); `helius_bundle`, `jito_bundle`, `astralane_bundle` default to `false`.
 - Temporal answers: `429 Too Many Requests` — the key's rate limit: 5 requests a second per key per Temporal server

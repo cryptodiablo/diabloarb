@@ -183,12 +183,15 @@ astralane_tip_max_lamports = "{astralane_max_tip}" # Astralane max tip
 astralane_min_priority_fee = "{astralane_min_prio}" # Astralane min priority fee
 astralane_max_priority_fee = "{astralane_max_prio}" # Astralane max priority fee
 astralane_cooldown_ms = "{astralane_cooldown_ms}" # Astralane loop interval in ms
+astralane_region = "auto" # Astralane sends and bundles go to one region: auto = the nearest to your server (measured at start),
+                            # or fr, fr2, ams, ams2, lon, ny, la, jp, sg, lim, lit; rotate = all regions by turn (from build 033b82fd9869)
+# astralane_all_endpoints = true # plain Astralane sends to every region each time (before 033b82fd9869: always; Astralane warns about it)
 
 astralane_bundle = false # Astralane bundles (sendBundle with revert protection): a miss is dropped and costs nothing
 astralane_bundle_api_key = "" # optional separate Astralane key for the bundles; empty = astralane_api_key
 astralane_bundle_tip_min_lamports = 10000 # min 10 000 (Astralane minimum); a random tip in min..max each bundle
 astralane_bundle_tip_max_lamports = 1000000
-astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region by turn); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
+astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region: astralane_region); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # astralane_bundle_all_endpoints = true # every Astralane region each time
 # astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # astralane_bundle_max_priority_fee = 10000
