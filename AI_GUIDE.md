@@ -590,7 +590,7 @@ whole unless they remove keys first.
   bundle timer ticks at the fastest lane; unset — the bundle timer's pace (build `f018db0dc27d`).
 - **29 Oct 2026** — `nonce_accounts = ["…"]`: your own durable nonce accounts instead of the bot's, in every mode that uses nonces; checked on start (authority must be the wallet), none created, never closed by `nonces close` (build `404b54dcaf48`).
 - **29 Oct 2026** — `markets_nonces = true`: the `markets` mode signs every copy of a shot (senders, bundles, all `send_rpcs`) over one durable nonce, at most one lands; off by default (build `eacd26e2ae0e`).
-- **3 Nov 2026** — a bundle lane (any service) whose failed transactions land on chain with its tip — the service did not protect them, each paid the fee — stops by itself after 3 such landings (BlockSprint did it: ≈12 500 failed in an hour for one user); BlockSprint's `revertProtection` is now sent in the request body too.
+- **3 Nov 2026** — the BlockSprint bundle lane whose failed transactions land on chain with its tip — BlockSprint did not protect them, each paid the fee (≈12 500 failed in an hour for one user) — stops by itself after 3 such landings; BlockSprint's `revertProtection` is now sent in the request body too. From 4 Nov only BlockSprint's lane: the other services' bundle lanes never stop so.
 - **29 Oct 2026** — new senders BlockSprint (`blocksprint`, `blocksprint_bundle`) and BlockRazor (`blockrazor`, `blockrazor_bundle`), the bundles with a pause of their own in `ladder`/`flow` as Astralane and Aura bundles; Aura's «Jito mainnet failed (429)» — Aura's own upstream busy — no longer reads as «limit used up».
 
 ## 15. Glossary
