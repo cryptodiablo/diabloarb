@@ -201,6 +201,13 @@ astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region:
 # astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # astralane_bundle_max_priority_fee = 10000
 
+zerocopy = false # ZeroCopy SWQoS sender (docs.zerocopy.sh; build 770fadee199b+): needs your own zerocopy_api_key
+zerocopy_api_key = "" # your ZeroCopy key
+zerocopy_tip_min_lamports = 1000000 # min 0.001 SOL unless your key's minimum is lower; paid only on success
+zerocopy_tip_max_lamports = 1000000
+# zerocopy_cooldown_ms = 100 # this sender's pace (a key's default limit: 15 sends a second per region)
+# zerocopy_region = "auto" # one region: auto = the nearest, or fra, ams, lon, nyc, lax, tyo, rotate
+
 aura = false # enable AuraBoost sender (auraboost.io; from 25 Oct 2026)
 aura_api_key = "" # Aura API key
 aura_tip_min_lamports = 1000000 # min 1 000 000
