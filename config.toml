@@ -12,6 +12,7 @@ send_rpcs = [ # broadcast RPC endpoints used by spam_rpc path
 # the only source of the pools' tables there — without it routes of several pools stop fitting into a transaction.
 # Not read in mode = "ladder" / "flow" (there the tables come from the watched bots' transactions).
 luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path or URL)
+# luts_only = true # use only the tables of the luts list in a transaction (not ours, not other bots ones); build 130f92e2568f+
 luts_update_ms = 1000 # LUT file refresh interval in ms (markets mode)
 
 markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
