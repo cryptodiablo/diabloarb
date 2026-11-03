@@ -324,6 +324,7 @@ file. The markets file is not used in these modes.
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program\|wallet\|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 | `markets_nonces` | `false` | `markets` mode over durable nonces too (see §2). |
+| `markets_nonce_per_shot` | `false` | With `markets_nonces` (from build `b50bf1cfd15c`): `true` — each shot on a nonce of its own (the copies of one shot still share it), so several shots of one group can land in one block. Without it every shot of one group shares one nonce and at most one lands a block. Each extra landing that finds no profit pays its fee; a nonce is held up to 2 s, so keep at least two nonces per shot a second (a shot with no free nonce is skipped). |
 | `nonce_accounts` | `[]` | Your own nonce accounts instead of the bot's (see §2). |
 
 Minimal ladder setup (without `mode`, `geyser_endpoint` and `geyser_x_token` the bot falls back to markets):
