@@ -226,7 +226,7 @@ blocksprint_tip_min_lamports = 1000000 # min 1 000 000, in every transaction
 blocksprint_tip_max_lamports = 3000000
 blocksprint_cooldown_ms = 300 # loop interval in ms (6 regions each time; 50 a second a key)
 
-blocksprint_bundle = false # BlockSprint bundles (to Jito, revert-protected): a miss is dropped and costs nothing
+blocksprint_bundle = false # BlockSprint bundles (to Jito, asked revert-protected): misses have landed and paid fees (3 Nov 2026); the bot stops the lane after 3 such landings
 blocksprint_bundle_api_key = "" # optional separate key for the bundles; empty = blocksprint_api_key
 blocksprint_bundle_tip_min_lamports = 1000000 # min 1 000 000
 blocksprint_bundle_tip_max_lamports = 3000000
