@@ -69,7 +69,9 @@ wallet); other clients get 403, so restart a bot built before 27 October 2026 to
   A missing reference keeps the default. Example: `process_delay_ms = "{spam_cooldown_ms}"` with
   `"spam_cooldown_ms": 300` in `gas.json`.
 - **Live reload.** `config.toml` and `gas.json` are re-read every `files_updates_ms`; senders, fees and delays are
-  rebuilt on the fly. Exception: the hot-mode keys (§8) are read once at start — restart after changing them.
+  rebuilt on the fly — in every mode, the hot-mode keys (§8) too: thresholds, pauses, priorities, Jito's step and
+  `hot_lanes_off` (the log says `🔄 Settings applied without a restart`). Read once at start, restart after changing them:
+  `mode` (a switch between `ladder`, `flow` and `markets`), `send_rpcs`, `arb_sources_file`, `route_memory`, `nonces`.
 - Unknown keys are ignored (counted as "keys not used"), they do no harm.
 - **A key written twice** (e.g. a pasted `temporal_bundle = true` under the sample's `temporal_bundle = false`): the
   last value is used. Better edit the existing line than add a second one.
@@ -515,9 +517,9 @@ helius_bundle_cooldown_ms = 100
 | `🪙 Creating token accounts for N mint(s); the other coins shoot on meanwhile` | A new coin needs a token account; it is being created via `send_rpcs`. |
 | `❌ token accounts not created: …` | Creation failed — check `send_rpcs` accepts transactions and the wallet has SOL. |
 | `🎯 Starting spam loop... every N ms` | Running; `(dry run: nothing sent)` with `DIABLO_SENDER_DRY=1`. |
-| `📤 Dispatched tx`, `⚡ Dispatched Jito tx`, `🌀 Dispatched temporal tx/bundle`, `🎼 Dispatched Harmonic bundle`, … | One transaction sent: tip, priority, number of regions, signature start. |
+| `📤 Dispatched tx … — N in 10 s`, `⚡ Dispatched Jito tx …`, `🌀 Dispatched temporal tx/bundle …`, `🎼 Dispatched Harmonic bundle …`, … | A sender is sending: the last copy's tip, priority, number of regions, signature start, and how many copies it sent in the last 10 s. At most one line per sender per 10 s. |
 | `❌ <sender> send failed (N in 10 s): …` | A sender refused requests (bad key, rate limit, 400/429). At most one line per 10 s. |
-| `⛔ <lane> stopped: its key was refused 20 times in a row (HTTP 403); it sends again after a restart` | A bundle lane whose key the service refused (401/403) 20 times running is stopped until the bot restarts — no more requests into a refused key. A new key, or the service's support; then restart. |
+| `⛔ <lane> stopped: its key was refused 20 times in a row (HTTP 403); it sends again after a restart` (or with a new key in the config) | A bundle lane whose key the service refused (401/403) 20 times running is stopped until the bot restarts — no more requests into a refused key. A new key, or the service's support; then restart. |
 | `✅ [n] Success! +X SOL (wallet …)` | A win: the base token balance grew. |
 | `📊 Last minute: …` | Per-minute summary: sent, failed, wins, balances; in markets mode pools/groups, in hot modes the top 2 coins with their rate and tier. |
 | `⚠️ …` | Configuration warning (sender without key, bad UUID, unknown mode). |

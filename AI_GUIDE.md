@@ -352,7 +352,7 @@ Example start (values vary):
 📡 Geyser stream                                                       ← or "No Geyser: pools over RPC every N ms"
 ✅ Markets loaded: 120 pools
 🎯 Starting spam loop... every 50 ms
-☀️ Dispatched helius bundle (tip=14579858, priority_fee=5000, endpoints=1, sig=5k67…)
+☀️ Dispatched helius bundle (tip=14579858, priority_fee=5000, endpoints=1, sig=5k67…) — 140 in 10 s   ← one line a sender every 10 s
 ✅ [1] Success! +0.0123 SOL (wallet …)
 📊 Last minute: 830 sent, 2 failed | since start: helius 830 | wins 1 (+0.0123 SOL) | balance 0.4200 SOL, 1.2000 WSOL | 120 pools, 24 groups
 ```
