@@ -514,8 +514,10 @@ helius_bundle_cooldown_ms = 100
 | `✅ Markets loaded: N pools` / `🔄 Markets updated: N pools` | Markets file read / changed. |
 | `📚 LUTs: N loaded` | Lookup tables. |
 | `👛 Token accounts: N` | Token accounts the wallet has. |
-| `🪙 Creating token accounts for N mint(s); the other coins shoot on meanwhile` | A new coin needs a token account; it is being created via `send_rpcs`. |
-| `❌ token accounts not created: …` | Creation failed — check `send_rpcs` accepts transactions and the wallet has SOL. |
+| `🪙 Creating token accounts for N mint(s); the other coins shoot on meanwhile` | A new coin needs a token account. The creation goes to `send_rpcs`, to Jito without a key and to a backup; each send pays its fee and a small Jito tip. The bot reads the account back over RPC every 3 s, with Geyser or without it; if it is still not there, the creation is sent again after 10 s, then 20, 40 … at most once in 5 minutes. |
+| `❌ token accounts not created: <where>: <why>` | One copy of the creation was refused: `send0`, `send1` … (`send_rpcs`), `rpc`, `jito` or `backup`, with the HTTP code (`jito: http status 429` — Jito's limit without a key, 1 request a second per IP — is harmless when another copy lands). If `🪙 Creating…` keeps repeating, none lands: check that `send_rpcs` accepts transactions and the wallet has SOL. |
+| `⚠️ Token accounts not read (…)` | At the start the `rpc` did not list the wallet's token accounts: they are created when needed and read back one by one. |
+| `🪙 … closed outside the bot: creating … again` | A token account was closed from the wallet while the bot ran. With Geyser it shows from a failed shot, without Geyser from a check once a minute. |
 | `🎯 Starting spam loop... every N ms` | Running; `(dry run: nothing sent)` with `DIABLO_SENDER_DRY=1`. |
 | `📤 Dispatched tx … — N in 10 s`, `⚡ Dispatched Jito tx …`, `🌀 Dispatched temporal tx/bundle …`, `🎼 Dispatched Harmonic bundle …`, … | A sender is sending: the last copy's tip, priority, number of regions, signature start, and how many copies it sent in the last 10 s. At most one line per sender per 10 s. |
 | `❌ <sender> send failed (N in 10 s): …` | A sender refused requests (bad key, rate limit, 400/429). At most one line per 10 s. |

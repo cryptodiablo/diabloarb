@@ -435,7 +435,7 @@ Open the signature on solscan.io / solana.fm.
 | `❌ <sender> send failed … 429` | Provider rate limit: raise `<name>_cooldown_ms`, check the plan/key. Helius Sender without `helius_api_key`: 1 request a second per IP per region — set the key (50 a second). |
 | `❌ jito send failed … 400` | `jito_uuid` is not a valid UUID or not yours — leave it empty. |
 | `❌ … 401/403` | Wrong or missing API key for that sender. Temporal bundles `403 Forbidden`: the key is not permitted to send bundles — a new key or Temporal's support; after 20 in a row the lane stops until a restart. |
-| `❌ token accounts not created` | `send_rpcs` must accept transactions and the wallet needs SOL. |
+| `❌ token accounts not created: <where>: <why>` | One copy was refused, the others may have landed: `jito: http status 429` is Jito's limit without a key and is harmless. Only if `🪙 Creating token accounts…` keeps repeating: `send_rpcs` must accept transactions and the wallet needs SOL. Do not close token accounts of coins the bot is shooting. |
 | Harmonic bundles stop | Usually markets not loaded (`0 groups`) — the minute summary tells why. Check the keypair is whitelisted (or use `harmonic_bundle_public = true`: no key; then few bundles is normal — one goes only when a profit is seen). |
 | `⚠️ mode = … needs Geyser` | Ladder/flow need `geyser_endpoint`; the bot fell back to markets. |
 | Geyser errors / reconnects | Endpoint or `geyser_x_token` wrong, or the provider limits streams. |
