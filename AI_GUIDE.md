@@ -189,7 +189,7 @@ does not cover its own tip and fees never executes. There is no "required profit
 |---|---|---|
 | **Bundles** — Temporal bundles, Helius bundles, Astralane bundles (`astralane_bundle`), Jito bundles (`jito_bundle`), Harmonic bundles, Jito with `jito_classic = true` | Dropped whole: **nothing paid** | fee + priority + tip, covered by the profit |
 | **Senders that fail without profit** — Helius, Temporal, Astralane, Falcon, 0slot, NextBlock, Stellium, Flashblock, HelloMoon, Fast, Apex, Jito (default) | Lands as failed (`0x7 NoProfit`): **fee + priority paid, tip not** | fee + priority + tip |
-| **Always-landing** — RPC copies (`spam_rpc`), Helius SWQoS (unless `helius_swqos_require_profit = true`: then it fails without profit like the senders, tip unpaid), Fast SWQoS, Jito with `jito_require_profit = false`, ladder step-3 Jito | Lands as an empty success: **fee + priority (+ tip, where it has one) paid** | same + profit |
+| **Always-landing** — RPC copies (`spam_rpc`), Helius SWQoS (unless `helius_swqos_require_profit = true`: then it fails without profit like the senders, tip unpaid), Fast SWQoS, Jito with `jito_require_profit = false` (in `markets` mode only: `ladder` and `flow` do not read the key), ladder step-3 Jito (`hot_jito_step`) | Lands as an empty success: **fee + priority (+ tip, where it has one) paid** | same + profit |
 
 `require_profit=true` in a sender's start line means its tip is paid only on a win.
 
@@ -539,6 +539,12 @@ whole unless they remove keys first.
 - **Windows / Mac?** Linux x86_64 only; Windows via WSL2; otherwise a VPS.
 - **Jito UUID — where?** From Jito on request; it is optional.
 - **What is `require_profit=true` in the start line?** That sender's tip is paid only on a win.
+- **`jito_require_profit = false`, but my Jito transactions fail with `0x7` and pay no tip?** In `ladder` and `flow` the
+  key is not read: Jito goes with the senders and its tip is paid only on a win (a copy without profit lands failed: fee
+  and priority paid, tip not). To pay the tip on every landing: the ladder's own Jito step (`hot_jito_step = true`, its
+  tips `hot_jito_step_tip_min_lamports` / `hot_jito_step_tip_max_lamports` — set them, the step does not use
+  `jito_min/max_tip_lamports` — its threshold `hot_jito_sol_per_min`), or `markets` mode, where the key works as
+  written. Either way every landing then costs its tip.
 - **What does the 7% fee apply to?** Only to realized profit of a win; nothing on misses or losses.
 - **Can I build my own sender?** Yes — `sdk/README.md` documents the executor's public instruction format and IDL.
 - **How do I see my wins?** `✅ [n] Success!` lines, the wallet's WSOL/USDC growth, or the diablo.bot dashboard.
@@ -592,6 +598,9 @@ whole unless they remove keys first.
 - **29 Oct 2026** — `markets_nonces = true`: the `markets` mode signs every copy of a shot (senders, bundles, all `send_rpcs`) over one durable nonce, at most one lands; off by default (build `eacd26e2ae0e`).
 - **3 Nov 2026** — the BlockSprint bundle lane whose failed transactions land on chain with its tip — BlockSprint did not protect them, each paid the fee (≈12 500 failed in an hour for one user) — stops by itself after 3 such landings; BlockSprint's `revertProtection` is now sent in the request body too. From 4 Nov only BlockSprint's lane: the other services' bundle lanes never stop so.
 - **29 Oct 2026** — new senders BlockSprint (`blocksprint`, `blocksprint_bundle`) and BlockRazor (`blockrazor`, `blockrazor_bundle`), the bundles with a pause of their own in `ladder`/`flow` as Astralane and Aura bundles; Aura's «Jito mainnet failed (429)» — Aura's own upstream busy — no longer reads as «limit used up».
+- **12 Nov 2026** — docs only: `jito_require_profit = false` acts in `markets` mode. `ladder` and `flow` have not read
+  it since 22 Oct: Jito goes with the senders there and pays its tip only on a win (a copy without profit fails with
+  `0x7`); a tip on every landing is the ladder's own Jito step, `hot_jito_step`.
 
 ## 15. Glossary
 

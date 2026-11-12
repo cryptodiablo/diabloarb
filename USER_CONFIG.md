@@ -87,7 +87,10 @@ wallet); other clients get 403, so restart a bot built before 27 October 2026 to
 - **Lanes that fail without profit** (tip saved, fee+priority paid): Jito with `jito_require_profit = true`, Helius,
   Temporal, Flashblock, HelloMoon, Astralane, 0slot, Falcon, Stellium, NextBlock, Fast, Apex.
 - **Lanes that land even without profit** (an empty successful run, fee+priority paid): RPC (`spam_rpc`), Helius
-  SWQoS, Fast SWQoS, Jito with `jito_require_profit = false` (then the tip is paid every time).
+  SWQoS, Fast SWQoS, Jito with `jito_require_profit = false` (then the tip is paid every time) — **in `markets` mode
+  only.** In `ladder` and `flow` the key is not read: Jito goes with the senders, its copy fails without profit
+  (`0x7`), the tip unpaid. A Jito that pays its tip on every landing there is the ladder's own step, `hot_jito_step`
+  (§8); `flow` has none.
 - **Bundles** (Harmonic, Temporal bundles, Helius bundles, Astralane bundles, Jito bundles, `jito_classic`): a bundle
   without profit is dropped — nothing is paid.
 - More lanes and shorter delays = more chances to win and more fees. Tips only matter when you win.
@@ -202,7 +205,7 @@ replaces every plain sender's pause (unset: each sender's own pause from the tab
 
 | Lane (switch) | Key | Tip keys (service minimum) | Priority keys (unset) | Pause in `markets` | Notes |
 |---|---|---|---|---|---|
-| `jito` | `jito_uuid` (optional; a real UUID only) | `jito_min_tip_lamports`, `jito_max_tip_lamports` (none) | `jito_min/max_priority_fee` (none: no priority) | `jito_process_delay_ms` | `jito_require_profit` (default `true` when a tip is set): the tip only on a win; `false`: lands always, the tip paid every time. In `ladder`: `hot_jito_as_sender`, `hot_jito_step`, `hot_jito_pause_ms`, `hot_jito_step_tip_min/max_lamports` (§8). |
+| `jito` | `jito_uuid` (optional; a real UUID only) | `jito_min_tip_lamports`, `jito_max_tip_lamports` (none) | `jito_min/max_priority_fee` (none: no priority) | `jito_process_delay_ms` | `jito_require_profit` (default `true` when a tip is set): the tip only on a win; `false`: lands always, the tip paid every time — `markets` mode only, not read in `ladder`/`flow` (there the tip is paid only on a win, or always by the ladder's own step `hot_jito_step`). In `ladder`: `hot_jito_as_sender`, `hot_jito_step`, `hot_jito_pause_ms`, `hot_jito_step_tip_min/max_lamports` (§8). |
 | `helius` | `helius_api_key` (optional) | `helius_tip_min/max_lamports` (200 000) | `helius_min/max_priority_fee` (one end set: copied to the other; none: global) | `helius_cooldown_ms` | Without a key 1 request/s per IP per region, with one 50. |
 | `helius_swqos` | `helius_api_key` (optional) | `helius_swqos_tip_min/max_lamports` (5 000) | `helius_swqos_min/max_priority_fee` (each unset end: the global one) | `helius_swqos_cooldown_ms` | Lands always; `helius_swqos_require_profit = true`: fails without profit, tip unpaid. |
 | `temporal` | `temporal_uuid` | `temporal_tip_min/max_lamports` (1 000 000) | `temporal_min/max_priority_fee` (none: global) | `temporal_cooldown_ms` | `temporal_tip_accounts` overrides the tip accounts. |
