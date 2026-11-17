@@ -12,7 +12,7 @@
 - It sends arbitrage transactions on Solana: a cycle of 2–3 swaps over DEX pools that starts and ends in the same base
   token — **SOL (as WSOL), USDC or USDT**. Supported DEXs: Meteora DLMM, DAMM v2, Pools (DAMM v1) and DBC; Pump.fun AMM
   (PumpSwap); Raydium AMM v4, CPMM and CLMM; Orca Whirlpool and Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal
-  CLMM; DefiTuna Fusion; Manifest (order book); MetaDAO Futarchy. SPL Token and Token-2022 coins (tokens with an
+  CLMM; DefiTuna Fusion; Manifest (order book); MetaDAO Futarchy; Hylo Exchange (mint and redeem of its x-tokens xSOL, xHYPE, xBTC, xZEC, xONYC and of hyUSD at the Pyth oracle price). SPL Token and Token-2022 coins (tokens with an
   active transfer hook are skipped). A pool of any other DEX in a markets file is ignored.
 - The trade is executed on chain by the DiabloArb executor program (`DiabLokxis…`). The program searches the best
   size itself at execution time, up to **the wallet's base-token balance plus, with `flashloan = true`, the whole
@@ -312,6 +312,7 @@ file. The markets file is not used in these modes.
 | `hot_senders_x` | 2 | Ladder: tier 2 at this multiple of the threshold. |
 | `hot_jito_x` | 4 | Ladder: tier 3 (Jito's own) at this multiple. |
 | `hot_rpc_sol_per_min`, `hot_senders_sol_per_min`, `hot_jito_sol_per_min` | `hot_sol_per_min` × 1, × `hot_senders_x`, × `hot_jito_x` | Ladder: each step's own threshold, SOL per minute, in place of the multiples (any order; a step that is off does not count). |
+| `<row>_sol_per_min` of a bundle row (`jito_bundle_sol_per_min`, `astralane_bundle_sol_per_min`, `temporal_bundle_sol_per_min`, `temporal_bundle_N_sol_per_min`, `harmonic_bundle_…`, `aura_bundle_…`, `blockrazor_bundle_…`, `blocksprint_bundle_…`, `helius_bundle_…`) | unset (none) | Ladder and flow (from 18 Nov 2026, build `63a30cad00ec`): that row's own «Starts at», SOL per minute — its bundles go only while the coin of the shot earns the on-chain bots at least this. Unset or 0: the row sends on the bundle timer as before (also while no coin is on). Not read in `markets`. For a provider that cuts or blocks keys over a non-stop flow of bundles; a bundle miss costs nothing, so for profit the default (none) is usually better. Applies live. |
 | `hot_senders_on` | `true` | Ladder: the senders' step (tier 2) as a whole; `false` — never reached (the senders' own switches stay as they are). |
 | `hot_jito_as_sender` | `true` | Jito joins the senders' broadcast from tier 2. |
 | `hot_jito_step` | `true` only when `hot_jito_as_sender = false` | Ladder: Jito's own tier 3 (from `hot_jito_x`), also when it is one of the senders. **Its tip is paid on every landing, win or not.** |

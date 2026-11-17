@@ -38,11 +38,18 @@ https://solscan.io/tx/3CVwFndtJyJHbgHozCtfBnYaKDcz57pgskSJveeYAN4VTh3XXovKgZ2SXA
 Sample of tx with 5.1k$ profit:
 <img width="1816" height="444" alt="image" src="https://github.com/user-attachments/assets/41c56bbb-5e74-4e90-90b6-00d1008e450a" />
 
-## 🆕 What's new (October 2026)
+## 🆕 What's new (October–November 2026)
 
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **Hylo Exchange (18 Nov 2026).** Routes can go through Hylo: minting and redeeming its leveraged x-tokens (xSOL,
+  xHYPE, xBTC, xZEC, xONYC) and hyUSD at the Pyth oracle price — a venue with no pool and no curve, so when the market
+  moves fast its price and the DEX pools of the same tokens drift apart. Nothing to set: such routes come with the live markets.
+- **"Starts at" for bundle rows (18 Nov 2026, `ladder`/`flow`).** Any bundle row can have its own threshold
+  `<row>_sol_per_min` (e.g. `astralane_bundle_sol_per_min = 0.05`): its bundles go only while the coin earns the
+  on-chain bots at least that, SOL a minute. Unset or 0 — on the bundle timer as before. For a provider that cuts or
+  blocks a key over a non-stop flow of bundles; on diablo.bot it is the row's **Starts at** field.
 - **CopyTrade on diablo.bot** — copy the meme-coin trades of wallets you pick, from your Arb wallet — see [`COPYTRADE.md`](COPYTRADE.md).
 - **Scalper on diablo.bot** — buys the bounce after a big sale drops a pump.fun coin, sells seconds later, from your Arb wallet — see [`SCALPER.md`](SCALPER.md).
 - **New on-chain executor.** The trade size is no longer guessed off-chain: the program finds the best amount at the
@@ -116,6 +123,7 @@ Arbitrage routes (2 or 3 swaps, starting and ending in SOL, USDC or USDT) across
 | DefiTuna Fusion | concentrated liquidity with limit orders |
 | Manifest | on-chain order book |
 | MetaDAO Futarchy | spot market |
+| Hylo Exchange | mint / redeem of x-tokens and hyUSD at the oracle price |
 
 SPL Token and Token-2022 coins are supported (tokens with an active transfer hook are skipped). Any pool of these
 DEXs can be put in your own markets file; the live `mp.toml` picks the ones where the arbitrage is happening.
@@ -229,11 +237,18 @@ senders once you see wins.
 заканчивается в SOL (WSOL), USDC или USDT, и отправляет его в сеть. Сделку исполняет программа DiabloArb в сети:
 она сама подбирает сумму в момент исполнения и ничего не делает, если выгоды уже нет.
 
-### Что нового (октябрь 2026)
+### Что нового (октябрь–ноябрь 2026)
 
 Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
 обновится до нового при следующем перезапуске.
 
+- **Hylo Exchange (18.11.2026).** Маршруты могут идти через Hylo: выпуск и выкуп его x-токенов (xSOL, xHYPE, xBTC, xZEC,
+  xONYC) и hyUSD по цене оракула Pyth. Пула и кривой там нет, поэтому при резком движении рынка цена Hylo и пулы тех же
+  токенов расходятся. Ничего настраивать не нужно: такие маршруты приходят с живыми рынками.
+- **«Starts at» у строк пакетов (18.11.2026, `ladder`/`flow`).** У любой строки пакетов может быть свой порог
+  `<строка>_sol_per_min` (например, `astralane_bundle_sol_per_min = 0.05`): её пакеты идут, только пока монета приносит
+  ончейн-ботам не меньше этого, SOL в минуту. Не задан или 0 — по таймеру пакетов, как раньше. Нужен, если поставщик
+  режет или блокирует ключ за постоянный поток пакетов; на diablo.bot это поле **Starts at** у строки.
 - **Новая программа исполнения.** Сумма сделки подбирается в сети в момент исполнения: до вашего баланса
   WSOL/USDC/USDT плюс, при `flashloan = true`, всё хранилище флешлоана DiabloArb. Если возможность ушла — транзакция
   ничего не делает, платные отправители не берут чаевые.
@@ -289,7 +304,8 @@ senders once you see wins.
 ### Поддерживаемые DEX
 
 Meteora DLMM, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
-Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy.
+Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy;
+Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула).
 Монеты SPL Token и Token-2022 (кроме токенов с действующим transfer hook).
 
 ### Установка и запуск

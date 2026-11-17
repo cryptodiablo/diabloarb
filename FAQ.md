@@ -101,6 +101,9 @@ problem reports: Telegram bot [@diablo_support_bot](https://t.me/diablo_support_
 - **What is "Starts at … SOL/min"?** In ladder mode the bot measures how much the on-chain arbitrage bots earn on each
   coin right now. A lane joins only when a coin's earnings reach its **Starts at** (`hot_rpc_sol_per_min`,
   `hot_senders_sol_per_min`, `hot_jito_sol_per_min`). Lower = more shots and more cost; higher = pickier.
+- **Bundle rows have a Starts at too (from 18 Nov 2026).** Empty by default: bundles go non-stop on the bundle timer — a
+  miss costs nothing, and bundles often win on coins nobody is earning on yet. Set it (`<row>_sol_per_min`, e.g.
+  `astralane_bundle_sol_per_min = 0.05`) only if the provider rate-limits or blocks your key for a constant stream.
 - **My bot sends nothing for hours.** In a quiet market no coin reaches the threshold: nothing is sent and nothing is
   paid — by design. The minute summary shows the top coins' SOL/min. At 0.1 SOL/min a lane may sleep for hours; most
   bots use 0.03 for RPC copies and 0.03–0.06 for paid senders. Also check the bot is running and has SOL.

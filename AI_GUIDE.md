@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 22 October 2026 (build `e96545b6fb69`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 18 November 2026 (build `63a30cad00ec`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -41,7 +41,7 @@
   time the program checks whether a profitable route exists and how big the trade should be. **If the profit does not
   cover what that very transaction costs (fee + priority + tip), the trade does not happen** (§5).
 - Base tokens: **SOL (as WSOL), USDC, USDT**. Supported DEXs: USER_CONFIG.md §1 (Meteora, PumpSwap, Raydium, Orca,
-  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO…). Coins with an active transfer hook are skipped.
+  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange…). Coins with an active transfer hook are skipped.
 - Capital: the wallet's WSOL/USDC/USDT plus, with `flashloan = true`, a shared vault that lends for the duration of a
   single transaction (repaid inside it). **7% of each realized profit** goes to the vault; the rest stays in the wallet.
   No fee on losses or misses.
@@ -601,6 +601,13 @@ whole unless they remove keys first.
 - **12 Nov 2026** — docs only: `jito_require_profit = false` acts in `markets` mode. `ladder` and `flow` have not read
   it since 22 Oct: Jito goes with the senders there and pays its tip only on a win (a copy without profit fails with
   `0x7`); a tip on every landing is the ladder's own Jito step, `hot_jito_step`.
+- **18 Nov 2026** — Hylo Exchange as a venue: routes mint and redeem its x-tokens (xSOL, xHYPE, xBTC, xZEC, xONYC) and
+  hyUSD at the Pyth price. Bundle rows in `ladder`/`flow` take their own «Starts at» `<row>_sol_per_min` (USER_CONFIG §8;
+  unset — on the bundle timer as before). A PumpSwap pool whose buyback-fee recipient has no token account is left out
+  (it used to take the first recipient and fail). After a 429 a read is retried in 1–1.5 s; the Aura lane comes back by
+  itself after refusals; an address that is no pool the bot trades (a wallet, an unknown program's account) is read once a
+  minute, not every 2 s; a transaction's signer is never taken for a pool; a new key of a lane clears the old key's
+  answers and stop in `live.json`. Ladder and flow use about a fifth less CPU (build `63a30cad00ec`).
 
 ## 15. Glossary
 
