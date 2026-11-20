@@ -43,6 +43,12 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **GoonFi (20 Nov 2026).** Routes can go through GoonFi v2: a market maker's pools quoted at its own bid/ask price
+  rather than a curve, so when the market moves fast they drift apart from the DEX pools of the same tokens. Nothing to
+  set: such routes come with the live markets.
+- **Closed WSOL account fixed (20 Nov 2026).** If the wallet's WSOL (or USDC/USDT) token account is closed outside the
+  bot — an unwrap or «close empty accounts» in a wallet app — the bot now creates it again within a minute. Older builds
+  could keep sending transactions that failed with `0x6` NotTokenAccount. Restart the bot to update.
 - **Hylo Exchange (18 Nov 2026).** Routes can go through Hylo: minting and redeeming its leveraged x-tokens (xSOL,
   xHYPE, xBTC, xZEC, xONYC) and hyUSD at the Pyth oracle price — a venue with no pool and no curve, so when the market
   moves fast its price and the DEX pools of the same tokens drift apart. Nothing to set: such routes come with the live markets.
@@ -124,6 +130,7 @@ Arbitrage routes (2 or 3 swaps, starting and ending in SOL, USDC or USDT) across
 | Manifest | on-chain order book |
 | MetaDAO Futarchy | spot market |
 | Hylo Exchange | mint / redeem of x-tokens and hyUSD at the oracle price |
+| GoonFi v2 | a market maker's pools at its own bid/ask price |
 
 SPL Token and Token-2022 coins are supported (tokens with an active transfer hook are skipped). Any pool of these
 DEXs can be put in your own markets file; the live `mp.toml` picks the ones where the arbitrage is happening.
@@ -242,6 +249,12 @@ senders once you see wins.
 Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
 обновится до нового при следующем перезапуске.
 
+- **GoonFi (20.11.2026).** Маршруты могут идти через GoonFi v2: пулы маркет-мейкера по его собственной цене покупки и
+  продажи, без кривой, поэтому при резком движении рынка они расходятся с пулами тех же токенов на DEX. Ничего
+  настраивать не нужно: такие маршруты приходят с живыми рынками.
+- **Исправлено: закрытый счёт WSOL (20.11.2026).** Если счёт WSOL (или USDC/USDT) кошелька закрыли вне бота — «развернуть
+  SOL» или «закрыть пустые счета» в приложении кошелька, — бот теперь создаёт его заново в течение минуты. Прежние
+  сборки могли продолжать слать транзакции, падавшие с `0x6` NotTokenAccount. Чтобы обновиться — перезапустите бота.
 - **Hylo Exchange (18.11.2026).** Маршруты могут идти через Hylo: выпуск и выкуп его x-токенов (xSOL, xHYPE, xBTC, xZEC,
   xONYC) и hyUSD по цене оракула Pyth. Пула и кривой там нет, поэтому при резком движении рынка цена Hylo и пулы тех же
   токенов расходятся. Ничего настраивать не нужно: такие маршруты приходят с живыми рынками.
@@ -305,7 +318,7 @@ senders once you see wins.
 
 Meteora DLMM, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
 Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy;
-Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула).
+Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула); GoonFi v2 (пулы маркет-мейкера по его цене).
 Монеты SPL Token и Token-2022 (кроме токенов с действующим transfer hook).
 
 ### Установка и запуск

@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 18 November 2026 (build `63a30cad00ec`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 November 2026 (build `ec587e289024`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -41,7 +41,7 @@
   time the program checks whether a profitable route exists and how big the trade should be. **If the profit does not
   cover what that very transaction costs (fee + priority + tip), the trade does not happen** (§5).
 - Base tokens: **SOL (as WSOL), USDC, USDT**. Supported DEXs: USER_CONFIG.md §1 (Meteora, PumpSwap, Raydium, Orca,
-  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange…). Coins with an active transfer hook are skipped.
+  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange, GoonFi…). Coins with an active transfer hook are skipped.
 - Capital: the wallet's WSOL/USDC/USDT plus, with `flashloan = true`, a shared vault that lends for the duration of a
   single transaction (repaid inside it). **7% of each realized profit** goes to the vault; the rest stays in the wallet.
   No fee on losses or misses.
@@ -378,7 +378,8 @@ Open the signature on solscan.io / solana.fm.
 | 0x7 | NoProfit | Nothing reached the required profit at that moment — **normal**, the opportunity was taken. Tip not paid. |
 | 0x3 | Unprofitable | The route ran but realized less than expected (state moved) or, after the vault fee, below the minimum. |
 | 0x8 | BadVault | Vault section wrong or not repaid — should not happen with the official sender; report it. |
-| 0x1, 0x2, 0x4, 0x5, 0x6, 0x9 | data / account errors | Should not happen with the official sender; report the signature. |
+| 0x6 | NotTokenAccount | A token account of the wallet (a base or the out coin) is missing — almost always the WSOL account closed outside the bot (an unwrap or «close empty accounts» in a wallet app). From build `ec587e289024` the bot creates it again within a minute; older builds could keep firing without it. If it keeps repeating, report the signature. |
+| 0x1, 0x2, 0x4, 0x5, 0x9 | data / account errors | Should not happen with the official sender; report the signature. |
 
 - **Failed inside a DEX** (an error from Raydium/Meteora/Orca…, e.g. Anchor `3007`, slippage): the pool changed between
   build and execution — normal in small numbers.
@@ -608,6 +609,11 @@ whole unless they remove keys first.
   itself after refusals; an address that is no pool the bot trades (a wallet, an unknown program's account) is read once a
   minute, not every 2 s; a transaction's signer is never taken for a pool; a new key of a lane clears the old key's
   answers and stop in `live.json`. Ladder and flow use about a fifth less CPU (build `63a30cad00ec`).
+- **20 Nov 2026** — GoonFi v2 as a venue: a market maker's pools quoted at its own bid/ask price, no curve. A token
+  account of the wallet closed outside the bot (WSOL unwrapped or empty accounts closed in a wallet app) is created again
+  within a minute: the bot sees the account close in its stream and re-reads its WSOL/USDC/USDT accounts every minute.
+  Before, with a stream that does not send the bot's own failed transactions, it kept firing without the account and every
+  shot failed with `0x6` NotTokenAccount (build `ec587e289024`).
 
 ## 15. Glossary
 
