@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 20 November 2026 (build `ec587e289024`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `8d5da492e3e2`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -512,6 +512,14 @@ whole unless they remove keys first.
 - **Can the bot use my markets groups as written, without making new combinations by coin?** Yes, from build
   `efbc0c4bba1f`: `markets_file_groups = true` — each `[[group]]` of the markets file is its own transaction and its routes come
   only from its own pools; default `false` regroups the pools by coin and packs up to two more groups in a transaction.
+- **«Group not sent whole … needs N accounts, the transaction took M» — but far under 64 accounts?** It is the byte
+  limit: an account that is in a lookup table costs 1 byte, one that is not costs 32, so pools in no table fill 1,232
+  bytes after 2–3 pools. From build `8d5da492e3e2`: `tx_v1 = true` (v1 transactions, 4,096 bytes, no tables) — with every
+  lane of the bot on `tx_v1_lanes` such groups fit up to 64 accounts and the line shows `limits: 4096 bytes`. Or put
+  the group's accounts (pools, vaults, oracles, bin/tick arrays, the wallet's token accounts) into your own lookup table
+  and list it in `luts`. «needs» counts the accounts of the group's pools (both directions); «took» — every account of
+  the transaction actually built, the wallet, the program, compute budget and tip included; the whole group is about
+  needs + 10–15.
 - **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
   runs up to 5). In `markets` mode a group of four pools in the markets file gives its four-pool loop; in ladder and flow
   the bot builds them from the routes it remembers. `max_hops = 3` keeps the routes as before.
@@ -614,6 +622,11 @@ whole unless they remove keys first.
   within a minute: the bot sees the account close in its stream and re-reads its WSOL/USDC/USDT accounts every minute.
   Before, with a stream that does not send the bot's own failed transactions, it kept firing without the account and every
   shot failed with `0x6` NotTokenAccount (build `ec587e289024`).
+- **21 Nov 2026** — v1 transactions (`tx_v1 = true`, `tx_v1_lanes`): up to 4,096 bytes, every address inline, no lookup
+  tables; on the lanes seen accepting them (RPC, Jito, Astralane, Helius, Falcon, Stellium, 0slot). With every lane on
+  the list a shot is packed by the v1 limits, so pools in no lookup table fit (a markets group of 5–6 new pools whole);
+  64 accounts a transaction stay. The «Group not sent whole» line names the byte limit the shot was packed by (build
+  `8d5da492e3e2`).
 
 ## 15. Glossary
 
