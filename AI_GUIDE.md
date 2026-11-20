@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `8d5da492e3e2`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `42f0b281481d`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -627,6 +627,10 @@ whole unless they remove keys first.
   the list a shot is packed by the v1 limits, so pools in no lookup table fit (a markets group of 5–6 new pools whole);
   64 accounts a transaction stay. The «Group not sent whole» line names the byte limit the shot was packed by (build
   `8d5da492e3e2`).
+- **21 Nov 2026** — pump.fun protocol fee recipient rotation (cut-off 25 Nov): the bot takes the 8 new recipients first
+  (their token account of the quote coin must exist; else the global config ones as before). Only the older PumpSwap
+  trade form carries the recipient (pools of cashback coins, or `pump_v2 = false`); a build before `42f0b281481d` would fail
+  those trades after 25 Nov with `InvalidProtocolFeeRecipient` (6013) — restart to update (build `42f0b281481d`).
 
 ## 15. Glossary
 
