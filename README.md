@@ -43,6 +43,9 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **Restart before 25 Nov 2026: pump.fun fee recipients (21 Nov 2026).** pump.fun rotates its protocol fee recipients;
+  after 25 November only the 8 new ones work. Build 42f0b281481d uses the new ones (the older PumpSwap trade form needs them;
+  builds before it would fail those trades after 25 Nov). Restart the bot once — it updates itself.
 - **Bigger transactions (21 Nov 2026).** `tx_v1 = true` sends shots as v1 transactions: up to 4,096 bytes instead of
   1,232 and no lookup tables needed, so pools that are in no table still fit — a markets group of 5–6 new pools goes
   in one transaction. Off by default; sent on the lanes known to accept it (RPC, Jito, Astralane, Helius, Falcon,
@@ -253,6 +256,9 @@ senders once you see wins.
 Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
 обновится до нового при следующем перезапуске.
 
+- **Перезапустите до 25.11.2026: получатели комиссии pump.fun (21.11.2026).** pump.fun меняет получателей комиссии;
+  после 25 ноября работают только 8 новых. Сборка 42f0b281481d берёт новых (они нужны старой форме сделки PumpSwap; в
+  прежних сборках такие сделки после 25.11 падали бы). Перезапустите бота один раз — он обновится сам.
 - **Большие транзакции (21.11.2026).** `tx_v1 = true` — выстрелы уходят транзакциями версии 1: до 4 096 байт вместо
   1 232 и без таблиц адресов, поэтому влезают и пулы, которых нет ни в одной таблице, — группа рынков из 5–6 новых
   пулов уходит одной транзакцией. По умолчанию выключено; отправляется на каналах, где формат точно принимают (RPC,
