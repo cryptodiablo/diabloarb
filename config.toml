@@ -15,7 +15,7 @@ luts = "https://moneyprinter.bot/auto/mplutall.txt" # LUT list file (local path 
 # luts_only = true # use only the tables of the luts list in a transaction (not ours, not other bots ones); build 130f92e2568f+
 luts_update_ms = 1000 # LUT file refresh interval in ms (markets mode)
 # tx_v1 = true # v1 transactions: up to 4096 bytes, no lookup tables needed — pools in no table still fit; build 8d5da492e3e2+
-# tx_v1_lanes = ["rpc", "jito", "astralane", "helius", "falcon", "stellium", "0slot"] # lanes sending v1 (default: these)
+# tx_v1_lanes = ["rpc", "jito", "astralane", "helius", "falcon", "stellium", "0slot", "harmonic", "temporal", "apex", "aura", "fast", "flashblock"] # lanes sending v1 (default: these)
 
 markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (local path or URL)
 # markets_file_groups = true # markets mode: use the file's [[group]] tables as written — each group its own transaction,

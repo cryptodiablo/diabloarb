@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `42f0b281481d`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `9ac6003c27f4`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -631,6 +631,10 @@ whole unless they remove keys first.
   (their token account of the quote coin must exist; else the global config ones as before). Only the older PumpSwap
   trade form carries the recipient (pools of cashback coins, or `pump_v2 = false`); a build before `42f0b281481d` would fail
   those trades after 25 Nov with `InvalidProtocolFeeRecipient` (6013) — restart to update (build `42f0b281481d`).
+- **21 Nov 2026** — `tx_v1 = true` sends v1 on Harmonic, Temporal, Apex, Aura, Fast and Flashblock too: by default every lane
+  the diablo.bot bots use (13), checked there the same day. With all of a bot's lanes on that list a shot is packed by the v1
+  limits even with Temporal or Harmonic on. HelloMoon, BlockSprint, BlockRazor, LandX, NextBlock and ZeroCopy stay v0
+  unless `tx_v1_lanes = ["all"]` (build `9ac6003c27f4`).
 
 ## 15. Glossary
 
