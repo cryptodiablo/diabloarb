@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `9ac6003c27f4`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `dd0b87d44f0a`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -635,6 +635,10 @@ whole unless they remove keys first.
   the diablo.bot bots use (13), checked there the same day. With all of a bot's lanes on that list a shot is packed by the v1
   limits even with Temporal or Harmonic on. HelloMoon, BlockSprint, BlockRazor, LandX, NextBlock and ZeroCopy stay v0
   unless `tx_v1_lanes = ["all"]` (build `9ac6003c27f4`).
+- **21 Nov 2026** — with `spam_rpc = false` the bot used to drop `send_rpcs` for its own service transactions too, so token
+  accounts were created only through `rpc` (often read-only) and Jito's public endpoint, and the shots of those coins waited.
+  Now token accounts, nonces, the WSOL unwrap and closing go through `send_rpcs` whether the RPC lane is on or off (build
+  `dd0b87d44f0a`).
 
 ## 15. Glossary
 
