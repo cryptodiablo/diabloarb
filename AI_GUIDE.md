@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 23 November 2026 (build `102665cbf72a`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 23 November 2026 (build `f09c43d0d901`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -646,6 +646,11 @@ whole unless they remove keys first.
 - **23 Nov 2026** — `markets_file_groups`: «just sent» counts by the group's own last shot, so groups sharing pools no
   longer skip each other about every other shot; «Group not sent whole» names each pool left out and why and counts the
   accounts the same way on both sides; `markets_file_groups_partial = true` sends the part that fits (build `0713b3e2c5fa`).
+- **23 Nov 2026** — in `ladder`/`flow` every bundle lane goes on its own pause (`astralane_bundle_cooldown_ms`,
+  `jito_bundle_cooldown_ms`, `harmonic_bundle_cooldown_ms`, …) to the ms, whatever the other lanes' pauses are. Before,
+  one bundle timer ticked at the shortest pause and each lane took the first tick past its own: Astralane at 45 ms next to
+  Harmonic at 30 ms went every 60 ms (≈1,000 bundles a minute instead of ≈1,333), and a 30 ms lane alone missed ticks
+  (≈1,570 a minute in a dry run, ≈1,950 now) (build `f09c43d0d901`).
 - **23 Nov 2026** — in `markets` mode a route is no longer held back for 200 ms after it was sent: the hold is 4/5 of the
   markets tick (the shortest pause of your lanes), as in `ladder`/`flow` since 23 Oct, so every tick ships the routes
   again. With a 150 ms pause the bot used to leave most unchanged routes out and skip about one shot in seven; dry runs

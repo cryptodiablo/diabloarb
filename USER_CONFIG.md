@@ -232,8 +232,8 @@ copied" — the single given value is used for both ends.
 
 **Bundle lanes.** A bundle without profit is dropped whole — nothing is paid, neither fee nor tip. They run next to
 the plain senders and do not depend on their switches (`astralane_bundle` works with `astralane = false`, `jito_bundle`
-with `jito = false`) nor on `hot_senders_on`; in `ladder`/`flow` they shoot on every tick of the bundle timer, also
-while no coin is hot. Their priority keys are lamports a transaction and act in `ladder`/`flow` too (unset there: the
+with `jito = false`) nor on `hot_senders_on`; in `ladder`/`flow` each shoots on its own pause (its `_cooldown_ms`, else
+`hot_bundle_interval_ms`), also while no coin is hot. Their priority keys are lamports a transaction and act in `ladder`/`flow` too (unset there: the
 senders' `hot_sender_min/max_priority_fee`).
 
 | Lane (switch) | Key (unset → fallback) | Tips (unset → default) | Priority keys | Pause in `markets` | Pause in `ladder`/`flow` | Regions (default) |
@@ -290,7 +290,9 @@ file. The markets file is not used in these modes.
   (the hottest coin's best route first, then other hot coins' routes, as many as fit in one transaction — up to 64
   accounts; the program checks them all on chain and runs the best) whenever any coin is tracked (in `ladder`/`flow` that timer, not the lane's `_cooldown_ms`, sets how often a bundle
   lane sends: 100 ms = 10 bundles a second; exceptions with a pace of their own — `astralane_bundle_cooldown_ms`,
-  `jito_bundle_cooldown_ms`, `harmonic_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
+  `jito_bundle_cooldown_ms`, `harmonic_bundle_cooldown_ms` and the extra Temporal streams' `temporal_bundle_N_cooldown_ms`;
+  each keeps its own pause to the ms whatever the other lanes' are — from build `f09c43d0d901`; before it one timer ticked at the
+  shortest pause and a lane took the first tick past its own, so 45 ms next to 30 ms went every 60 ms) — also while no coin is on; a bundle without profit costs nothing. Their tips are their
   own keys; their priority is their own `<name>_min/max_priority_fee` (`harmonic_bundle_…`, `temporal_bundle_…`,
   `helius_bundle_…`, `astralane_bundle_…`, `jito_bundle_…`, lamports a transaction) when set, else the senders' `hot_sender_min/max_priority_fee`.
 - **Flow** — non-stop: one shot every `hot_sender_pause_ms` (unset: 250 ms) with the top 2 coins, or one and the
@@ -331,7 +333,7 @@ file. The markets file is not used in these modes.
 | `markets_file_groups_partial` | `false` | With `markets_file_groups = true` (from build `0713b3e2c5fa`): `true` — a group that does not fit whole goes in the part that fits instead of not at all; the log then says `Group sent in part: …` with the pools left out and why. A part can miss a cycle through a left-out pool, and a landed transaction without a win still pays its network fee. |
 | `luts_only` | `false` | From build `130f92e2568f`: `true` — a transaction uses only the lookup tables of your `luts` list (as listed; the ones it needs are kept), not our universal table and not the tables seen in other bots transactions. Default `false`: our universal table first, then the tables (yours and the others) that cover most of the accounts. Needs a `luts` list; without it, as by default. |
 | `hot_lanes_off` | `[]` | Senders not used in this mode, e.g. `["landx", "nextblock"]`. |
-| `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the same transaction as a shot — hottest coin first, then more hot coins as fit (up to 64 accounts) — this often. 0 = with the shots. |
+| `hot_bundle_interval_ms` | 100 | Timer of the bundle lanes (Temporal bundles, Harmonic, `jito_classic`): the same transaction as a shot — hottest coin first, then more hot coins as fit (up to 64 accounts) — this often; a lane with a `_cooldown_ms` of its own goes on that pause instead, each lane on its own. 0 = with the shots. |
 | `arb_sources_file` | built in | Own list of bots to watch: `<address> <program\|wallet\|aggregator> <name>` per line. Only `program` entries count for the heat ranking. |
 | `nonces` | 32 | Durable nonce accounts (max 100). |
 | `markets_nonces` | `false` | `markets` mode over durable nonces too (see §2). |
