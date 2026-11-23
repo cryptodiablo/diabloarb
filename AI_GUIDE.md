@@ -3,7 +3,7 @@
 > **To the AI reading this:** you are helping a user of the DiabloArb Solana arbitrage bot (`sender`, from
 > github.com/cryptodiablo/diabloarb). This file is the support knowledge base: setup, how money moves, modes, senders,
 > costs with numbers, logs, explorer errors, troubleshooting, and the questions users actually ask. Every config key is
-> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 21 November 2026 (build `dd0b87d44f0a`;
+> in [USER_CONFIG.md](USER_CONFIG.md) — read both completely before answering. State of 23 November 2026 (build `0713b3e2c5fa`;
 > the diablo.bot dashboard as of 22 October — §11).
 > Short answers to the most asked questions and settings presets for diablo.bot and self-hosted: [FAQ.md](FAQ.md).
 >
@@ -512,14 +512,18 @@ whole unless they remove keys first.
 - **Can the bot use my markets groups as written, without making new combinations by coin?** Yes, from build
   `efbc0c4bba1f`: `markets_file_groups = true` — each `[[group]]` of the markets file is its own transaction and its routes come
   only from its own pools; default `false` regroups the pools by coin and packs up to two more groups in a transaction.
-- **«Group not sent whole … needs N accounts, the transaction took M» — but far under 64 accounts?** It is the byte
-  limit: an account that is in a lookup table costs 1 byte, one that is not costs 32, so pools in no table fill 1,232
-  bytes after 2–3 pools. From build `8d5da492e3e2`: `tx_v1 = true` (v1 transactions, 4,096 bytes, no tables) — with every
-  lane of the bot on `tx_v1_lanes` such groups fit up to 64 accounts and the line shows `limits: 4096 bytes`. Or put
-  the group's accounts (pools, vaults, oracles, bin/tick arrays, the wallet's token accounts) into your own lookup table
-  and list it in `luts`. «needs» counts the accounts of the group's pools (both directions); «took» — every account of
-  the transaction actually built, the wallet, the program, compute budget and tip included; the whole group is about
-  needs + 10–15.
+- **«Group not sent whole» — which limit is it?** From build `0713b3e2c5fa` the line names each pool left out and why:
+  `its routes didn't fit (bytes or 64 accounts locked)`, `the 16-route cap`, `no quote on its current state` (the pool's
+  state cannot quote the route now), `its token account is being created`, `its state is loading`, `no route through it`
+  (e.g. over `max_hops`). «need A accounts» counts the accounts of the shot's pools, «carries B of them» how many of those
+  the transaction has, «in all» every account of it (wallet, program, compute budget, tip included). Bytes: an account in
+  a lookup table costs 1 byte, one that is not costs 32, so pools in no table fill 1,232 bytes after 2–3 pools; with
+  `tx_v1 = true` (v1 transactions, 4,096 bytes, no tables, build `8d5da492e3e2`) and every lane of the bot on
+  `tx_v1_lanes` such groups fit up to 64 accounts and the line shows `limits: 4096 bytes`; or put the group's accounts
+  (pools, vaults, oracles, bin/tick arrays, the wallet's token accounts) into your own lookup table and list it in
+  `luts`. Before build `0713b3e2c5fa` a pool was also left out when its routes had gone out within 200 ms in another group's shot
+  (groups sharing pools, about every other shot); now «just sent» counts by the group's own last shot. To send the part
+  that fits instead of nothing: `markets_file_groups_partial = true`.
 - **Can the bot do 4-hop routes?** Yes, in every mode: `max_hops = 4` is the default (2–5; the on-chain program
   runs up to 5). In `markets` mode a group of four pools in the markets file gives its four-pool loop; in ladder and flow
   the bot builds them from the routes it remembers. `max_hops = 3` keeps the routes as before.
@@ -639,6 +643,9 @@ whole unless they remove keys first.
   accounts were created only through `rpc` (often read-only) and Jito's public endpoint, and the shots of those coins waited.
   Now token accounts, nonces, the WSOL unwrap and closing go through `send_rpcs` whether the RPC lane is on or off (build
   `dd0b87d44f0a`).
+- **23 Nov 2026** — `markets_file_groups`: «just sent» counts by the group's own last shot, so groups sharing pools no
+  longer skip each other about every other shot; «Group not sent whole» names each pool left out and why and counts the
+  accounts the same way on both sides; `markets_file_groups_partial = true` sends the part that fits (build `0713b3e2c5fa`).
 
 ## 15. Glossary
 
