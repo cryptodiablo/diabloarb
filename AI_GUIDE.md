@@ -655,6 +655,12 @@ whole unless they remove keys first.
   markets tick (the shortest pause of your lanes), as in `ladder`/`flow` since 23 Oct, so every tick ships the routes
   again. With a 150 ms pause the bot used to leave most unchanged routes out and skip about one shot in seven; dry runs
   of a minute each, old and new: 0 left out instead of 1,198, 368 transactions built instead of 313 (build `102665cbf72a`).
+- **24 Nov 2026** — Meteora DLMM: a shot's DLMM window (`swap2`) also carries the bin arrays with liquidity behind the
+  active bin (two for a bin step up to 25 bp, else one), so a trade that moves the price an array or two before the shot
+  executes no longer drops the pool from the search (build `5f028a0cd91b`).
+- **24 Nov 2026** — `markets` mode without `markets_file_groups`: the coins go in the markets file's order (the first
+  pool of each), not by their address, so the two groups a shot packs beside its own are the ones listed first — the
+  hottest in an `mp.toml` (build `9f8fe8b2e1cc`).
 
 ## 15. Glossary
 
