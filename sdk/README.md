@@ -31,11 +31,13 @@ you want your own pool discovery, pricing or landing.
 8. [Return data and errors](#8-return-data-and-errors)
 9. [An example, decoded](#9-an-example-decoded)
 10. [Checklist](#10-checklist)
+11. [Program upgrades](#11-program-upgrades)
 
 ## 1. Terms and fees
 
-- **Program:** `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z` (upgradeable; the ELF in the network since 2026-10-26,
-  SHA-256 `e925e50fdf5f99b64a9df1a6610807ff1637beef34d5ee133d9f2b5ba27a3eb3`).
+- **Program:** `DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z` (upgradeable; the ELF in the network since 2026-11-19
+  16:46 UTC, SHA-256 `2130e26f905dd9dd7a05160c6309b82bdba29a88990d66f6f9c5f7fbbcf7d794`; every upgrade — in
+  [Program upgrades](#11-program-upgrades)).
 - **Vault (flash loan):** PDA `Bank4kzA4xv6zsLfXXx4YrMK7io8fWTvCEHsbQZoh2Jc` (seeds `"bank"`, `3310317` as u64 LE,
   bump 255). Its token accounts lend to any signer, up to their whole balance, free, repaid in the same instruction:
 
@@ -980,7 +982,7 @@ number of on-chain quotes the search made. With `simulateTransaction` it tells y
 | 1 (0x1) | InvalidData | malformed data: counts out of range, sizes do not add up, unknown tag |
 | 2 (0x2) | AccountIndex | an index (`first`, `out`, base, vault) points past the account list |
 | 3 (0x3) | Unprofitable | the route executed but realized less than expected (state moved) or, after the fee, below `min_profit` |
-| 4 (0x4) | UnknownDex | `dex` not in 0..=16, or a window's program is not one of that DEX's |
+| 4 (0x4) | UnknownDex | `dex` not in 0..=29 (17–29 from the November upgrades, §11), or a window's program is not one of that DEX's |
 | 5 (0x5) | NotSigner | account 0 did not sign |
 | 6 (0x6) | NotTokenAccount | a base or `out` account is not a token account |
 | 7 (0x7) | NoProfit | no route reached `min_profit` with `FAIL_WHEN_DRY` — **normal**: the opportunity was gone |
@@ -1029,3 +1031,15 @@ fee, 5 quotes.
 - [ ] Simulate first (`simulateTransaction`, `sigVerify: false`) and read the return data and logs; only then send.
 - [ ] Start with one window and `tag 2` (quote) to check a window's accounts: data `02 | hop (5 bytes) | u64 amount`,
       accounts `user, then the window`; return data = the quoted output.
+
+## 11. Program upgrades
+
+Each upgrade of the executor in the network: the date (UTC), the slot, the SHA-256 of the ELF and what changed. A line is
+added with every upgrade; an upgrade that adds venues leaves the existing ones as they were (checked on the same network
+snapshots before and after: same quotes, same results).
+
+| Date (UTC) | Slot | SHA-256 | What changed |
+|---|---|---|---|
+| 2026-10-26 | — | `e925e50fdf5f99b64a9df1a6610807ff1637beef34d5ee133d9f2b5ba27a3eb3` | Jupiter Perpetuals pool (Dex 16) — §6.16. |
+| 2026-11-17 17:14 | 470 613 607 | `2c47b9d96b2483740fe6e95bfdc5f40888330ba427469d0eb8f505633f538108` | Hylo Exchange: 12 steps (Dex 17–28 — mint and redeem of x-tokens and hyUSD, xSOL ↔ hyUSD, the SOL/LST market); windows not described here yet. Existing DEXes unchanged. |
+| 2026-11-19 16:46 | 471 407 864 | `2130e26f905dd9dd7a05160c6309b82bdba29a88990d66f6f9c5f7fbbcf7d794` | GoonFi v2 (Dex 29); window not described here yet. Existing DEXes unchanged. `UnknownDex` now means `dex` not in 0..=29 or a window's program not one of that DEX's. |
