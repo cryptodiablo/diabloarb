@@ -304,6 +304,14 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
   their own in ladder/flow too: `temporal_bundle_N_cooldown_ms` (streams 2…100), `astralane_bundle_cooldown_ms`,
   `jito_bundle_cooldown_ms` (build `961ae47e967c`, 13 Oct 2026, and later), `harmonic_bundle_cooldown_ms` (build
   `f018db0dc27d`, 23 Oct 2026).
+- More keys of one sender or bundle service (from build `50d3dfb1bb84`): rows `<name>_2` … `<name>_10` — e.g.
+  `astralane_2`, `jito_3`, `astralane_bundle_2`, `jito_bundle_2` — each a lane of its own. A row's keys are the first row's
+  with `_N` after the name (`astralane_2_api_key`, `jito_2_min_tip_lamports`, `jito_2_process_delay_ms`,
+  `astralane_bundle_2_region`); every key a row leaves unset is the first row's, except the tips (the service's minimum).
+  The full list and what each row inherits: USER_CONFIG.md §7a. Two rows on one key share its limit; each row is one more
+  copy of every shot. Rows exist for jito, temporal, astralane, zeroslot, falcon, flashblock, aura, blocksprint, blockrazor,
+  stellium, nextblock, fast, fast_swqos, apex, zerocopy, manka and the bundles of jito, astralane, aura, blocksprint,
+  blockrazor, manka — not for helius, hellomoon, harmonic or the RPC (Temporal bundles have their streams 2…100).
 - Regions: plain senders always send to all their regions — except Astralane (from build `033b82fd9869`): its sends and
   bundles go to one region, `astralane_region` (`auto` = the nearest, measured at start; a region code; `rotate` = all
   by turn); every region each time only with `astralane_all_endpoints = true` / `astralane_bundle_all_endpoints = true`. Bundle lanes: `<lane>_all_endpoints = false` — one region by
@@ -674,6 +682,19 @@ whole unless they remove keys first.
   `[[group]]` route still goes first. Dry runs on the live feed, 40 min, 74 competitor wins: the winning route whole in
   our shot 38–42 times with any order, against 31–32 by the file's order. `markets_file_order = true` keeps the order
   (build `d0fce4ebb21e`).
+- **26 Nov 2026** — more keys of one sender or bundle service in one bot, each with its own terms: rows `<name>_2` …
+  `<name>_10` for 16 senders (`astralane_2`, `jito_2`, …) and 6 bundle services (`astralane_bundle_2`, `jito_bundle_2`,
+  `aura_bundle_2`, `blocksprint_bundle_2`, `blockrazor_bundle_2`, `manka_bundle_2`) — its own key, tips, priority, pause
+  (also in `ladder`/`flow`), `_sol_per_min` threshold, `_region` and `_all_endpoints`; unset keys are the first row's, the
+  tips the service's minimum. A row without a key anywhere (a Jito row without a UUID) stays off with a warning. A bundle
+  lane names its own region too: `jito_bundle_region`, `astralane_bundle_region` (unset: `astralane_region`, as before),
+  `aura_bundle_region`, `blocksprint_bundle_region`, `blockrazor_bundle_region`. Harmonic: `harmonic_bundle_region` —
+  `auto` (the nearest of six), a region or `rotate` (the six by turn), one region unless
+  `harmonic_bundle_all_endpoints = true`; unset — as before. Also fixed: two lanes of one service to one region no
+  longer share their counters and refusal stop when the
+  config is read again, and the copies of one service in a shot take different tip accounts (two keys never send one
+  signature). Without the new keys the bot reads every config as before — checked lane by lane on the published
+  `config.toml` and 10 more configs (build `50d3dfb1bb84`).
 
 ## 15. Glossary
 

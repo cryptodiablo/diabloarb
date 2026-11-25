@@ -119,6 +119,7 @@ jito_bundle_tip_min_lamports = 10000 # a random tip in min..max each bundle, pai
 jito_bundle_tip_max_lamports = 1000000
 jito_bundle_cooldown_ms = 50 # Jito bundle interval in ms (one Jito region by turn); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # jito_bundle_all_endpoints = true # every Jito region each time
+# jito_bundle_region = "fra" # one Jito region (build 50d3dfb1bb84+): auto = the nearest, ams dub fra lon ny slc sgp tyo; unset = all by turn
 # jito_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # jito_bundle_max_priority_fee = 10000
 # -------------------------------------------------------------------------------------------------------------------
@@ -204,8 +205,32 @@ astralane_bundle_tip_min_lamports = 10000 # min 10 000 (Astralane minimum); a ra
 astralane_bundle_tip_max_lamports = 1000000
 astralane_bundle_cooldown_ms = 50 # Astralane bundle interval in ms (one region: astralane_region); in ladder/flow too: this lane's own pace (unset = hot_bundle_interval_ms)
 # astralane_bundle_all_endpoints = true # every Astralane region each time
+# astralane_bundle_region = "ny" # the bundles' own region (build 50d3dfb1bb84+), same values as astralane_region; unset = astralane_region
 # astralane_bundle_min_priority_fee = 1000 # lamports per tx; in ladder/flow ahead of hot_sender_*
 # astralane_bundle_max_priority_fee = 10000
+
+# More keys of one sender or bundle service (build 50d3dfb1bb84+): a row <name>_2 … <name>_10 is a lane of its own with
+# its own key, tips, pause, region and threshold. Its keys are the first row's with _N after the name; each one unset is
+# the first row's, except the tips (unset = the service's minimum). Rows exist for jito, temporal, astralane, zeroslot,
+# falcon, flashblock, aura, blocksprint, blockrazor, stellium, nextblock, fast, fast_swqos, apex, zerocopy, manka and for
+# jito_bundle, astralane_bundle, aura_bundle, blocksprint_bundle, blockrazor_bundle, manka_bundle (USER_CONFIG.md §7a).
+# Each row is one more copy of every shot; a row on the first row's key shares that key's limit.
+# A second Astralane bundles key, in New York, every 50 ms:
+# astralane_bundle_2 = true
+# astralane_bundle_2_api_key = "" # your second Astralane key; empty = astralane_bundle_api_key, else astralane_api_key
+# astralane_bundle_2_region = "ny" # auto, a region code, rotate; unset = the first row's region
+# astralane_bundle_2_cooldown_ms = 50 # this row's own pace (markets and ladder/flow); unset = the first row's
+# astralane_bundle_2_tip_min_lamports = 10000
+# astralane_bundle_2_tip_max_lamports = 1000000
+# astralane_bundle_2_sol_per_min = 0.001 # ladder/flow: only on coins at least this hot; unset = always
+# A second plain Astralane row (plain sends, not bundles):
+# astralane_2 = true
+# astralane_2_api_key = "" # empty = astralane_api_key (both rows then share its limit)
+# astralane_2_region = "ams" # unset = astralane_region
+# astralane_2_cooldown_ms = 100 # also in ladder/flow, ahead of hot_sender_pause_ms; unset = the first row's
+# astralane_2_tip_min_lamports = 10000
+# astralane_2_tip_max_lamports = 1000000
+# astralane_2_sol_per_min = 0.01 # ladder/flow: only on coins at least this hot; unset = with the senders' step
 
 zerocopy = false # ZeroCopy SWQoS sender (docs.zerocopy.sh; build 770fadee199b+): needs your own zerocopy_api_key
 zerocopy_api_key = "" # your ZeroCopy key
@@ -327,6 +352,9 @@ harmonic_bundle_public = false # true: Harmonic's public bundle service — no w
                                # bundle goes only when the bot sees a profit itself. Then set harmonic_bundle_all_endpoints = false
 harmonic_bundle_endpoints = ["fra", "lon", "ams", "ny", "tyo", "sgp"] # regions (fra lon ams ny tyo sgp slc) or URLs
 harmonic_bundle_all_endpoints = true # every endpoint each time
+# harmonic_bundle_region = "auto" # (build 50d3dfb1bb84+) one region: auto = the nearest, or fra lon ams ny tyo sgp slc; rotate = the
+#                                 # six by turn with harmonic_bundle_all_endpoints = false, all six at once with true. When set,
+#                                 # harmonic_bundle_endpoints is not read. Harmonic takes ~10 bundles a second per region.
 harmonic_bundle_cooldown_ms = 300 # Harmonic loop interval in ms
 # harmonic_bundle_min_priority_fee = 50000 # lamports per tx — Harmonic's price (no tip); in ladder/flow ahead of
 # harmonic_bundle_max_priority_fee = 200000 #   hot_sender_* (unset: min/max_priority_fee; hot modes: hot_sender_*)

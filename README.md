@@ -43,6 +43,11 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **More keys of one sender or bundle service (26 Nov 2026).** Rows `<name>_2` … `<name>_10`, each a lane with its own
+  key and terms: e.g. `astralane_bundle_2 = true` with `astralane_bundle_2_api_key`, `astralane_bundle_2_region = "ny"`,
+  `astralane_bundle_2_cooldown_ms = 50`. For 16 senders (`astralane_2`, `jito_2`, …) and the bundles of Jito, Astralane,
+  Aura, BlockSprint, BlockRazor, Manka; keys a row leaves unset are the first row's. `harmonic_bundle_region` picks
+  Harmonic's region. Example in config.toml, every key in USER_CONFIG.md §7a (build 50d3dfb1bb84).
 - **Manka sender and bundles (25 Nov 2026).** `manka = true` with your own `manka_api_key` (docs.manka.wtf) sends
   through the nearest of Manka's fra, ams, nyc; `manka_bundle = true` adds its atomic bundles (a paid plan only — a
   free key gets `not_permitted`). Keys and defaults in USER_CONFIG.md §7 (build d1730517d577).
