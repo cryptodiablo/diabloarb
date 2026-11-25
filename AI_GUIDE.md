@@ -669,6 +669,11 @@ whole unless they remove keys first.
 - **25 Nov 2026** — `markets` mode: the cut to the 64 best candidate routes keeps up to 16 of the tick coin's and of the
   first extra coin's routes whatever their rank, so a coin listed above the tick coin with many routes no longer cuts
   the tick coin out of its own shot (build `60eca4fe429f`).
+- **25 Nov 2026** — `markets` mode with your own markets file (not moneyprinter.bot's): the file's order no longer
+  matters. Routes are ranked by a fresh quote, the coins beside the tick coin are those whose pools moved last; a
+  `[[group]]` route still goes first. Dry runs on the live feed, 40 min, 74 competitor wins: the winning route whole in
+  our shot 38–42 times with any order, against 31–32 by the file's order. `markets_file_order = true` keeps the order
+  (build `d0fce4ebb21e`).
 
 ## 15. Glossary
 

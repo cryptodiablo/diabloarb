@@ -22,6 +22,8 @@ markets_file = "https://moneyprinter.bot/auto/mp.toml" # markets file path (loca
 #                             # routes only from its pools (default false: pools regrouped by coin; build efbc0c4bba1f+)
 # markets_file_groups_partial = true # with markets_file_groups: a group that doesn't fit whole goes in the part that fits
 #                                     # (default false: the group whole or not at all; build 0713b3e2c5fa+)
+# markets_file_order = true # your own markets file ranked by its order (default false: a fresh quote ranks the routes,
+#                            # the order does not matter; moneyprinter.bot's list always goes by its order; build d0fce4ebb21e+)
 files_updates_ms = 200 # local files refresh interval (gas + markets) in ms
 remote_files_update_ms = 10000 # remote URL refresh interval (markets/luts) in ms
 

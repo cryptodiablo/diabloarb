@@ -39,6 +39,10 @@ Markets file format (TOML): `markets = ["poolAddr", …]` and/or groups `[[group
 (first = hottest), and the bot follows that order. `moneyprinter.bot/auto/mp.toml` is rebuilt live from the coins the
 on-chain arbitrage bots earn most on right now. Both URLs answer only our sender (it signs each request with your
 wallet); other clients get 403, so restart a bot built before 27 October 2026 to let it update itself.
+**Your own markets file** (any path or URL not on moneyprinter.bot; from build `d0fce4ebb21e`): its order does not matter.
+The bot ranks the routes by a fresh quote of each and packs beside the tick's coin the coins whose pools moved last, so
+there is nothing to sort by hand; a `[[group]]` route of the file still goes first, whatever its place. The log says which
+way it runs at start (`📋 markets file: …`). `markets_file_order = true` ranks an own file by its order as before.
 
 ## 3. Commands and environment
 
@@ -132,10 +136,12 @@ wallet); other clients get 403, so restart a bot built before 27 October 2026 to
 ## 6a. Markets mode (default, `mode` unset or `"markets"`)
 
 - The bot shoots the pools of the markets file. Pools are grouped by coin (USDC pairs join their coin's group); a
-  group needs at least two pools. In `mp.toml` every group is one route and the order is the priority.
+  group needs at least two pools. In `mp.toml` every group is one route and the order is the priority; in your own
+  file the order does not matter (a fresh quote ranks the routes, §2).
 - One transaction per **tick**; the tick is the shortest delay of all active loops (`process_delay_ms`,
-  `jito_process_delay_ms`, `<sender>_cooldown_ms`). A transaction carries the next group plus up to two more groups
-  that still fit (size and compute limits).
+  `jito_process_delay_ms`, `<sender>_cooldown_ms`). A transaction carries the next group plus routes of two more
+  coins, route by route as they fit (64 accounts, 16 routes): the first two of `mp.toml`, or with your own file the
+  two whose pools moved last.
 - Each sender sends at most once per its own delay; a tick when a sender's delay has not passed skips that sender.
 - Data: Geyser if set, else the pools are polled over `rpc` every second (blockhash every 400 ms). Without Geyser the
   bot cannot see the outcome of its own transactions in detail, only balances.
