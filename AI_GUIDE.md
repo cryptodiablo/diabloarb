@@ -666,6 +666,9 @@ whole unless they remove keys first.
   your own `manka_api_key`, tips from 0.001 SOL (0.0001 on a Pro key), one region — the nearest of fra, ams, nyc
   unless `manka_region`; the bundles with a pause of their own in `ladder`/`flow` and `manka_bundle_sol_per_min`
   (build `d1730517d577`).
+- **25 Nov 2026** — `markets` mode: the cut to the 64 best candidate routes keeps up to 16 of the tick coin's and of the
+  first extra coin's routes whatever their rank, so a coin listed above the tick coin with many routes no longer cuts
+  the tick coin out of its own shot (build `60eca4fe429f`).
 
 ## 15. Glossary
 
