@@ -168,6 +168,8 @@ Each sender is a separate loop: turned on by its flag, sending every `<name>_coo
 | `blocksprint_bundle` | `blocksprint_bundle_api_key` if set, else the same `blocksprint_api_key` | 1 000 000 | BlockSprint `sendBundle` to Jito, asked with revert protection, a lane of its own next to `blocksprint`. **3 Nov 2026: BlockSprint landed failed bundle transactions anyway (each paid the fee and priority)** — the bot stops this lane by itself after 3 such landings (the log and the cabinet show it stopped; it sends again after a restart); 10 bundles a second a key. Keys `blocksprint_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms` (in `ladder`/`flow` its own pace; unset: `hot_bundle_interval_ms`), `_all_endpoints` (false: one of 6 regions by turn). |
 | `blockrazor` | `blockrazor_api_key` | 100 000 | BlockRazor (from 29 Oct 2026): `sendTransaction` in fra, ams, lon, ny, tyo, sgp (every region each time). Key from blockrazor.io; tip from 0.0001 SOL; the free plan takes 3 sends a second — with 6 regions a send is 6 requests, so keep `blockrazor_cooldown_ms` ≥ 2000 on it (or ask BlockRazor for more). |
 | `blockrazor_bundle` | `blockrazor_bundle_api_key` if set, else the same `blockrazor_api_key` | 100 000 | BlockRazor `sendBundle` (all or nothing: a miss costs nothing). **BlockRazor switches bundles on for a key on request** — without that every bundle is refused (shown in the cabinet, nothing paid). Keys as `blocksprint_bundle_*`. |
+| `manka` | `manka_api_key` | 1 000 000 | Manka (docs.manka.wtf; from build `d1730517d577`): `sendTransaction` on `/send` in fra, ams, nyc — one region, the nearest (`manka_region`: `auto`, `fra`, `ams`, `nyc`, `rotate`; `manka_all_endpoints = true` — every region each time, each copy counts on your key's rate). The free plan: 5 sends a second, tips from 0.001 SOL; Pro: 40 a second and bundles, tips from 0.0001 SOL. Manka cuts the tips' weight of a key whose sends rarely land — see their docs. |
+| `manka_bundle` | `manka_bundle_api_key` if set, else the same `manka_api_key` | 1 000 000 | Manka `sendBundle` on `/bundles` (all or nothing: a miss costs nothing), a lane of its own next to `manka`. **A paid plan only** — a free key answers `not_permitted` (shown in the log, nothing paid). Keys `manka_bundle_tip_min/max_lamports` (default 0.001 SOL), `_min/max_priority_fee`, `_cooldown_ms` (in `ladder`/`flow` its own pace), `_region` (as `manka_region`), `_all_endpoints`, `_sol_per_min` (hot modes). |
 | `zeroslot` | `zeroslot_api_key` | 1 000 000 | 0slot. |
 | `falcon` | `falcon_api_key` | 1 000 000 | |
 | `stellium` | `stellium_api_key` | 1 000 000 | `stellium_endpoints` = list of its URLs. |
@@ -215,6 +217,7 @@ replaces every plain sender's pause (unset: each sender's own pause from the tab
 | `aura` | `aura_api_key` | `aura_tip_min/max_lamports` (1 000 000) | `aura_min/max_priority_fee` (none: global) | `aura_cooldown_ms` | AuraBoost; 3 regions each time. |
 | `blocksprint` | `blocksprint_api_key` | `blocksprint_tip_min/max_lamports` (1 000 000) | `blocksprint_min/max_priority_fee` (none: global) | `blocksprint_cooldown_ms` | BlockSprint; 6 regions each time. |
 | `blockrazor` | `blockrazor_api_key` | `blockrazor_tip_min/max_lamports` (100 000) | `blockrazor_min/max_priority_fee` (none: global) | `blockrazor_cooldown_ms` | BlockRazor; 6 regions each time (free plan: 3 requests a second). |
+| `manka` | `manka_api_key` | `manka_tip_min/max_lamports` (1 000 000; a Pro key down to 100 000) | `manka_min/max_priority_fee` (none: global) | `manka_cooldown_ms` | Manka; one region, the nearest (`manka_region`, `manka_all_endpoints`). In `ladder`/`flow` it goes with the senders. |
 | `zeroslot` | `zeroslot_api_key` | `zeroslot_tip_min/max_lamports` (1 000 000) | `zeroslot_min/max_priority_fee` | `zeroslot_cooldown_ms` | 0slot. |
 | `falcon` | `falcon_api_key` | `falcon_tip_min/max_lamports` (1 000 000) | `falcon_min/max_priority_fee` | `falcon_cooldown_ms` | |
 | `stellium` | `stellium_api_key` | `stellium_tip_min/max_lamports` (1 000 000) | `stellium_min/max_priority_fee` | `stellium_cooldown_ms` | `stellium_endpoints = ["…"]` — its hosts. |
@@ -245,6 +248,7 @@ senders' `hot_sender_min/max_priority_fee`).
 | `aura_bundle` | `aura_bundle_api_key` → `aura_api_key` (required) | `aura_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `aura_bundle_min/max_priority_fee` | `aura_bundle_cooldown_ms` | `aura_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `aura_bundle_all_endpoints` (`false`) |
 | `blocksprint_bundle` | `blocksprint_bundle_api_key` → `blocksprint_api_key` (required) | `blocksprint_bundle_tip_min/max_lamports` → 1 000 000 (minimum 1 000 000) | `blocksprint_bundle_min/max_priority_fee` | `blocksprint_bundle_cooldown_ms` | `blocksprint_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `blocksprint_bundle_all_endpoints` (`false`) |
 | `blockrazor_bundle` | `blockrazor_bundle_api_key` → `blockrazor_api_key` (required) | `blockrazor_bundle_tip_min/max_lamports` → 100 000 (minimum 100 000) | `blockrazor_bundle_min/max_priority_fee` | `blockrazor_bundle_cooldown_ms` | `blockrazor_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `blockrazor_bundle_all_endpoints` (`false`) |
+| `manka_bundle` | `manka_bundle_api_key` → `manka_api_key` (required; a paid plan) | `manka_bundle_tip_min/max_lamports` → 1 000 000 (a Pro key down to 100 000) | `manka_bundle_min/max_priority_fee` | `manka_bundle_cooldown_ms` | `manka_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `manka_bundle_region` (`auto`: the nearest), `manka_bundle_all_endpoints` (`false`) |
 | `jito_bundle` | `jito_bundle_uuid` → `jito_uuid` (optional) | `jito_bundle_tip_min/max_lamports` → 10 000 | `jito_bundle_min/max_priority_fee` (none: no priority) | `jito_bundle_cooldown_ms` | `jito_bundle_cooldown_ms` → `hot_bundle_interval_ms` | `jito_bundle_all_endpoints` (`false`) |
 | `harmonic_bundle` | `harmonic_bundle_auth_keypair` (a whitelisted keypair file), or `harmonic_bundle_public = true` | no tip (the priority is the price) | `harmonic_bundle_min/max_priority_fee` (one end: copied) | `harmonic_bundle_cooldown_ms` | `hot_bundle_interval_ms` | `harmonic_bundle_endpoints` (fra, lon, ams, ewr, tyo, sgp or URLs); `harmonic_bundle_all_endpoints` (`true`; `false` with public) |
 
@@ -436,6 +440,10 @@ helius_tip_max_lamports = 2000000
 # blockrazor_tip_min_lamports = 100000 # min 100 000
 # blockrazor_cooldown_ms = 2000
 # blockrazor_bundle = true             # BlockRazor bundles: only on a key BlockRazor switched them on for
+# manka = true                         # Manka (docs.manka.wtf); free plan: 5 a second, tips from 0.001 SOL
+# manka_api_key = "…"
+# manka_region = "auto"                 # the nearest of fra, ams, nyc
+# manka_bundle = true                  # Manka bundles: a paid plan only (a free key: not_permitted)
 # zeroslot = true
 # zeroslot_api_key = "…"
 # zeroslot_tip_min_lamports = 1000000   # 0slot; min 1 000 000

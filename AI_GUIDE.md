@@ -329,6 +329,7 @@ USER_CONFIG.md §7a — answer config questions from that table, never invent a 
 | Aura bundles (`aura_bundle`) | `aura_bundle_api_key` (its own), else `aura_api_key` (auraboost.io) | nothing | From 25 Oct 2026. Tip ≥ 0.001 SOL, one of 3 regions (fra, ams, nyc) by turn, pause `aura_bundle_cooldown_ms`. |
 | BlockSprint bundles (`blocksprint_bundle`) | `blocksprint_bundle_api_key` (its own), else `blocksprint_api_key` (blocksprint.io) | nothing | From 29 Oct 2026. To Jito, asked with revert protection — on 3 Nov 2026 failed ones landed anyway and paid fees; the bot stops the lane after 3 such landings; tip ≥ 0.001 SOL, one of 6 regions by turn, pause `blocksprint_bundle_cooldown_ms`. |
 | BlockRazor bundles (`blockrazor_bundle`) | `blockrazor_bundle_api_key` (its own), else `blockrazor_api_key` (blockrazor.io) | nothing | From 29 Oct 2026. Tip ≥ 0.0001 SOL, pause `blockrazor_bundle_cooldown_ms`. BlockRazor switches bundles on for a key on request — off by default: every bundle refused until then. |
+| Manka (`manka`) and Manka bundles (`manka_bundle`) | `manka_api_key` (docs.manka.wtf); bundles `manka_bundle_api_key`, else the same key | sends: fee + priority; bundles: nothing | From build `d1730517d577` (25 Nov 2026). Tip ≥ 0.001 SOL (a Pro key ≥ 0.0001), one region — the nearest unless `manka_region`. Bundles need a paid plan: a free key answers `not_permitted`. |
 | Harmonic bundles | whitelisted keypair file, or nothing with `harmonic_bundle_public = true` | nothing | Price = priority. Public: lower rate limits, a bundle only when a profit is seen now. |
 | OrbitFlare Apex | `apex_api_key` | fee + priority if it lands as failed; nothing if rejected | Tip ≥ 0.001 SOL. Pick 1–2 nearest `apex_regions`. |
 | Astralane, 0slot, Falcon, Aura, BlockSprint, BlockRazor, NextBlock, Stellium, Flashblock, HelloMoon, Fast | their API key | fee + priority | Minimum tips in USER_CONFIG §7. Aura (`aura`, from 25 Oct 2026): `aura_api_key` from auraboost.io, tip ≥ 0.001 SOL, 3 regions each time — a trial key's 10 requests a second allow `aura_cooldown_ms` ≥ 300. BlockSprint (`blocksprint`, from 29 Oct 2026): `blocksprint_api_key` from blocksprint.io, tip ≥ 0.001 SOL in every transaction, 6 regions each time, 50 a second a key. BlockRazor (`blockrazor`): `blockrazor_api_key` from blockrazor.io, tip ≥ 0.0001 SOL, 6 regions each time — the free plan's 3 requests a second allow `blockrazor_cooldown_ms` ≥ 2000. |
@@ -661,6 +662,10 @@ whole unless they remove keys first.
 - **24 Nov 2026** — `markets` mode without `markets_file_groups`: the coins go in the markets file's order (the first
   pool of each), not by their address, so the two groups a shot packs beside its own are the ones listed first — the
   hottest in an `mp.toml` (build `9f8fe8b2e1cc`).
+- **25 Nov 2026** — new sender Manka (`manka`, docs.manka.wtf) and its bundles (`manka_bundle`, a paid plan's):
+  your own `manka_api_key`, tips from 0.001 SOL (0.0001 on a Pro key), one region — the nearest of fra, ams, nyc
+  unless `manka_region`; the bundles with a pause of their own in `ladder`/`flow` and `manka_bundle_sol_per_min`
+  (build `d1730517d577`).
 
 ## 15. Glossary
 

@@ -43,6 +43,9 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **Manka sender and bundles (25 Nov 2026).** `manka = true` with your own `manka_api_key` (docs.manka.wtf) sends
+  through the nearest of Manka's fra, ams, nyc; `manka_bundle = true` adds its atomic bundles (a paid plan only — a
+  free key gets `not_permitted`). Keys and defaults in USER_CONFIG.md §7 (build d1730517d577).
 - **Restart before 25 Nov 2026: pump.fun fee recipients (21 Nov 2026).** pump.fun rotates its protocol fee recipients;
   after 25 November only the 8 new ones work. Build 42f0b281481d uses the new ones (the older PumpSwap trade form needs them;
   builds before it would fail those trades after 25 Nov). Restart the bot once — it updates itself.

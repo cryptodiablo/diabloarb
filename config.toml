@@ -212,6 +212,21 @@ zerocopy_tip_max_lamports = 1000000
 # zerocopy_cooldown_ms = 100 # this sender's pace (a key's default limit: 15 sends a second per region)
 # zerocopy_region = "auto" # one region: auto = the nearest, or fra, ams, lon, nyc, lax, tyo, rotate
 
+manka = false # Manka sender (docs.manka.wtf; build d1730517d577+): needs your own manka_api_key
+manka_api_key = "" # your Manka key (free plan: 5 sends a second; Pro: 40 and bundles)
+manka_tip_min_lamports = 1000000 # 0.001 SOL, the free key's minimum; a Pro key takes from 100000 (0.0001 SOL)
+manka_tip_max_lamports = 1000000
+# manka_cooldown_ms = 200 # this sender's pace; keep it within your plan's rate
+# manka_region = "auto" # one region: auto = the nearest, or fra, ams, nyc, rotate
+# manka_all_endpoints = false # true: every region each time (each copy counts on your key's rate)
+manka_bundle = false # Manka bundles (sendBundle, all or nothing): a paid plan only, a free key gets not_permitted
+manka_bundle_api_key = "" # optional separate key for the bundles; empty = manka_api_key
+manka_bundle_tip_min_lamports = 1000000
+manka_bundle_tip_max_lamports = 1000000
+# manka_bundle_cooldown_ms = 200 # in ladder/flow this lane's own pace
+# manka_bundle_region = "auto" # auto = the nearest, or fra, ams, nyc, rotate
+# manka_bundle_sol_per_min = 0.001 # ladder/flow: bundles only on coins at least this hot; unset = always
+
 aura = false # enable AuraBoost sender (auraboost.io; from 25 Oct 2026)
 aura_api_key = "" # Aura API key
 aura_tip_min_lamports = 1000000 # min 1 000 000
