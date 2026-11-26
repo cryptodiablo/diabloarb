@@ -47,7 +47,7 @@ unchanged**, and the old binary updates itself to the new one on its next restar
   fee by its schedule and the market's volatility — quoted to the unit as the program pays (0 differences on the program
   itself, on the network's swaps and on simulations in the network). The pool's referral share of the fee (20 % of the
   protocol's) is paid into the trade and counts as profit. DLMM Pro is in beta: if Meteora upgrades the program, the bot stops routing through it by itself until a
-  build that knows the new version. Nothing to set: the bot takes DLMM Pro pools in its markets by itself; the live markets will list them once most bots run this build (build 098a87b0f586).
+  build that knows the new version. Nothing to set: the bot takes DLMM Pro pools in its markets by itself, and the live markets list them too since 26 Nov 2026; an older build just skips such a pool (build 098a87b0f586).
 - **MetaDAO Futarchy: half the compute units (26 Nov 2026).** A DAO with no proposal trading is priced by its spot swap
   alone: a transaction with a Futarchy pool asks about half the compute units it did (with DAMM v2 ≈207 thousand
   instead of ≈437), so you pay less priority fee and the on-chain search goes on to the trade's size (build 098a87b0f586).
@@ -278,7 +278,7 @@ senders once you see wins.
   заявками, комиссия по расписанию пула и волатильности рынка — расчёт до единицы, как платит программа (0 расхождений с
   самой программой, со сделками сети и с симуляциями в сети). Доля комиссии для `referral` (20 % доли протокола)
   приходит в саму сделку и идёт в прибыль. DLMM Pro — бета: если Meteora обновит программу, бот сам перестанет через неё ходить до сборки, которая знает новую
-  версию. Ничего настраивать не нужно: бот сам берёт пулы DLMM Pro из своих рынков; в живые рынки они попадут, когда большинство ботов перейдёт на эту сборку (сборка 098a87b0f586).
+  версию. Ничего настраивать не нужно: бот сам берёт пулы DLMM Pro из своих рынков, в живых рынках они тоже есть с 26.11.2026; прежняя сборка такой пул просто пропускает (сборка 098a87b0f586).
 - **MetaDAO Futarchy: вдвое меньше единиц вычислений (26.11.2026).** DAO без идущего голосования считается по обмену в
   одном спотовом пуле: транзакция с пулом Futarchy просит примерно вдвое меньше единиц вычислений (с DAMM v2 ≈207 тыс.
   вместо ≈437) — меньше плата за приоритет, и поиск в сети доходит до нужной суммы (сборка 098a87b0f586).
