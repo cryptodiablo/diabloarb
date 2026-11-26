@@ -40,7 +40,7 @@
 - Each transaction calls the **DiabloArb executor** program (`DiabLokxisGR8P4Qqp2QL6PmBhhVsdzPstCE4WoLxc5z`). At execution
   time the program checks whether a profitable route exists and how big the trade should be. **If the profit does not
   cover what that very transaction costs (fee + priority + tip), the trade does not happen** (§5).
-- Base tokens: **SOL (as WSOL), USDC, USDT**. Supported DEXs: USER_CONFIG.md §1 (Meteora, PumpSwap, Raydium, Orca,
+- Base tokens: **SOL (as WSOL), USDC, USDT**. Supported DEXs: USER_CONFIG.md §1 (Meteora incl. DLMM Pro, PumpSwap, Raydium, Orca,
   PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange, GoonFi…). Coins with an active transfer hook are skipped.
 - Capital: the wallet's WSOL/USDC/USDT plus, with `flashloan = true`, a shared vault that lends for the duration of a
   single transaction (repaid inside it). **7% of each realized profit** goes to the vault; the rest stays in the wallet.
@@ -695,6 +695,14 @@ whole unless they remove keys first.
   config is read again, and the copies of one service in a shot take different tip accounts (two keys never send one
   signature). Without the new keys the bot reads every config as before — checked lane by lane on the published
   `config.toml` and 10 more configs (build `50d3dfb1bb84`).
+- **26 Nov 2026** — Meteora DLMM Pro (`dPro1D5wiqnGMH8vMDG23jh35btTHoWdyqXjqkqxe8n`) as a venue: ticks with liquidity and
+  limit orders, the fee by the pool's schedule and volatility, quoted to the unit as the program pays; the pool's
+  referral share (20 % of the protocol's) is paid into the trade and counts as profit. The DiabloArb executor in the
+  network has the DLMM Pro hop since the same day. DLMM Pro is in beta: the bot reads the program's deployment slot once a minute and routes
+  through it only at a deployment it was checked against — after an upgrade by Meteora such routes stop by themselves
+  until a newer build; an empty file `dlmmpro-slots.txt` next to the binary turns DLMM Pro off by hand. MetaDAO
+  Futarchy: a DAO with no proposal trading is priced by its spot swap alone — a menu with DAMM v2 asks ≈207 thousand
+  compute units instead of ≈437 (build `098a87b0f586`).
 
 ## 15. Glossary
 

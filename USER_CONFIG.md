@@ -10,7 +10,7 @@
 ## 1. What the bot does
 
 - It sends arbitrage transactions on Solana: a cycle of 2–3 swaps over DEX pools that starts and ends in the same base
-  token — **SOL (as WSOL), USDC or USDT**. Supported DEXs: Meteora DLMM, DAMM v2, Pools (DAMM v1) and DBC; Pump.fun AMM
+  token — **SOL (as WSOL), USDC or USDT**. Supported DEXs: Meteora DLMM, DLMM Pro, DAMM v2, Pools (DAMM v1) and DBC; Pump.fun AMM
   (PumpSwap); Raydium AMM v4, CPMM and CLMM; Orca Whirlpool and Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal
   CLMM; DefiTuna Fusion; Manifest (order book); MetaDAO Futarchy; Hylo Exchange (mint and redeem of its x-tokens xSOL, xHYPE, xBTC, xZEC, xONYC and of hyUSD at the Pyth oracle price); GoonFi v2 (a market maker's pools at its own bid/ask price). SPL Token and Token-2022 coins (tokens with an
   active transfer hook are skipped). A pool of any other DEX in a markets file is ignored.

@@ -43,6 +43,14 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **Meteora DLMM Pro (26 Nov 2026).** Routes can go through Meteora DLMM Pro: ticks with liquidity and limit orders, a
+  fee by its schedule and the market's volatility — quoted to the unit as the program pays (0 differences on the program
+  itself, on the network's swaps and on simulations in the network). The pool's referral share of the fee (20 % of the
+  protocol's) is paid into the trade and counts as profit. DLMM Pro is in beta: if Meteora upgrades the program, the bot stops routing through it by itself until a
+  build that knows the new version. Nothing to set: the bot takes DLMM Pro pools in its markets by itself; the live markets will list them once most bots run this build (build 098a87b0f586).
+- **MetaDAO Futarchy: half the compute units (26 Nov 2026).** A DAO with no proposal trading is priced by its spot swap
+  alone: a transaction with a Futarchy pool asks about half the compute units it did (with DAMM v2 ≈207 thousand
+  instead of ≈437), so you pay less priority fee and the on-chain search goes on to the trade's size (build 098a87b0f586).
 - **More keys of one sender or bundle service (26 Nov 2026).** Rows `<name>_2` … `<name>_10`, each a lane with its own
   key and terms: e.g. `astralane_bundle_2 = true` with `astralane_bundle_2_api_key`, `astralane_bundle_2_region = "ny"`,
   `astralane_bundle_2_cooldown_ms = 50`. For 16 senders (`astralane_2`, `jito_2`, …) and the bundles of Jito, Astralane,
@@ -131,6 +139,7 @@ Arbitrage routes (2 or 3 swaps, starting and ending in SOL, USDC or USDT) across
 | DEX | Pool type |
 |---|---|
 | Meteora DLMM | dynamic liquidity bins |
+| Meteora DLMM Pro | concentrated liquidity (ticks) with limit orders |
 | Meteora DAMM v2 | dynamic AMM |
 | Meteora Pools (DAMM v1) | AMM over Meteora vaults |
 | Meteora DBC | dynamic bonding curve (launchpad pools) |
@@ -265,6 +274,14 @@ senders once you see wins.
 Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
 обновится до нового при следующем перезапуске.
 
+- **Meteora DLMM Pro (26.11.2026).** Маршруты могут идти через Meteora DLMM Pro: тики с ликвидностью и лимитными
+  заявками, комиссия по расписанию пула и волатильности рынка — расчёт до единицы, как платит программа (0 расхождений с
+  самой программой, со сделками сети и с симуляциями в сети). Доля комиссии для `referral` (20 % доли протокола)
+  приходит в саму сделку и идёт в прибыль. DLMM Pro — бета: если Meteora обновит программу, бот сам перестанет через неё ходить до сборки, которая знает новую
+  версию. Ничего настраивать не нужно: бот сам берёт пулы DLMM Pro из своих рынков; в живые рынки они попадут, когда большинство ботов перейдёт на эту сборку (сборка 098a87b0f586).
+- **MetaDAO Futarchy: вдвое меньше единиц вычислений (26.11.2026).** DAO без идущего голосования считается по обмену в
+  одном спотовом пуле: транзакция с пулом Futarchy просит примерно вдвое меньше единиц вычислений (с DAMM v2 ≈207 тыс.
+  вместо ≈437) — меньше плата за приоритет, и поиск в сети доходит до нужной суммы (сборка 098a87b0f586).
 - **Перезапустите до 25.11.2026: получатели комиссии pump.fun (21.11.2026).** pump.fun меняет получателей комиссии;
   после 25 ноября работают только 8 новых. Сборка 42f0b281481d берёт новых (они нужны старой форме сделки PumpSwap; в
   прежних сборках такие сделки после 25.11 падали бы). Перезапустите бота один раз — он обновится сам.
@@ -340,7 +357,7 @@ senders once you see wins.
 
 ### Поддерживаемые DEX
 
-Meteora DLMM, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
+Meteora DLMM, DLMM Pro, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
 Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy;
 Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула); GoonFi v2 (пулы маркет-мейкера по его цене).
 Монеты SPL Token и Token-2022 (кроме токенов с действующим transfer hook).
