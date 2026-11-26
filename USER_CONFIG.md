@@ -321,9 +321,11 @@ file. The markets file is not used in these modes.
 - **Ladder** — a coin turns **on** when its rate ≥ `hot_sol_per_min` and the bots made at least 3 paying trades on it
   in those 30 s; it stays on until its temperature falls below a quarter of the threshold. The tier follows the
   temperature:
-  - tier 1 — on: RPC copies only, one every `process_delay_ms` (recent blockhash, lands even without profit). Their priority is random from
-    1 000 lamports up to a ceiling: twice the median priority the winning bots pay on that coin (last 60 s), at most
-    10% of the bots' earnings per our landings per minute, never above `hot_priority_cap`;
+  - tier 1 — on: RPC copies only, one every `process_delay_ms` (recent blockhash, lands even without profit). Their priority is random (uniform) from
+    `hot_rpc_min_priority_fee` (default 1 000 lamports; 0 allowed) up to a ceiling: twice the median priority the winning
+    bots pay on that route (last 60 s, every way they landed — priority fee only, no tips), at most 10% of the bots'
+    earnings per our landings per minute (shots a minute × 0.5) less the 5 000 base fee, never above `hot_priority_cap`. A
+    ceiling under the floor is raised to the floor; with no wins on the route yet every copy goes at the floor;
   - tier 2 — temperature ≥ `hot_senders_x` × threshold: plus a broadcast to every configured sender every
     `hot_sender_pause_ms`, all copies signed over one durable nonce (at most one lands). Each sender's tip is its own `<name>_tip_*` range, priority
     random in `hot_sender_min/max_priority_fee`. Jito joins if `hot_jito_as_sender`; its tip is then raised to at
@@ -379,6 +381,7 @@ file. The markets file is not used in these modes.
 | `hot_half_life_s` | 15 | Seconds in which a coin's temperature halves. |
 | `hot_sender_min_priority_fee`, `hot_sender_max_priority_fee` | 100, 1000 | Senders' priority, lamports/tx, random in the range. |
 | `hot_priority_cap` | 100000 | Ladder: ceiling of the RPC copies' priority (lamports/tx). Flow: not used — RPC copies take the senders' range. |
+| `hot_rpc_min_priority_fee` | 1000 | Ladder: floor of the RPC copies' priority (lamports/tx), 0 allowed; see tier 1 above for the ceiling. Flow: unset — the senders' minimum. |
 | `route_memory` | `true` | Both modes: the routes the arbitrage bots won on are remembered for hours (file `route-memory.txt` next to the config, kept over restarts) and every shot is the best single transaction by them — routes of any coin, by their profit (last 15 s, 150 s, 30 min) per account they take; the room left is filled as before. `false`: the selection as before (the top coins of the last minutes only). |
 | `max_hops` | `4` | Every mode, markets too: the longest route a shot lists, 2 to 5 pools (the program runs 5). Four covers the loops through a second base — SOL → USDC → coin A → coin B → SOL; in markets mode a group of four pools gives its four-pool loop; in ladder and flow a remembered route is recognised whichever base it starts from. A longer route asks more compute units of a transaction: set `3` to keep the shots as before. |
 | `markets_file_groups` | `false` | Markets mode (from build `efbc0c4bba1f`): `true` — the markets file's `[[group]]` tables as written: each group its own transaction, its routes only from its own pools (still up to `max_hops`), not regrouped by coin and no other groups packed in. A file of only the top-level `markets` list stays grouped by coin. From build `79d1586a9375` a group waits whole while one of its pools loads again (its tick or bin arrays moved with the price) — never shot as its part. From build `626b7354996c` a transaction that cannot carry every pool of the group is not sent at all — the group goes whole or not (`markets_file_groups_partial` below sends the part). When it does not fit, the log says so at most every 10 s, from build `0713b3e2c5fa` with each pool left out and why: `Group not sent whole: X of its Y pools in (R routes); left out: <pool> (<kind>): <reason>. The shot's pools need A accounts, the transaction carries B of them (C accounts in all; limits: …)`. From build `0713b3e2c5fa` «just sent» counts by the group's own last shot: a group shot within the repeat window (200 ms; from build `102665cbf72a` 4/5 of the markets tick, so a group shot every tick is never held) waits whole while none of its pools changed, and its routes are not left out one by one (before, groups sharing pools left the shared routes out of each other's next shot, and the group was skipped). |
@@ -540,8 +543,8 @@ hot_jito_step = false           # true: Jito's own step 3, its tip paid on every
 hot_bundle_interval_ms = 100
 harmonic_bundle = true
 harmonic_bundle_auth_keypair = "harmonic.json"
-harmonic_bundle_min_priority_fee = 50000
-harmonic_bundle_max_priority_fee = 200000
+harmonic_bundle_min_priority_fee = 200000    # winning Harmonic bundles of the diablo.bot bots, 24–26 Nov 2026:
+harmonic_bundle_max_priority_fee = 600000    # mostly 200 000–1 000 000 lamports/tx (median ≈390 000) — check the stats
 harmonic_bundle_cooldown_ms = 100
 temporal_bundle = true
 # temporal_bundle_uuid = "…"    # unset: temporal_uuid
