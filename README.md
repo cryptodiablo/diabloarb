@@ -43,6 +43,12 @@ Sample of tx with 5.1k$ profit:
 The bot was rebuilt from scratch. **Your existing `config.toml`, `gas.json` and markets file keep working
 unchanged**, and the old binary updates itself to the new one on its next restart.
 
+- **Archer and ZeroFi (28 Nov 2026).** Routes can go through two more venues: Archer, an on-chain exchange where market
+  makers post books of price levels, and ZeroFi, a market maker's pools at its own quoted price. Both are quoted to the
+  unit as the programs pay (checked on the programs themselves and on the network's swaps). If either program is
+  upgraded, the bot stops routing through it by itself until a build that knows the new version. Nothing to set: the bot
+  takes their pools in its markets by itself, and the live markets list them too since 28 Nov 2026; an older build just
+  skips such a pool (build 0e0d4761ea09).
 - **Meteora DLMM Pro (26 Nov 2026).** Routes can go through Meteora DLMM Pro: ticks with liquidity and limit orders, a
   fee by its schedule and the market's volatility — quoted to the unit as the program pays (0 differences on the program
   itself, on the network's swaps and on simulations in the network). The pool's referral share of the fee (20 % of the
@@ -156,6 +162,8 @@ Arbitrage routes (2 or 3 swaps, starting and ending in SOL, USDC or USDT) across
 | MetaDAO Futarchy | spot market |
 | Hylo Exchange | mint / redeem of x-tokens and hyUSD at the oracle price |
 | GoonFi v2 | a market maker's pools at its own bid/ask price |
+| Archer | market makers' books of price levels |
+| ZeroFi | a market maker's pools at its own quoted price |
 
 SPL Token and Token-2022 coins are supported (tokens with an active transfer hook are skipped). Any pool of these
 DEXs can be put in your own markets file; the live `mp.toml` picks the ones where the arbitrage is happening.
@@ -274,6 +282,11 @@ senders once you see wins.
 Бот переписан с нуля. **Старые `config.toml`, `gas.json` и файл рынков работают без правок**, старый бинарник сам
 обновится до нового при следующем перезапуске.
 
+- **Archer и ZeroFi (28.11.2026).** Маршруты могут идти ещё через две площадки: Archer — биржа в сети, где маркет-мейкеры
+  выставляют книги ценовых уровней, и ZeroFi — пулы маркет-мейкера по его собственной цене. Расчёт до единицы, как
+  платят программы (сверено с самими программами и со сделками сети). Если программу обновят, бот сам перестанет через
+  неё ходить до сборки, которая знает новую версию. Ничего настраивать не нужно: бот сам берёт их пулы из своих рынков,
+  в живых рынках они тоже есть с 28.11.2026; прежняя сборка такой пул просто пропускает (сборка 0e0d4761ea09).
 - **Meteora DLMM Pro (26.11.2026).** Маршруты могут идти через Meteora DLMM Pro: тики с ликвидностью и лимитными
   заявками, комиссия по расписанию пула и волатильности рынка — расчёт до единицы, как платит программа (0 расхождений с
   самой программой, со сделками сети и с симуляциями в сети). Доля комиссии для `referral` (20 % доли протокола)
@@ -359,7 +372,8 @@ senders once you see wins.
 
 Meteora DLMM, DLMM Pro, DAMM v2, Pools (DAMM v1) и DBC; Pump.fun AMM (PumpSwap); Raydium AMM v4, CPMM и CLMM; Orca Whirlpool и
 Orca v2 / SPL Token Swap; PancakeSwap CLMM; Byreal CLMM; DefiTuna Fusion; Manifest (книга заявок); MetaDAO Futarchy;
-Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула); GoonFi v2 (пулы маркет-мейкера по его цене).
+Hylo Exchange (выпуск и выкуп x-токенов и hyUSD по цене оракула); GoonFi v2 (пулы маркет-мейкера по его цене);
+Archer (книги ценовых уровней маркет-мейкеров); ZeroFi (пулы маркет-мейкера по его цене).
 Монеты SPL Token и Token-2022 (кроме токенов с действующим transfer hook).
 
 ### Установка и запуск

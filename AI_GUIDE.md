@@ -41,7 +41,7 @@
   time the program checks whether a profitable route exists and how big the trade should be. **If the profit does not
   cover what that very transaction costs (fee + priority + tip), the trade does not happen** (§5).
 - Base tokens: **SOL (as WSOL), USDC, USDT**. Supported DEXs: USER_CONFIG.md §1 (Meteora incl. DLMM Pro, PumpSwap, Raydium, Orca,
-  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange, GoonFi…). Coins with an active transfer hook are skipped.
+  PancakeSwap, Byreal, DefiTuna, Manifest, MetaDAO, Hylo Exchange, GoonFi, Archer, ZeroFi…). Coins with an active transfer hook are skipped.
 - Capital: the wallet's WSOL/USDC/USDT plus, with `flashloan = true`, a shared vault that lends for the duration of a
   single transaction (repaid inside it). **7% of each realized profit** goes to the vault; the rest stays in the wallet.
   No fee on losses or misses.
@@ -703,6 +703,14 @@ whole unless they remove keys first.
   until a newer build; an empty file `dlmmpro-slots.txt` next to the binary turns DLMM Pro off by hand. MetaDAO
   Futarchy: a DAO with no proposal trading is priced by its spot swap alone — a menu with DAMM v2 asks ≈207 thousand
   compute units instead of ≈437 (build `098a87b0f586`).
+- **28 Nov 2026** — Archer (`Archer8kgiavM61GyusMzaaS2ft5sALtNsD1HxkUPMhy`) and ZeroFi
+  (`ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY`) as venues. Archer: an on-chain exchange where market makers post books
+  of price levels; a swap fills against the best books in lots. ZeroFi: a market maker's pools on shared vaults at its
+  own quoted price (written by its price program `W1LDCARDa67SPBG7TFpQivHnEZXRtxCFP13ysEd1bWR`). Both are quoted to the
+  unit as the programs pay — checked on the programs themselves and on the network's swaps (Archer: ≈15 thousand). The
+  DiabloArb executor in the network has both hops since the same day. Both are gated like DLMM Pro: the bot reads the
+  programs' deployment slots once a minute and routes through them only at deployments it was checked against; an
+  empty `archer-slots.txt` / `zerofi-slots.txt` next to the binary turns one off by hand (build `0e0d4761ea09`).
 
 ## 15. Glossary
 
